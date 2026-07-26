@@ -8,6 +8,7 @@ import { STARTER_CANDIES, CANDIES } from '../data/candies.js';
 import { STARTER_DECOS, STARTER_PACKS, DECORATIONS, PACKAGING } from '../data/decorations.js';
 import { COLOR_UNLOCK, FLAVORS } from '../data/palette.js';
 import { computeBonuses } from '../data/upgrades.js';
+import { staffBonuses, makeEmployee } from '../data/staff.js';
 
 const SAVE_KEY = 'liekes-candy-design/save/v1';
 const SAVE_VERSION = 1;
@@ -50,6 +51,9 @@ function freshState(){
 
     upgrades: {},
 
+    /* hired employees + today's applicant pool */
+    staff: { roster: [], applicants: [], applicantsDate: '', seededFromUpgrade: 0, seedDone: false },
+
     counters: {
       orders:0, fiveStars:0, perfect:0, coinsEarned:0, decosPlaced:0,
       wrapped:0, tips:0, photos:0, unlocked:0, totalStars:0, served:0,
@@ -64,6 +68,9 @@ function freshState(){
 
     missions: { daily: [], date: '', claimed: [], careerClaimed: [] },
     daily: { lastClaim: '', streak: 0, cycleStart: 1 },
+
+    /* levels whose pick-2 reward grid has not been opened yet */
+    levelRewards: { pending: [] },
 
     records: { endless:0, speed:0, challenge:0, shopLevel:1 },
     photos: [],
@@ -97,9 +104,12 @@ function migrate(old){
   const base = freshState();
   const merged = { ...base, ...old, v: SAVE_VERSION };
   // deep-merge the nested objects so new fields appear for old saves
-  for (const key of ['owned','counters','missions','daily','records','settings']){
+  for (const key of ['owned','counters','missions','daily','records','settings','staff','levelRewards']){
     merged[key] = { ...base[key], ...(old[key] || {}) };
   }
+  merged.staff.roster = [...(old.staff?.roster || [])];
+  merged.staff.applicants = [...(old.staff?.applicants || [])];
+  merged.levelRewards.pending = [...(old.levelRewards?.pending || [])];
   merged.owned = {
     candies: [...new Set([...base.owned.candies, ...(old.owned?.candies || [])])],
     decos:   [...new Set([...base.owned.decos,   ...(old.owned?.decos   || [])])],
@@ -153,7 +163,10 @@ export function addXp(amount){
   if (leveled.length){
     S.records.shopLevel = Math.max(S.records.shopLevel, S.level);
     const gained = syncUnlocks();
-    emit('levelup', { level: S.level, unlocked: gained });
+    // every level earned queues one pick-2 reward grid
+    if (!S.levelRewards) S.levelRewards = { pending: [] };
+    for (const lv of leveled) S.levelRewards.pending.push(lv);
+    emit('levelup', { level: S.level, unlocked: gained, levels: leveled });
   }
   emit('state');
   save();
@@ -256,7 +269,69 @@ export const isFresh = id => S.fresh.includes(id);
 /* ── upgrades ────────────────────────────────────────── */
 export const upgLevel = id => S.upgrades[id] || 0;
 export function setUpgLevel(id, lv){ S.upgrades[id] = lv; emit('state'); save(); }
-export const bonuses = () => computeBonuses(S.upgrades);
+/**
+ * Upgrade bonuses with the hired staff layered on top.
+ * Staff is purely additive, so nobody who already owned the Employee
+ * upgrade can end up worse off than before the roster existed.
+ */
+export const bonuses = () => {
+  const base = computeBonuses(S.upgrades);
+  const st = staffBonuses(S.staff?.roster || []);
+  return {
+    ...base,
+    idleCoins:    base.idleCoins + st.idleCoins,
+    tipMult:      base.tipMult * st.tipMult,
+    patienceMult: base.patienceMult * st.patienceMult,
+  };
+};
+
+/* ── staff roster ────────────────────────────────────── */
+
+/** Slots come from the Employee upgrade level. */
+export const staffSlots = () => upgLevel('staff');
+export const roster = () => S.staff?.roster || [];
+
+/**
+ * Players who bought the Employee upgrade before the roster existed
+ * get a real employee for every slot they already paid for — their
+ * old idle income is preserved and they can now fire/replace them.
+ */
+export function seedLegacyStaff(){
+  if (!S.staff) S.staff = { roster: [], applicants: [], applicantsDate: '', seededFromUpgrade: 0 };
+  // Runs exactly once per save. Slots bought *after* this point stay empty —
+  // those you fill yourself from the applicant list.
+  if (S.staff.seedDone) return [];
+
+  const slots = staffSlots();
+  const added = [];
+  for (let i = S.staff.roster.length; i < slots; i++){
+    const emp = makeEmployee(i >= 2 ? 'expert' : 'skilled', { noBadTraits: true });
+    emp.hiredAt = Date.now();
+    emp.legacy = true;
+    S.staff.roster.push(emp);
+    added.push(emp);
+  }
+  S.staff.seedDone = true;
+  S.staff.seededFromUpgrade = slots;
+  save();
+  return added;
+}
+
+export function hireEmployee(emp){
+  if (roster().length >= staffSlots()) return false;
+  emp.hiredAt = Date.now();
+  S.staff.roster.push(emp);
+  S.staff.applicants = S.staff.applicants.filter(a => a.id !== emp.id);
+  emit('state'); save();
+  return true;
+}
+
+export function fireEmployee(id){
+  const before = roster().length;
+  S.staff.roster = roster().filter(e => e.id !== id);
+  if (S.staff.roster.length !== before){ emit('state'); save(); return true; }
+  return false;
+}
 
 /* ── shop satisfaction (0-100) ───────────────────────── */
 export function nudgeSatisfaction(delta){

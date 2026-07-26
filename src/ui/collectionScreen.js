@@ -90,7 +90,7 @@ function allEntries(){
   for (const d of DECORATIONS){
     if (d.event && d.event !== ev?.id && !ownsDeco(d.id)) continue;
     out.push({ kind:'deco', id:d.id, name:d.name, rarity:d.rarity, owned:ownsDeco(d.id),
-      desc:d.desc, cat:d.cat, unlock:d.unlock, fixed:d.fixed });
+      desc:d.desc, cat:d.cat, unlock:d.unlock, fixed:d.fixed, reward:d.reward });
   }
   for (const p of PACKAGING){
     if (p.id === 'none') continue;
@@ -161,8 +161,9 @@ function showEntry(e){
   openModal({
     title: e.owned ? name : t('coll.notYet'),
     sub: tName('rarity', e.rarity, RARITY[e.rarity].name)
-       + (e.owned ? '' : t('coll.unlockLevel', { n:e.unlock })),
-    body: [art, el('p.center.tiny.muted', e.owned ? desc : t('coll.keepPlaying'))],
+       + (e.owned ? '' : e.reward ? t('coll.rewardOnly') : t('coll.unlockLevel', { n:e.unlock })),
+    body: [art, el('p.center.tiny.muted',
+      e.owned ? desc : e.reward ? t('coll.rewardHint') : t('coll.keepPlaying'))],
     actions: [{ label:t('coll.close'), cls:'ghost' }],
   });
 }

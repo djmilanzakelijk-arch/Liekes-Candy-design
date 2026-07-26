@@ -5,7 +5,7 @@
 import { el, $, $$, fmt, clamp, pickWeighted, randI, todayKey, rngFrom } from '../core/utils.js';
 import {
   S, addCoins, addGems, grantDeco, save, hardReset, dailyStatus, claimDaily,
-  deletePhoto, shopSatisfaction, xpForLevel,
+  deletePhoto, shopSatisfaction, xpForLevel, staffSlots,
 } from '../core/state.js';
 import { sfx, haptic, setVolume, setMusicEnabled } from '../core/audio.js';
 import { toast, confetti, coinFly, candyRain, bumpPill } from '../core/fx.js';
@@ -32,6 +32,8 @@ export function mountMore(host){
     tile('🏆', t('more.missions'), t('more.missionsSub', { n: missions }), () => go('missions'), missions),
     tile('🎁', t('more.daily'), daily.available ? t('more.dailyClaim') : t('more.dailyStreak', { n: S.daily.streak }),
          () => go('daily'), daily.available ? 1 : 0),
+    tile('🧑‍🍳', t('more.staff'), t('more.staffSub', { a: (S.staff?.roster || []).length, b: staffSlots() }),
+         () => go('staff'), legendWaiting() ? 1 : 0),
     tile('📸', t('more.photos'), t('more.photosSub', { n: S.photos.length }), () => go('photos')),
     tile('🏅', t('more.leaderboard'), t('more.leaderboardSub'), () => go('leaderboard')),
     tile('🎉', t('more.events'),
@@ -57,6 +59,11 @@ export function mountMore(host){
 
   host.append(wrap);
   refreshMissionBadge();
+}
+
+/** A legendary applicant waiting in the wings earns a badge on the tile. */
+function legendWaiting(){
+  return (S.staff?.applicants || []).some(a => a.tier === 'legend' && a.expires > Date.now());
 }
 
 function tile(ico, name, sub, onclick, badge = 0){

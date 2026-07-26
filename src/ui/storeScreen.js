@@ -70,7 +70,8 @@ function renderDecos(host){
     ));
   }
 
-  let list = DECORATIONS.filter(d => !d.event || d.event === ev?.id);
+  // reward-only decorations are never for sale — they come from level-up grids
+  let list = DECORATIONS.filter(d => !d.reward && (!d.event || d.event === ev?.id));
   if (decoFilter === 'owned') list = list.filter(d => ownsDeco(d.id));
   else if (decoFilter !== 'all') list = list.filter(d => d.cat === decoFilter);
 
@@ -228,6 +229,11 @@ function renderUpgrades(host){
         el('small', { style:{ color:'var(--mint-500)', fontWeight:'800' } },
           lv ? u.label(lv) : t('store.notInstalled')),
         pips,
+        // the Employee upgrade buys slots — the people go in the staff screen
+        u.id === 'staff' && lv > 0
+          ? el('button.btn.ghost.sm', { style:{ marginTop:'6px', minHeight:'30px', fontSize:'11.5px' },
+              onclick: e => { e.stopPropagation(); go('staff'); } }, t('store.manageStaff'))
+          : null,
       ),
       maxed
         ? el('div.upg-buy.max', t('store.max'))

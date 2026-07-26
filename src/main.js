@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { el, $, $$, fmt, clamp, sleep } from './core/utils.js';
-import { S, load, save, on, xpForLevel, collectIdle, syncUnlocks } from './core/state.js';
+import { S, load, save, on, xpForLevel, collectIdle, syncUnlocks, seedLegacyStaff } from './core/state.js';
 import { unlock as unlockAudio, sfx, startMusic, setVolume, duck } from './core/audio.js';
 import { toast, confetti, candyRain, bumpPill } from './core/fx.js';
 import { openModal } from './ui/modal.js';
@@ -15,6 +15,8 @@ import { mountMissions, ensureDailyMissions, refreshMissionBadge } from './ui/mi
 import {
   mountMore, mountDaily, mountPhotos, mountLeaderboard, mountEvents, mountSettings,
 } from './ui/moreScreen.js';
+import { mountStaff } from './ui/staffScreen.js';
+import { openLevelReward, hasPendingLevelReward } from './ui/levelReward.js';
 import { getCandy } from './data/candies.js';
 import { activeEvent } from './data/events.js';
 import { t, tName, initLang, setLang, getLang, hasChosenLang, LANGS } from './core/i18n.js';
@@ -40,6 +42,7 @@ async function boot(){
   load();
   ensureDailyMissions();
   syncUnlocks();
+  seedLegacyStaff();   // existing Employee upgrades become real, fireable staff
 
   await step(48, TIPS[1]);
   registerScreens();
@@ -73,6 +76,7 @@ function registerScreens(){
   registerScreen('leaderboard', mountLeaderboard);
   registerScreen('events', mountEvents);
   registerScreen('settings', mountSettings);
+  registerScreen('staff', mountStaff);
 }
 
 /* ══════════════ HUD ══════════════ */
@@ -115,7 +119,10 @@ function wireHud(){
       icon:'🎊', title:t('lvl.title', { n:level }),
       sub:t('lvl.sub'),
       body,
-      actions:[{ label:t('lvl.nice'), cls:'mint' }],
+      dismissable:false,
+      actions:[{ label:t('lvl.reward'), cls:'mint', onClick: () => {
+        setTimeout(() => openLevelReward(), 240);
+      }}],
     });
   });
 }
@@ -153,6 +160,9 @@ function afterBoot(){
 
   if (!S.tutorialDone){
     setTimeout(() => hasChosenLang() ? showTutorial() : askLanguage(), 500);
+  } else if (hasPendingLevelReward()){
+    // a reward grid was left unopened last session — give it back
+    setTimeout(() => openLevelReward(), 900);
   }
 
   // save on the way out

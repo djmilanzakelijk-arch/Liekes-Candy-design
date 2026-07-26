@@ -81,7 +81,7 @@
   position:absolute;inset:0;display:flex;flex-direction:column;background:transparent;
 }
 .studio-top{
-  flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:9px 11px 7px;
+  flex:0 0 auto;display:flex;align-items:center;gap:9px;padding:9px 11px 0;
 }
 .icon-btn{
   width:38px;height:38px;border-radius:13px;display:grid;place-items:center;font-size:18px;
@@ -92,11 +92,35 @@
 
 .order-strip{
   flex:1 1 auto;min-width:0;background:var(--surface);border-radius:var(--r-md);
-  padding:7px 11px;border:1.5px solid var(--line);box-shadow:var(--sh-1);
+  padding:6px 11px;border:1.5px solid var(--line);box-shadow:var(--sh-1);
+  display:flex;align-items:center;gap:8px;min-height:38px;
 }
-.order-strip .o-who{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:800;color:var(--ink-faint)}
-.order-strip .o-text{font-size:12px;font-weight:800;line-height:1.3;color:var(--ink);
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.order-strip .o-who{
+  display:flex;align-items:center;gap:5px;flex:0 0 auto;max-width:44%;
+  font-size:12px;font-weight:800;color:var(--ink);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.order-strip .o-more{
+  flex:1 1 auto;text-align:right;font-size:11px;font-weight:800;color:var(--pink-600);
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+
+/* The order itself gets its own full-width row so it is never squeezed.
+   Plain block + max-height beats -webkit-line-clamp for cross-browser safety. */
+.order-line{
+  flex:0 0 auto;margin:7px 11px 0;padding:9px 12px;
+  background:linear-gradient(180deg,#fff,var(--surface-2));
+  border:1.5px solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);
+  font-size:13px;font-weight:800;line-height:1.35;color:var(--ink);
+  /* exactly three lines of text + the vertical padding, so a long order is
+     never sliced through the middle of a line. Tapping shows the full list. */
+  max-height:calc(4.05em + 18px);
+  overflow:hidden;position:relative;
+  display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:3;line-clamp:3;
+}
+.order-line::-webkit-scrollbar{display:none}
+.order-line b{color:var(--pink-600)}
+.order-line.vip{border-color:var(--gold-2);box-shadow:0 0 0 2px var(--gold-1),var(--sh-1)}
 
 .timer-ring{position:relative;width:38px;height:38px;flex:0 0 auto}
 .timer-ring svg{transform:rotate(-90deg)}
@@ -105,11 +129,64 @@
 
 /* stage */
 .stage-wrap{
-  flex:1 1 auto;position:relative;min-height:0;display:grid;place-items:center;padding:4px 10px;
+  flex:1 1 auto;position:relative;min-height:0;overflow:hidden;
+  display:flex;align-items:center;justify-content:center;padding:6px 10px;
   touch-action:none;
 }
+
+/* Wide + short (landscape phone): put the tray beside the candy instead of
+   under it, so the stage keeps a sensible size. */
+@media (min-width:620px) and (max-height:560px){
+  .studio{
+    display:grid;
+    grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+    grid-template-rows:auto auto minmax(0,1fr) auto;
+    grid-template-areas:
+      "top   top"
+      "line  line"
+      "stage tray"
+      "stage actions";
+    column-gap:8px;
+  }
+  .studio-top{grid-area:top}
+  .order-line{grid-area:line}
+  .stage-wrap{grid-area:stage}
+  .studio-actions{grid-area:actions;padding:6px 10px 8px 0}
+  .tray{
+    grid-area:tray;min-height:0;overflow-y:auto;
+    border-radius:var(--r-lg);border:1.5px solid var(--line);
+    margin:0 10px 0 0;box-shadow:var(--sh-1);
+  }
+  .tray-body{flex-wrap:wrap;overflow-x:hidden}
+}
+
+/* Short viewports (landscape phones, small windows): claw back vertical
+   space from the chrome so the candy itself stays a usable size. */
+@media (max-height:560px){
+  .studio-top{padding:6px 10px 0}
+  .order-line{
+    margin-top:5px;padding:6px 10px;font-size:12px;
+    max-height:calc(2.7em + 12px);-webkit-line-clamp:2;line-clamp:2;
+  }
+  .stage-wrap{padding:4px 8px}
+  .stage-hint{display:none}
+  .studio-actions{padding:6px 10px 0}
+  .studio-actions .btn{min-height:38px;height:38px;font-size:13px}
+  .studio-actions .act-icon{width:42px;flex:0 0 42px}
+  .tray{padding-top:5px}
+  .tray-tabs{padding-bottom:5px}
+  .tray-body{min-height:0;padding-bottom:3px}
+  .tool{width:56px}
+  .tool canvas{width:36px;height:36px}
+  .tool .t-emoji{font-size:24px;line-height:36px}
+  .swatch{height:52px}
+  .swatch i{width:32px;height:32px}
+}
+/* --stage-max is written by the studio on every resize so the square
+   never overflows short screens (landscape phones, small windows). */
 .stage{
-  position:relative;width:min(100%,420px);aspect-ratio:1;border-radius:var(--r-xl);
+  position:relative;width:min(100%,420px,var(--stage-max,420px));
+  aspect-ratio:1;border-radius:var(--r-xl);
   background:
     radial-gradient(120% 100% at 50% 0%,rgba(255,255,255,.95),rgba(255,255,255,.55) 55%,rgba(255,240,248,.5)),
     linear-gradient(180deg,#fff6fb,#f2e9ff);
@@ -197,10 +274,26 @@
 .swatch b{font-size:8.5px;font-weight:800;color:var(--ink-faint)}
 .swatch.on{box-shadow:0 0 0 2.5px var(--pink-400),var(--sh-2)}
 
-/* action row */
-.studio-actions{display:flex;gap:8px;padding:2px 10px 0}
-.studio-actions .btn{padding:0 10px;font-size:13.5px}
-.studio-actions .btn{flex:1}
+/* action row — fixed heights and no wrapping, whatever the label length */
+.studio-actions{
+  display:flex;gap:8px;padding:8px 10px 2px;align-items:stretch;
+}
+.studio-actions .btn{
+  flex:0 0 auto;min-height:44px;height:44px;padding:0 12px;
+  font-size:14px;white-space:nowrap;border-radius:var(--r-md);
+}
+/* Undo / Clear stay compact; Serve takes whatever is left. */
+.studio-actions .act-icon{
+  width:48px;padding:0;font-size:19px;flex:0 0 48px;
+}
+.studio-actions .act-main{flex:1 1 auto;min-width:0;font-size:15px}
+.studio-actions .act-main span{
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:block;
+}
+@media (max-width:340px){
+  .studio-actions .act-icon{width:42px;flex:0 0 42px;font-size:17px}
+  .studio-actions .btn{font-size:13px}
+}
 
 /* text input modal */
 .text-field{
@@ -452,3 +545,124 @@
 }
 .unlock-art canvas{width:96px;height:96px}
 .unlock-art .emoji{font-size:64px}
+
+/* ═══════════════ LEVEL-UP REWARD GRID ═══════════════ */
+.lr-hint{
+  text-align:center;font-size:11px;font-weight:800;color:var(--ink-faint);
+  text-transform:uppercase;letter-spacing:.6px;margin-bottom:6px;
+}
+.lr-preview{
+  display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin-bottom:12px;
+}
+.lr-chip{
+  font-size:10px;font-weight:900;padding:4px 9px;border-radius:var(--r-pill);
+  background:linear-gradient(180deg,#fff,var(--rar-a,#f6f8fb));
+  border:1.5px solid var(--rar-b,var(--line));color:var(--rar-t,var(--ink-soft));
+  white-space:nowrap;
+}
+.lr-counter{
+  text-align:center;font-size:13px;font-weight:900;color:var(--pink-600);margin-bottom:9px;
+}
+.lr-grid{
+  display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+}
+.lr-card{
+  position:relative;aspect-ratio:1;border-radius:var(--r-md);
+  transform-style:preserve-3d;transition:transform .45s cubic-bezier(.3,1.1,.4,1);
+  perspective:600px;
+}
+.lr-card:active{transform:scale(.94)}
+.lr-face{
+  position:absolute;inset:0;border-radius:var(--r-md);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;
+  transition:transform .42s cubic-bezier(.3,1.1,.4,1),opacity .3s;
+  overflow:hidden;padding:4px;
+}
+.lr-back{
+  background:linear-gradient(150deg,var(--grape-300),var(--grape-500));
+  box-shadow:var(--sh-1),inset 0 0 0 2px rgba(255,255,255,.5);
+  font-size:26px;
+}
+.lr-back span{filter:drop-shadow(0 2px 3px rgba(0,0,0,.25))}
+.lr-back::after{
+  content:'';position:absolute;top:-60%;left:-140%;width:55%;height:220%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);
+  transform:rotate(20deg);animation:shineSweep 2.6s ease-in-out infinite;
+}
+.lr-front{
+  background:linear-gradient(180deg,#fff,var(--rar-a,#f6f8fb));
+  border:2px solid var(--rar-b,var(--line));
+  box-shadow:var(--sh-1);
+  transform:rotateY(180deg);
+}
+.lr-front b{
+  font-size:9px;font-weight:900;line-height:1.1;text-align:center;
+  color:var(--rar-t,var(--ink-soft));
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.lr-front canvas{display:block}
+.lr-emoji{font-size:32px;line-height:1}
+.lr-card.open .lr-back{transform:rotateY(-180deg)}
+.lr-card.open .lr-front{transform:rotateY(0deg)}
+.lr-card.open{animation:lrPop .4s cubic-bezier(.2,1.6,.4,1)}
+@keyframes lrPop{0%{transform:scale(1)}45%{transform:scale(1.09)}100%{transform:scale(1)}}
+.lr-card.dim .lr-front{opacity:.42;filter:grayscale(.5)}
+.lr-grid.finished .lr-card:not(.open){pointer-events:none}
+.btn.is-waiting{filter:grayscale(.5) opacity(.6)}
+
+/* ═══════════════ STAFF ═══════════════ */
+.staff-slot{
+  display:flex;align-items:center;gap:11px;padding:11px;border-radius:var(--r-lg);
+  background:var(--surface);border:1.5px solid var(--line);box-shadow:var(--sh-1);
+  margin-bottom:9px;position:relative;overflow:hidden;
+}
+.staff-slot.empty{
+  border-style:dashed;background:var(--surface-2);justify-content:center;
+  color:var(--ink-faint);font-size:12.5px;font-weight:800;
+}
+.staff-slot.locked{filter:grayscale(.6) opacity(.6)}
+.staff-face{
+  width:52px;height:52px;border-radius:17px;flex:0 0 auto;display:grid;place-items:center;
+  font-size:27px;background:linear-gradient(160deg,#fff,var(--rar-a,var(--pink-100)));
+  border:2px solid var(--rar-b,var(--line));box-shadow:var(--sh-in);
+}
+.staff-info{flex:1;min-width:0}
+.staff-info .s-name{font-size:13.5px;font-weight:800;display:flex;align-items:center;gap:5px}
+.staff-tier{
+  font-size:9px;font-weight:900;text-transform:uppercase;letter-spacing:.6px;
+  padding:1px 6px;border-radius:var(--r-pill);
+  background:var(--rar-a);color:var(--rar-t);border:1px solid var(--rar-b);
+}
+.staff-stats{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.staff-stat{
+  font-size:10px;font-weight:800;color:var(--ink-soft);
+  background:var(--surface-2);border:1px solid var(--line);
+  padding:2px 7px;border-radius:var(--r-pill);
+}
+.staff-trait{
+  font-size:10px;font-weight:800;padding:2px 7px;border-radius:var(--r-pill);
+  border:1px solid transparent;
+}
+.staff-trait.good{background:var(--mint-100);color:#0d5943;border-color:var(--mint-300)}
+.staff-trait.bad{background:#ffe6e6;color:#a4302f;border-color:#ffb3b3}
+.staff-action{
+  flex:0 0 auto;min-width:70px;height:36px;border-radius:var(--r-sm);
+  font-size:11.5px;font-weight:900;display:flex;align-items:center;justify-content:center;gap:4px;
+}
+.staff-action.fire{background:linear-gradient(180deg,#ffb3b3,#f07070);color:#fff;box-shadow:0 3px 0 #c74d4d}
+.staff-action.hire{background:linear-gradient(180deg,var(--gold-1),var(--gold-2));color:#6a4708;box-shadow:0 3px 0 var(--gold-3)}
+.staff-action.hire.cant{filter:grayscale(.6) opacity(.6)}
+.staff-action:active{transform:translateY(2px);box-shadow:none}
+
+.legend-banner{
+  position:relative;overflow:hidden;border-radius:var(--r-lg);padding:12px 14px;
+  margin-bottom:10px;color:#fff;box-shadow:var(--sh-2);
+  background:linear-gradient(120deg,#ffc94d,#ff6fc7,#9a6bff);
+}
+.legend-banner h3{font-size:15px;font-weight:900;text-shadow:0 2px 4px rgba(0,0,0,.25)}
+.legend-banner p{font-size:11px;font-weight:800;opacity:.95;margin-top:2px}
+.legend-timer{
+  display:inline-block;margin-top:6px;padding:3px 10px;border-radius:var(--r-pill);
+  background:rgba(0,0,0,.24);font-size:11px;font-weight:900;
+}

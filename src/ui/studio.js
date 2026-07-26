@@ -100,13 +100,10 @@ function buildDom(){
     const c = session.customer;
     strip.append(
       el('div.o-who', `${c.face} ${c.name}`, c.vip ? el('span', { style:{ color:'#c98f14' } }, ' • VIP') : null),
-      el('div.o-text', { id:'orderText' }, c.order.line),
+      el('div.o-more', t('studio.tapDetails')),
     );
   } else {
-    strip.append(
-      el('div.o-who', '🎨 ' + t('studio.free')),
-      el('div.o-text', t('studio.freeSub')),
-    );
+    strip.append(el('div.o-who', '🎨 ' + t('studio.free')));
   }
   strip.addEventListener('click', showChecklist);
 
@@ -125,6 +122,12 @@ function buildDom(){
 
   studio.append(el('div.studio-top', back, strip, timer));
 
+  /* the order text lives on its own full-width row — always readable */
+  const line = el('div.order-line' + (session.customer?.vip ? '.vip' : ''), {
+    id:'orderText', onclick: showChecklist,
+  }, session.customer ? session.customer.order.line : t('studio.freeSub'));
+  studio.append(line);
+
   /* stage */
   stageEl = el('div.stage');
   canvas = el('canvas');
@@ -138,11 +141,13 @@ function buildDom(){
 
   /* actions */
   const actions = el('div.studio-actions',
-    el('button.btn.ghost.sm', { onclick: undo }, t('studio.undo')),
-    el('button.btn.ghost.sm', { onclick: clearAll }, t('studio.clear')),
+    el('button.btn.ghost.act-icon', { onclick: undo, title: t('studio.undo'),
+      'aria-label': t('studio.undo') }, '↩︎'),
+    el('button.btn.ghost.act-icon', { onclick: clearAll, title: t('studio.clear'),
+      'aria-label': t('studio.clear') }, '🧹'),
     session.freeplay
-      ? el('button.btn.grape', { onclick: savePhotoNow }, t('studio.save'))
-      : el('button.btn.mint', { id:'serveBtn', onclick: serve }, t('studio.serve')),
+      ? el('button.btn.grape.act-main', { onclick: savePhotoNow }, el('span', t('studio.save')))
+      : el('button.btn.mint.act-main', { id:'serveBtn', onclick: serve }, el('span', t('studio.serve'))),
   );
   studio.append(actions);
 
@@ -191,6 +196,8 @@ function renderTray(){
   host.style.flexDirection = '';
   host.style.alignItems = '';
   toolThumbs = [];
+  // the tray changes height per tab — re-fit the stage afterwards
+  requestAnimationFrame(sizeCanvas);
 
   if (tabId === 'candy')      return renderCandyTray(host);
   if (tabId === 'color')      return renderColorTray(host, 'candy');
@@ -283,7 +290,10 @@ function renderDecoTray(host, cat){
   }
 
   const ev = activeEvent();
-  const list = DECORATIONS.filter(d => d.cat === cat && (!d.event || d.event === ev?.id));
+  const list = DECORATIONS.filter(d =>
+    d.cat === cat &&
+    (!d.event || d.event === ev?.id) &&
+    (!d.reward || ownsDeco(d.id)));      // level rewards only show once earned
 
   const grid = el('div', { style:{ display:'flex', gap:'9px' } });
   for (const d of list){
@@ -417,6 +427,16 @@ function renderTextTray(host){
    ══════════════════════════════════════════════════════ */
 function sizeCanvas(){
   if (!canvas || !stageEl) return;
+  // Cap the square by the space actually left between the header and the tray,
+  // otherwise short/landscape screens clip the candy.
+  const wrapEl = stageEl.parentElement;
+  if (wrapEl){
+    // Measure without the current cap, otherwise the square props the row open
+    // and we keep re-measuring our own height.
+    wrapEl.style.setProperty('--stage-max', '0px');
+    const avail = wrapEl.clientHeight - 12;
+    wrapEl.style.setProperty('--stage-max', Math.max(150, avail) + 'px');
+  }
   const r = stageEl.getBoundingClientRect();
   const d = DPR();
   canvas.width = Math.round(r.width * d);

@@ -81,6 +81,16 @@ export const DECORATIONS = [
   { id:'ev_egg',       name:'Speckled Egg',   cat:'charm',   art:'egg',     rarity:'rare',      price:700,  unlock:3, colorable:true, layer:4, size:1, event:'easter', desc:'Easter exclusive — hand-speckled.' },
   { id:'ev_shell',     name:'Sea Shell',      cat:'charm',   art:'shell',   rarity:'epic',      price:1180, unlock:4, colorable:true, layer:4, size:1, event:'summer', desc:'Summer exclusive — sounds like the sea.' },
   { id:'ev_balloon',   name:'Party Balloon',  cat:'sticker', art:'balloon', rarity:'epic',      price:1220, unlock:4, colorable:true, layer:4, size:1.1, event:'birthday', desc:'Birthday Week exclusive.' },
+
+  /* ── LEVEL-UP REWARDS ──────────────────────────────────
+     `reward:true` keeps these out of the store — the only way to
+     get them is the pick-2 grid you open when you level up. */
+  { id:'rw_aurora_bow',  name:'Aurora Bow',      cat:'ribbon',   art:'bow',      rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'rainbow', layer:4, size:1.25, reward:true, desc:'Level reward — a bow woven from northern lights.' },
+  { id:'rw_prism_glaze', name:'Prism Glaze',     cat:'icing',    art:'glaze',    rarity:'legendary', price:0, unlock:1, colorable:false, fixed:'rainbow', layer:1, size:1.35, reward:true, desc:'Level reward — glaze that splits the light.' },
+  { id:'rw_moon_dust',   name:'Moon Dust',       cat:'sprinkle', art:'starDust', rarity:'legendary', price:0, unlock:1, colorable:false, fixed:'silver',  layer:5, size:1.2,  reward:true, desc:'Level reward — silver comets in slow orbit.' },
+  { id:'rw_star_crown',  name:'Starlight Crown', cat:'charm',    art:'crown',    rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'silver',  layer:4, size:1.15, reward:true, desc:'Level reward — cool silver, warm prestige.' },
+  { id:'rw_cocoa_pearls',name:'Cocoa Pearls',    cat:'charm',    art:'pearls',   rarity:'epic',      price:0, unlock:1, colorable:false, fixed:'brown',   layer:4, size:1,    reward:true, desc:'Level reward — dark, glossy and impossibly round.' },
+  { id:'rw_velvet_rose', name:'Velvet Rose',     cat:'flower',   art:'rose',     rarity:'legendary', price:0, unlock:1, colorable:true,  layer:4, size:1.2, reward:true, desc:'Level reward — deep petals with a matte bloom.' },
 ];
 
 export const DECO_BY_ID = Object.fromEntries(DECORATIONS.map(d => [d.id, d]));
