@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, maximum-scale=1, user-scalable=no" />
+<meta name="theme-color" content="#ffd9e8" />
+<meta name="apple-mobile-web-app-capable" content="yes" />
+<meta name="apple-mobile-web-app-status-bar-style" content="default" />
+<meta name="description" content="Lieke's Candy Design — a cozy candy decorating shop game." />
+<title>Lieke's Candy Design</title>
+<link rel="manifest" href="./manifest.webmanifest" />
+<link rel="icon" href="./icon.svg" type="image/svg+xml" />
+<link rel="apple-touch-icon" href="./icon.svg" />
+<link rel="stylesheet" href="./styles/main.css" />
+<link rel="stylesheet" href="./styles/screens.css" />
+</head>
+<body>
+
+<div id="boot">
+  <div class="boot-inner">
+    <div class="boot-logo">
+      <span class="boot-candy">🍬</span>
+      <h1>Lieke's<em>Candy Design</em></h1>
+    </div>
+    <div class="boot-bar"><i></i></div>
+    <p class="boot-tip">Warming up the chocolate…</p>
+  </div>
+</div>
+
+<div id="app" hidden>
+
+  <!-- ══ Top status bar ══ -->
+  <header id="hud">
+    <button class="hud-avatar" id="hudAvatar" aria-label="Shop info">
+      <span class="hud-avatar-face">🧁</span>
+      <span class="hud-level" id="hudLevel">1</span>
+    </button>
+    <div class="hud-meta">
+      <div class="hud-shopname" id="hudShopName">Lieke's Candy Shop</div>
+      <div class="hud-xp"><i id="hudXpFill"></i><span id="hudXpText">0 / 100</span></div>
+    </div>
+    <div class="hud-wallet">
+      <button class="pill pill-coin" id="hudCoins"><span class="pill-ico">🪙</span><b>0</b></button>
+      <button class="pill pill-gem" id="hudGems"><span class="pill-ico">💎</span><b>0</b></button>
+    </div>
+  </header>
+
+  <!-- ══ Screens ══ -->
+  <main id="screens"></main>
+
+  <!-- ══ Bottom navigation ══ -->
+  <nav id="tabbar">
+    <button class="tab" data-screen="shop"><span class="tab-ico">🏪</span><span class="tab-label">Shop</span></button>
+    <button class="tab" data-screen="store"><span class="tab-ico">🛒</span><span class="tab-label">Store</span></button>
+    <button class="tab tab-play" data-screen="play"><span class="tab-ico">🍬</span><span class="tab-label">Play</span></button>
+    <button class="tab" data-screen="collection"><span class="tab-ico">📖</span><span class="tab-label">Book</span></button>
+    <button class="tab" data-screen="more"><span class="tab-ico">✨</span><span class="tab-label">More</span></button>
+  </nav>
+
+  <!-- ══ Overlay layers ══ -->
+  <div id="toasts" aria-live="polite"></div>
+  <div id="fx"></div>
+  <div id="modals"></div>
+</div>
+
+<script type="module" src="./src/main.js"></script>
+</body>
+</html>

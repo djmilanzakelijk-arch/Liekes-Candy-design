@@ -1,0 +1,16 @@
+{
+  "name": "Lieke's Candy Design",
+  "short_name": "Candy Design",
+  "description": "A cosy candy decorating shop game — take orders, decorate sweets and grow your shop.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#ffeef6",
+  "theme_color": "#ffd9e8",
+  "categories": ["games", "entertainment"],
+  "icons": [
+    { "src": "./icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "./icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}
