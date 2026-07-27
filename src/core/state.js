@@ -120,7 +120,23 @@ function migrate(old){
 }
 
 let saveTimer = null;
+let saveLocked = false;
+
+/**
+ * Stop this session from writing to storage ever again.
+ *
+ * Call this immediately before importing a save and reloading: the
+ * page-hide handler fires during the reload and would otherwise write
+ * the old in-memory state straight back over the imported one.
+ */
+export function lockSave(){
+  saveLocked = true;
+  if (saveTimer){ clearTimeout(saveTimer); saveTimer = null; }
+}
+export const isSaveLocked = () => saveLocked;
+
 export function save(immediate = false){
+  if (saveLocked) return;
   if (saveTimer) clearTimeout(saveTimer);
   const write = () => {
     S.lastSeen = Date.now();

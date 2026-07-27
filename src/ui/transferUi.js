@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { el, fmt, $ } from '../core/utils.js';
-import { S, SAVE_KEY, save } from '../core/state.js';
+import { S, SAVE_KEY, save, lockSave } from '../core/state.js';
 import { sfx, haptic } from '../core/audio.js';
 import { toast, confetti } from '../core/fx.js';
 import { openModal } from './modal.js';
@@ -60,6 +60,8 @@ export async function handleIncomingTransfer(){
 async function install(){
   try {
     await applyIncoming();
+    // the reload fires pagehide, which would write the OLD state back
+    lockSave();
     sfx('unlock'); haptic([12, 30, 12]);
     confetti(50);
     openModal({
@@ -153,6 +155,7 @@ async function loadFromFile(){
   try {
     const parsed = await pickSaveFile();
     localStorage.setItem(SAVE_KEY, JSON.stringify(parsed));
+    lockSave();
     sfx('unlock');
     openModal({
       icon:'✅', title:t('mv.doneTitle'), sub:t('mv.doneSub'),

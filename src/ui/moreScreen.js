@@ -4,8 +4,8 @@
 
 import { el, $, $$, fmt, clamp, pickWeighted, randI, todayKey, rngFrom } from '../core/utils.js';
 import {
-  S, addCoins, addGems, grantDeco, save, hardReset, dailyStatus, claimDaily,
-  deletePhoto, shopSatisfaction, xpForLevel, staffSlots,
+  S, SAVE_KEY, addCoins, addGems, grantDeco, save, hardReset, dailyStatus, claimDaily,
+  deletePhoto, shopSatisfaction, xpForLevel, staffSlots, lockSave,
 } from '../core/state.js';
 import { sfx, haptic, setVolume, setMusicEnabled } from '../core/audio.js';
 import { toast, confetti, coinFly, candyRain, bumpPill } from '../core/fx.js';
@@ -20,6 +20,7 @@ import { go, subHeader } from './nav.js';
 import { openStudio } from './studio.js';
 import { t, tName, tDesc, LANGS, getLang, setLang } from '../core/i18n.js';
 import { openTransferSheet, maybeShowMoveBanner } from './transferUi.js';
+import { encodeSave, decodeSave, downloadSaveFile, pickSaveFile } from '../core/transfer.js';
 
 /* ══════════════ hub ══════════════ */
 export function mountMore(host){
@@ -450,56 +451,154 @@ function volumeSlider(){
   return input;
 }
 
-function exportSave(){
-  try {
-    const data = btoa(unescape(encodeURIComponent(JSON.stringify(S))));
-    const ta = el('textarea', { readonly:true, style:{
+async function exportSave(){
+  let code;
+  try { code = await encodeSave(S); }
+  catch { toast(t('set.exportFail'), 'bad', '⚠️'); return; }
+
+  // A plain (not readonly) textarea is the one thing every mobile browser
+  // reliably lets you select and copy from.
+  const ta = el('textarea', {
+    spellcheck:'false', autocapitalize:'off', autocorrect:'off',
+    style:{
       width:'100%', height:'120px', fontSize:'11px', borderRadius:'12px',
       border:'2px solid var(--line)', padding:'8px', fontFamily:'monospace',
-      userSelect:'text', WebkitUserSelect:'text',
-    }});
-    ta.value = data;
-    openModal({
-      icon:'⬆️', title:t('set.exportTitle'),
-      sub:t('set.exportSub'),
-      body: ta,
-      actions:[
-        { label:t('set.copy'), cls:'mint', onClick: () => {
-          ta.select();
-          navigator.clipboard?.writeText(data).then(
-            () => toast(t('set.copied'), 'good', '📋'),
-            () => toast(t('set.copyManual'), 'warn', '📋'));
-          return false;
-        }, close:false },
-        { label:t('set.done'), cls:'ghost' },
-      ],
-    });
-  } catch { toast(t('set.exportFail'), 'bad', '⚠️'); }
-}
+      userSelect:'text', WebkitUserSelect:'text', touchAction:'auto',
+      background:'var(--surface-2)', color:'var(--ink)', resize:'none',
+    },
+  });
+  ta.value = code;
 
-function importSave(){
-  const ta = el('textarea', { placeholder:t('set.importPlaceholder'), style:{
-    width:'100%', height:'110px', fontSize:'11px', borderRadius:'12px',
-    border:'2px solid var(--line)', padding:'8px', fontFamily:'monospace',
-    userSelect:'text', WebkitUserSelect:'text',
-  }});
   openModal({
-    icon:'⬇️', title:t('set.importTitle'),
-    sub:t('set.importSub'),
-    body: ta,
+    icon:'⬆️', title:t('set.exportTitle'), sub:t('set.exportSub'),
+    body:[ta, el('p.tiny.muted', { style:{ marginTop:'6px' } }, t('set.exportHint'))],
     actions:[
-      { label:t('more.cancel'), cls:'ghost' },
-      { label:t('set.importBtn'), onClick: () => {
-        try {
-          const parsed = JSON.parse(decodeURIComponent(escape(atob(ta.value.trim()))));
-          if (!parsed || typeof parsed.level !== 'number') throw new Error('bad');
-          localStorage.setItem('liekes-candy-design/save/v1', JSON.stringify(parsed));
-          location.reload();
-        } catch { toast(t('set.importBad'), 'bad', '⚠️'); }
-      }},
+      { label:t('set.copy'), cls:'mint', onClick: () => { copyText(ta, code); return false; }, close:false },
+      { label:t('set.saveFile'), cls:'ghost', onClick: () => {
+          downloadSaveFile(S); toast(t('mv.fileSaved'), 'good', '💾'); return false;
+        }, close:false },
+      { label:t('set.done'), cls:'ghost' },
     ],
   });
 }
+
+/** Clipboard write with a selection-based fallback for older browsers. */
+async function copyText(field, text){
+  try {
+    if (navigator.clipboard?.writeText){
+      await navigator.clipboard.writeText(text);
+      sfx('sparkle');
+      toast(t('set.copied'), 'good', '📋');
+      return;
+    }
+  } catch { /* fall through */ }
+  try {
+    field.focus();
+    field.setSelectionRange(0, text.length);
+    if (document.execCommand('copy')){
+      sfx('sparkle');
+      toast(t('set.copied'), 'good', '📋');
+      return;
+    }
+  } catch { /* fall through */ }
+  field.focus();
+  field.setSelectionRange(0, text.length);
+  toast(t('set.copyManual'), 'warn', '📋');
+}
+
+function importSave(){
+  const ta = el('textarea', {
+    placeholder:t('set.importPlaceholder'),
+    spellcheck:'false', autocapitalize:'off', autocorrect:'off',
+    style:{
+      width:'100%', height:'110px', fontSize:'11px', borderRadius:'12px',
+      border:'2px solid var(--line)', padding:'8px', fontFamily:'monospace',
+      userSelect:'text', WebkitUserSelect:'text', touchAction:'auto',
+      background:'var(--surface-2)', color:'var(--ink)', resize:'none',
+    },
+  });
+
+  const pasteBtn = el('button.btn.ghost.sm.block', { style:{ marginTop:'8px' }, onclick: async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      if (text){ ta.value = text.trim(); sfx('tap'); toast(t('set.pasted'), 'good', '📋'); }
+      else toast(t('set.clipEmpty'), 'warn', '📋');
+    } catch {
+      ta.focus();
+      toast(t('set.pasteManual'), 'warn', '📋');
+    }
+  }}, t('set.paste'));
+
+  // The dialog stays open on a bad code so the pasted text is not lost,
+  // and closes itself the moment an import succeeds.
+  const closeImport = openModal({
+    icon:'⬇️', title:t('set.importTitle'), sub:t('set.importSub'),
+    body:[
+      ta,
+      pasteBtn,
+      el('p.tiny.muted', { style:{ marginTop:'8px' } }, t('set.importHint')),
+      el('button.btn.ghost.sm.block', { style:{ marginTop:'6px' },
+        onclick: () => loadSaveFromFile(() => closeImport(true)) }, t('mv.loadFile')),
+    ],
+    actions:[
+      { label:t('more.cancel'), cls:'ghost' },
+      { label:t('set.importBtn'),
+        onClick: () => { runImport(ta.value, () => closeImport(true)); return false; },
+        close:false },
+    ],
+  });
+  setTimeout(() => ta.focus(), 120);
+}
+
+/** Accepts a bare code, a full transfer link, or an old-style export. */
+async function runImport(raw, onSuccess){
+  const text = String(raw || '').trim();
+  if (!text){ toast(t('set.importEmpty'), 'warn', '⚠️'); return; }
+
+  // people paste the whole link, so pull the payload out of it
+  const fromLink = /[#?&]move=([^&\s]+)/.exec(text);
+  const payload = fromLink ? fromLink[1] : text.replace(/\s+/g, '');
+
+  let parsed;
+  try { parsed = await decodeSave(payload); }
+  catch { sfx('error'); toast(t('set.importBad'), 'bad', '⚠️'); return; }
+
+  applyImported(parsed, onSuccess);
+}
+
+async function loadSaveFromFile(onSuccess){
+  try {
+    const parsed = await pickSaveFile();
+    applyImported(parsed, onSuccess);
+  } catch (e){
+    if (e?.message !== 'cancelled') toast(t('mv.badFile'), 'bad', '⚠️');
+  }
+}
+
+/** Write an imported save and restart, without the old state racing it back. */
+function applyImported(parsed, onSuccess){
+  const lang = parsed.__lang;
+  delete parsed.__lang;
+  try {
+    if (lang) localStorage.setItem('liekes-candy-design/lang', lang);
+    localStorage.setItem(SAVE_KEY, JSON.stringify(parsed));
+  } catch {
+    toast(t('set.importBad'), 'bad', '⚠️');
+    return;
+  }
+  // critical: the reload fires pagehide, which would save the OLD state
+  lockSave();
+  onSuccess?.();
+  sfx('unlock');
+  confetti(40);
+  openModal({
+    icon:'✅', title:t('mv.doneTitle'),
+    sub:t('set.importedSub', { n: parsed.level ?? 1 }),
+    dismissable:false,
+    actions:[{ label:t('mv.reload'), cls:'mint', onClick: () => location.reload() }],
+  });
+}
+
 
 function resetGame(){
   confirmModal({
