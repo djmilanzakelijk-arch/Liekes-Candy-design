@@ -10,7 +10,7 @@ import { COLOR_UNLOCK, FLAVORS } from '../data/palette.js';
 import { computeBonuses } from '../data/upgrades.js';
 import { staffBonuses, makeEmployee } from '../data/staff.js';
 
-const SAVE_KEY = 'liekes-candy-design/save/v1';
+export const SAVE_KEY = 'liekes-candy-design/save/v1';
 const SAVE_VERSION = 1;
 
 /* ── event bus ───────────────────────────────────────── */

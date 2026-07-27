@@ -17,6 +17,8 @@ import {
 } from './ui/moreScreen.js';
 import { mountStaff } from './ui/staffScreen.js';
 import { openLevelReward, hasPendingLevelReward } from './ui/levelReward.js';
+import { captureIncoming, hasIncoming } from './core/transfer.js';
+import { handleIncomingTransfer } from './ui/transferUi.js';
 import { getCandy } from './data/candies.js';
 import { activeEvent } from './data/events.js';
 import { t, tName, initLang, setLang, getLang, hasChosenLang, LANGS } from './core/i18n.js';
@@ -32,6 +34,10 @@ async function boot(){
     if (label) tip.textContent = label;
     while (p < to){ p += 2; bar.style.width = p + '%'; await sleep(6); }
   };
+
+  // a shop may have arrived in the URL from another address — take it out
+  // of the address bar before anything else touches storage
+  captureIncoming();
 
   initLang();
   document.documentElement.lang = getLang();
@@ -158,7 +164,9 @@ function afterBoot(){
     setTimeout(() => toast(t('ev.toast', { name: tName('event', ev.id, ev.name) }), 'good', ev.emoji), 1400);
   }
 
-  if (!S.tutorialDone){
+  if (hasIncoming()){
+    setTimeout(() => { handleIncomingTransfer(); }, 400);
+  } else if (!S.tutorialDone){
     setTimeout(() => hasChosenLang() ? showTutorial() : askLanguage(), 500);
   } else if (hasPendingLevelReward()){
     // a reward grid was left unopened last session — give it back

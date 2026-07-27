@@ -19,10 +19,12 @@ import { claimableCount, refreshMissionBadge } from './missions.js';
 import { go, subHeader } from './nav.js';
 import { openStudio } from './studio.js';
 import { t, tName, tDesc, LANGS, getLang, setLang } from '../core/i18n.js';
+import { openTransferSheet, maybeShowMoveBanner } from './transferUi.js';
 
 /* ══════════════ hub ══════════════ */
 export function mountMore(host){
   const wrap = el('div.screen.enter');
+  maybeShowMoveBanner(wrap);
   wrap.append(el('div.section-head', el('h2', t('more.title'))));
 
   const daily = dailyStatus();
@@ -407,6 +409,9 @@ export function mountSettings(host){
       el('button.btn.ghost.sm.grow', { onclick: exportSave }, t('set.export')),
       el('button.btn.ghost.sm.grow', { onclick: importSave }, t('set.import')),
     ),
+    el('button.btn.grape.sm.block', { style:{ marginTop:'8px' }, onclick: openTransferSheet },
+      t('mv.button')),
+    el('p.tiny.muted', { style:{ marginTop:'6px' } }, t('mv.buttonHint')),
     el('button.btn.sm.block', { style:{ marginTop:'8px',
       background:'linear-gradient(180deg,#ff9a9a,#e2504f)', boxShadow:'0 4px 0 #b93a39' },
       onclick: resetGame }, t('set.reset')),

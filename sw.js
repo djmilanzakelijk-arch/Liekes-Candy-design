@@ -1,6 +1,6 @@
 /* Service worker — makes the shop playable offline. */
 
-const CACHE = 'liekes-candy-v1';
+const CACHE = 'liekes-candy-v3';
 
 const ASSETS = [
   './',
@@ -38,6 +38,15 @@ const ASSETS = [
   './src/ui/collectionScreen.js',
   './src/ui/missions.js',
   './src/ui/moreScreen.js',
+  './src/ui/staffScreen.js',
+  './src/ui/staffEventUi.js',
+  './src/ui/levelReward.js',
+  './src/ui/transferUi.js',
+  './src/core/transfer.js',
+  './src/data/staff.js',
+  './src/data/tools.js',
+  './src/game/staffEvents.js',
+  './src/render/tools.js',
 ];
 
 self.addEventListener('install', e => {
@@ -75,14 +84,18 @@ self.addEventListener('fetch', e => {
     return;
   }
 
-  // cache-first for everything else
+  // stale-while-revalidate: instant from cache, refreshed in the background,
+  // so a new deploy lands on the next launch without a manual hard refresh
   e.respondWith(
-    caches.match(req).then(hit => hit || fetch(req).then(res => {
-      if (res.ok && new URL(req.url).origin === location.origin){
-        const copy = res.clone();
-        caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
-      }
-      return res;
-    }).catch(() => hit))
+    caches.match(req).then(hit => {
+      const network = fetch(req).then(res => {
+        if (res.ok && new URL(req.url).origin === location.origin){
+          const copy = res.clone();
+          caches.open(CACHE).then(c => c.put(req, copy)).catch(() => {});
+        }
+        return res;
+      }).catch(() => hit);
+      return hit || network;
+    })
   );
 });
