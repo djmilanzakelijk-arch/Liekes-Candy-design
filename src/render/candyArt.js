@@ -574,8 +574,277 @@ function donut(ctx, { color, flavor }){
   ctx.fillStyle = hg; ctx.fill();
 }
 
+/* ══════════════ TRUFFLE ══════════════ */
+function truffle(ctx, { color, flavor }){
+  const cx = 500, cy = 520, R = 250;
+  const c = getColor(color);
+  const rng = rngFrom('truffle');
+  dropShadow(ctx, cx, 790, 235, 44, .32);
+
+  // slightly irregular hand-rolled ball
+  const shape = () => {
+    ctx.beginPath();
+    for (let i = 0; i <= 80; i++){
+      const a = (i / 80) * TAU;
+      const rr = R + Math.sin(a * 3.1) * 11 + Math.sin(a * 5.7 + 1) * 7;
+      const px = cx + Math.cos(a) * rr, py = cy + Math.sin(a) * rr * .96;
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.closePath();
+  };
+  shape();
+  ctx.fillStyle = domeFill(ctx, color, cx, cy, R);
+  ctx.fill();
+
+  // cocoa-powder grain
+  ctx.save(); shape(); ctx.clip();
+  for (let i = 0; i < 320; i++){
+    const a = rng() * TAU, rr = Math.sqrt(rng()) * R;
+    ctx.fillStyle = `rgba(${rng() > .55 ? '255,255,255' : '0,0,0'},${.04 + rng() * .09})`;
+    ctx.beginPath();
+    ctx.arc(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr, rng() * 6 + 1.5, 0, TAU);
+    ctx.fill();
+  }
+  // matte finish: soften the highlight rather than a wet gloss
+  gloss(ctx, cx - 70, cy - 96, 120, 62, -.45, .22);
+  ctx.restore();
+
+  ctx.lineWidth = 8;
+  ctx.strokeStyle = alpha(c.dark, .35);
+  shape(); ctx.stroke();
+
+  // paper cup rim peeking out at the bottom
+  ctx.beginPath();
+  ctx.ellipse(cx, 742, 214, 46, 0, 0, TAU);
+  ctx.fillStyle = 'rgba(120,80,60,.22)'; ctx.fill();
+}
+
+/* ══════════════ CUPCAKE ══════════════ */
+function cupcake(ctx, { color, flavor }){
+  const c = getColor(color);
+  const cx = 500;
+  dropShadow(ctx, cx, 852, 220, 40, .3);
+
+  // paper case
+  const caseTop = 560, caseBot = 858, halfTop = 232, halfBot = 168;
+  ctx.beginPath();
+  ctx.moveTo(cx - halfTop, caseTop);
+  ctx.lineTo(cx - halfBot, caseBot);
+  ctx.quadraticCurveTo(cx, caseBot + 26, cx + halfBot, caseBot);
+  ctx.lineTo(cx + halfTop, caseTop);
+  ctx.closePath();
+  const pg = ctx.createLinearGradient(cx - halfTop, 0, cx + halfTop, 0);
+  pg.addColorStop(0, '#b9647f'); pg.addColorStop(.28, '#f5a8bf');
+  pg.addColorStop(.55, '#ffd0e0'); pg.addColorStop(1, '#c06c86');
+  ctx.fillStyle = pg; ctx.fill();
+  // pleats
+  ctx.strokeStyle = 'rgba(120,50,75,.28)'; ctx.lineWidth = 7;
+  for (let i = -4; i <= 4; i++){
+    ctx.beginPath();
+    ctx.moveTo(cx + i * halfTop * .23, caseTop + 6);
+    ctx.lineTo(cx + i * halfBot * .23, caseBot);
+    ctx.stroke();
+  }
+  ctx.beginPath();
+  ctx.ellipse(cx, caseTop, halfTop, 34, 0, 0, TAU);
+  ctx.fillStyle = '#ffe0ea'; ctx.fill();
+
+  // sponge peeking over the rim
+  ctx.beginPath();
+  ctx.ellipse(cx, caseTop - 22, halfTop - 6, 52, 0, Math.PI, 0);
+  ctx.fillStyle = '#d8a568'; ctx.fill();
+
+  // piped frosting: three stacked swirls
+  const swirl = (yy, rx, ry) => {
+    ctx.beginPath();
+    for (let i = 0; i <= 90; i++){
+      const a = (i / 90) * TAU;
+      const wob = 1 + Math.sin(a * 7) * .055;
+      const px = cx + Math.cos(a) * rx * wob;
+      const py = yy + Math.sin(a) * ry * wob;
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = domeFill(ctx, color, cx, yy, rx);
+    ctx.fill();
+    ctx.strokeStyle = alpha(c.dark, .22); ctx.lineWidth = 6; ctx.stroke();
+  };
+  swirl(510, 210, 78);
+  swirl(432, 168, 66);
+  swirl(360, 118, 52);
+  // the little peak
+  ctx.beginPath();
+  ctx.moveTo(cx - 40, 330);
+  ctx.quadraticCurveTo(cx - 6, 236, cx + 34, 322);
+  ctx.quadraticCurveTo(cx, 350, cx - 40, 330);
+  ctx.fillStyle = domeFill(ctx, color, cx, 300, 90); ctx.fill();
+
+  gloss(ctx, cx - 74, 420, 74, 34, -.35, .5);
+  specular(ctx, cx - 58, 356, 24, .8);
+}
+
+/* ══════════════ ICE CREAM CONE ══════════════ */
+function icecream(ctx, { color, flavor }){
+  const c = getColor(color);
+  const cx = 500;
+  dropShadow(ctx, cx, 900, 140, 28, .26);
+
+  // waffle cone
+  ctx.beginPath();
+  ctx.moveTo(cx - 176, 508);
+  ctx.lineTo(cx, 906);
+  ctx.lineTo(cx + 176, 508);
+  ctx.closePath();
+  const cg = ctx.createLinearGradient(cx - 176, 0, cx + 176, 0);
+  cg.addColorStop(0, '#a9733f'); cg.addColorStop(.35, '#e8bd85');
+  cg.addColorStop(.62, '#d3a067'); cg.addColorStop(1, '#96632f');
+  ctx.fillStyle = cg; ctx.fill();
+  // waffle lattice
+  ctx.save();
+  ctx.beginPath();
+  ctx.moveTo(cx - 176, 508); ctx.lineTo(cx, 906); ctx.lineTo(cx + 176, 508); ctx.closePath();
+  ctx.clip();
+  ctx.strokeStyle = 'rgba(110,70,35,.4)'; ctx.lineWidth = 6;
+  for (let i = -8; i <= 8; i++){
+    ctx.beginPath(); ctx.moveTo(cx - 200 + i * 62, 480); ctx.lineTo(cx + 120 + i * 62, 940); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(cx + 200 - i * 62, 480); ctx.lineTo(cx - 120 - i * 62, 940); ctx.stroke();
+  }
+  ctx.restore();
+  // cone rim
+  ctx.beginPath();
+  ctx.ellipse(cx, 508, 178, 40, 0, 0, TAU);
+  ctx.fillStyle = '#e8bd85'; ctx.fill();
+  ctx.strokeStyle = 'rgba(110,70,35,.35)'; ctx.lineWidth = 6; ctx.stroke();
+
+  // two scoops
+  const scoop = (sx, sy, r) => {
+    ctx.beginPath();
+    for (let i = 0; i <= 70; i++){
+      const a = (i / 70) * TAU;
+      const rr = r * (1 + Math.sin(a * 6) * .052 + Math.sin(a * 3 + .7) * .035);
+      const px = sx + Math.cos(a) * rr, py = sy + Math.sin(a) * rr;
+      i ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fillStyle = domeFill(ctx, color, sx, sy, r);
+    ctx.fill();
+    ctx.strokeStyle = alpha(c.dark, .22); ctx.lineWidth = 6; ctx.stroke();
+    specular(ctx, sx - r * .36, sy - r * .4, r * .22, .85);
+  };
+  scoop(cx - 8, 396, 176);
+  scoop(cx + 6, 250, 132);
+
+  // a drip running down the cone
+  ctx.beginPath();
+  ctx.moveTo(cx - 120, 500);
+  ctx.quadraticCurveTo(cx - 130, 560, cx - 104, 588);
+  ctx.quadraticCurveTo(cx - 78, 560, cx - 82, 498);
+  ctx.closePath();
+  ctx.fillStyle = alpha(c.light, .95); ctx.fill();
+
+  gloss(ctx, cx - 70, 300, 76, 40, -.45, .5);
+}
+
+/* ══════════════ CAKE POP ══════════════ */
+function cakepop(ctx, { color, flavor }){
+  const c = getColor(color);
+  const cx = 500, cy = 420, R = 218;
+  dropShadow(ctx, cx, 880, 120, 24, .24);
+
+  // stick
+  roundRect(ctx, cx - 22, cy + 60, 44, 430, 22);
+  const sg = ctx.createLinearGradient(cx - 22, 0, cx + 22, 0);
+  sg.addColorStop(0, '#d8cfc4'); sg.addColorStop(.4, '#fffdf8'); sg.addColorStop(1, '#c4b9ac');
+  ctx.fillStyle = sg; ctx.fill();
+
+  // coated ball
+  ctx.beginPath(); ctx.arc(cx, cy, R, 0, TAU);
+  ctx.fillStyle = domeFill(ctx, color, cx, cy, R);
+  ctx.fill();
+
+  // thick coating drip round the bottom
+  ctx.beginPath();
+  ctx.moveTo(cx - R * .98, cy + 20);
+  for (let i = 0; i <= 12; i++){
+    const p = i / 12;
+    const x = cx - R * .98 + p * R * 1.96;
+    const y = cy + 20 + Math.sin(p * Math.PI * 5.5) * 26 + 46;
+    ctx.lineTo(x, y);
+  }
+  ctx.lineTo(cx + R * .98, cy + 20);
+  ctx.closePath();
+  ctx.save();
+  ctx.globalCompositeOperation = 'source-atop';
+  ctx.fillStyle = alpha(c.dark, .28); ctx.fill();
+  ctx.restore();
+
+  ctx.lineWidth = 9;
+  ctx.strokeStyle = alpha(c.dark, .3);
+  ctx.beginPath(); ctx.arc(cx, cy, R - 4, 0, TAU); ctx.stroke();
+
+  gloss(ctx, cx - R * .32, cy - R * .36, R * .44, R * .28, -.5, .55);
+  specular(ctx, cx - R * .4, cy - R * .44, R * .2, .95);
+}
+
+/* ══════════════ CHOCOLATE PRETZEL ══════════════ */
+function pretzel(ctx, { color, flavor }){
+  const c = getColor(color);
+  const cx = 500, cy = 500;
+  dropShadow(ctx, cx, 810, 220, 38, .28);
+
+  const path = () => {
+    ctx.beginPath();
+    // two upper loops
+    ctx.arc(cx - 132, cy - 76, 124, Math.PI * .78, Math.PI * 2.08);
+    ctx.arc(cx + 132, cy - 76, 124, Math.PI * .92, Math.PI * 2.22);
+    // crossed tails into the belly
+    ctx.moveTo(cx - 210, cy + 10);
+    ctx.quadraticCurveTo(cx - 40, cy + 250, cx + 96, cy + 178);
+    ctx.moveTo(cx + 210, cy + 10);
+    ctx.quadraticCurveTo(cx + 40, cy + 250, cx - 96, cy + 178);
+    // the wide bottom curve
+    ctx.moveTo(cx - 236, cy - 30);
+    ctx.quadraticCurveTo(cx, cy + 292, cx + 236, cy - 30);
+  };
+
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+
+  // baked dough underneath
+  ctx.strokeStyle = '#a9733f'; ctx.lineWidth = 92;
+  path(); ctx.stroke();
+  ctx.strokeStyle = '#d3a067'; ctx.lineWidth = 74;
+  path(); ctx.stroke();
+
+  // chocolate coat in the chosen colour
+  ctx.strokeStyle = c.base; ctx.lineWidth = 60;
+  path(); ctx.stroke();
+  ctx.strokeStyle = alpha(c.light, .55); ctx.lineWidth = 22;
+  ctx.save();
+  ctx.translate(-8, -10);
+  path(); ctx.stroke();
+  ctx.restore();
+  ctx.strokeStyle = alpha(c.dark, .45); ctx.lineWidth = 12;
+  ctx.save();
+  ctx.translate(9, 12);
+  path(); ctx.stroke();
+  ctx.restore();
+
+  // salt crystals
+  const rng = rngFrom('pretzel');
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  for (let i = 0; i < 26; i++){
+    const a = rng() * TAU, rr = 110 + rng() * 190;
+    ctx.beginPath();
+    ctx.arc(cx + Math.cos(a) * rr, cy + Math.sin(a) * rr * .85, rng() * 7 + 3, 0, TAU);
+    ctx.fill();
+  }
+}
+
 /* ══════════════ registry ══════════════ */
-export const CANDY_ART = { bar, lolli, bonbon, gummy, marsh, cane, heart, cookie, box, donut };
+export const CANDY_ART = {
+  bar, lolli, bonbon, gummy, marsh, cane, heart, cookie, box, donut,
+  truffle, cupcake, icecream, cakepop, pretzel,
+};
 
 export function drawCandyBase(ctx, art, opts){
   const fn = CANDY_ART[art] || CANDY_ART.bar;

@@ -192,6 +192,88 @@ const DICT = {
     'coll.notYet':'Not collected yet',
     'coll.keepPlaying':'Keep playing to discover this one.',
     'coll.unlockLevel':' · unlocks at level {n}',
+    /* candy tools */
+    'studio.tab.tools':'Tools',
+    'studio.noTools':'This candy has no special tools.',
+    'studio.toolOff':'None',
+    'studio.toastLight':'Light', 'studio.toastMed':'Golden', 'studio.toastDark':'Dark',
+    'studio.dipTip':'Just the tip', 'studio.dipHalf':'Half', 'studio.dipDeep':'Deep',
+    'part.tools':'Tools',
+    'tool.toast1':'lightly toasted', 'tool.toast2':'golden toasted', 'tool.toast3':'deeply toasted',
+    'tool.tip':'just dipped', 'tool.half':'half dipped', 'tool.deep':'deeply dipped',
+    'tool.dipPhrase':'{depth} in {color} chocolate',
+    'tool.clause.fill':'filled with {v}',
+    'tool.clause.dip':'{v}',
+    'tool.clause.toast':'{v}',
+    'tool.clause.dust':'dusted with {v}',
+    'tool.clause.marble':'marbled with {v}',
+    'tool.clause.swirl':'topped with {v} cream',
+
+    /* staff morale + raises */
+    'staff.morale':'Mood',
+    'morale.great':'thriving', 'morale.good':'happy', 'morale.okay':'so-so',
+    'morale.low':'unhappy', 'morale.awful':'miserable',
+    'staff.raiseTitle':'Give {name} a raise?',
+    'staff.raiseSub':'A one-off 🪙 {n}. Permanently better output and a big mood lift.',
+    'staff.raiseYes':'Give the raise',
+    'staff.raiseDone':'{name} is thrilled with the raise!',
+    'staff.raiseMax':'TOP PAY',
+
+    /* staff incidents */
+    'sev.sub':'Your call, boss.',
+    'sev.quit':'{name} handed in their apron and walked out.',
+    'sev.cantafford':'You could not pay — {name} took it badly.',
+
+    'sev.raise.title':'{name} wants a raise',
+    'sev.raise.text':'"I have been putting in the hours and the shop is doing well. Any chance of a little more?"',
+    'sev.raise.give':'Give the raise',
+    'sev.raise.promise':'Promise to think about it',
+    'sev.raise.refuse':'Say no',
+
+    'sev.atecandy.title':'{name} ate the merchandise',
+    'sev.atecandy.text':'"So… that lollipop for table three. It was RIGHT there. I only meant to taste it."',
+    'sev.atecandy.laugh':'Laugh it off',
+    'sev.atecandy.notip':'No tips this shift',
+    'sev.atecandy.warn':'Formal warning',
+    'sev.atecandy.fire':'Fire them',
+
+    'sev.late.title':'{name} is late again',
+    'sev.late.text':'"The tram, the weather, my alarm… honestly it was all three this time."',
+    'sev.late.forgive':'Let it slide',
+    'sev.late.docked':'Dock the hours',
+    'sev.late.warn':'Formal warning',
+
+    'sev.sick.title':'{name} is off sick',
+    'sev.sick.text':'"I can barely stand up. I really do not want to sneeze near the truffles."',
+    'sev.sick.paid':'Pay sick leave',
+    'sev.sick.unpaid':'Unpaid — rules are rules',
+
+    'sev.greatday.title':'{name} had a brilliant shift',
+    'sev.greatday.text':'Three customers asked for them by name today. The queue never stopped smiling.',
+    'sev.greatday.bonus':'Hand out a bonus',
+    'sev.greatday.praise':'Praise them warmly',
+    'sev.greatday.nothing':'Say nothing',
+
+    'sev.poached.title':'Somebody wants to poach {name}',
+    'sev.poached.text':'"The shop across the square offered me more. I would rather stay here, though…"',
+    'sev.poached.counter':'Counter-offer',
+    'sev.poached.letgo':'Wish them luck',
+
+    'sev.brokemould.title':'{name} broke a mould',
+    'sev.brokemould.text':'"It slipped. It was the good heart mould. I am so sorry."',
+    'sev.brokemould.nevermind':'Accidents happen',
+    'sev.brokemould.paydamage':'They pay for it',
+    'sev.brokemould.warn':'Formal warning',
+
+    'sev.timeoff.title':'{name} asks for a day off',
+    'sev.timeoff.text':'"My sister is getting married. I would only need the one day, I promise."',
+    'sev.timeoff.grant':'Of course — go',
+    'sev.timeoff.deny':'Not this week',
+
+    'sev.tastetest.title':'{name} wants to taste-test',
+    'sev.tastetest.text':'"How am I supposed to recommend the pistachio filling if I have never tried it?"',
+    'sev.tastetest.allow':'One piece a day',
+    'sev.tastetest.nomore':'Absolutely not',
     'store.manageStaff':'👥 Manage employees',
     'coll.close':'Close',
     'coll.rewardOnly':' · level reward',
@@ -494,6 +576,88 @@ const DICT = {
     'coll.notYet':'Nog niet verzameld',
     'coll.keepPlaying':'Blijf spelen om deze te ontdekken.',
     'coll.unlockLevel':' · vanaf niveau {n}',
+    /* snoepgereedschap */
+    'studio.tab.tools':'Gereedschap',
+    'studio.noTools':'Dit snoepje heeft geen speciaal gereedschap.',
+    'studio.toolOff':'Geen',
+    'studio.toastLight':'Licht', 'studio.toastMed':'Goudbruin', 'studio.toastDark':'Donker',
+    'studio.dipTip':'Puntje', 'studio.dipHalf':'Half', 'studio.dipDeep':'Diep',
+    'part.tools':'Gereedschap',
+    'tool.toast1':'licht gebrand', 'tool.toast2':'goudbruin gebrand', 'tool.toast3':'donker gebrand',
+    'tool.tip':'met het puntje', 'tool.half':'half', 'tool.deep':'diep',
+    'tool.dipPhrase':'{depth} gedoopt in {color} chocolade',
+    'tool.clause.fill':'gevuld met {v}',
+    'tool.clause.dip':'{v}',
+    'tool.clause.toast':'{v}',
+    'tool.clause.dust':'bestrooid met {v}',
+    'tool.clause.marble':'gemarmerd met {v}',
+    'tool.clause.swirl':'met een toef {v} slagroom',
+
+    /* stemming + loonsverhoging */
+    'staff.morale':'Stemming',
+    'morale.great':'geweldig', 'morale.good':'blij', 'morale.okay':'gaat wel',
+    'morale.low':'ontevreden', 'morale.awful':'balen',
+    'staff.raiseTitle':'{name} loonsverhoging geven?',
+    'staff.raiseSub':'Eenmalig 🪙 {n}. Blijvend betere prestaties en een flinke stemmingsboost.',
+    'staff.raiseYes':'Verhoging geven',
+    'staff.raiseDone':'{name} is dolblij met de verhoging!',
+    'staff.raiseMax':'TOPLOON',
+
+    /* voorvallen */
+    'sev.sub':'Jij beslist, baas.',
+    'sev.quit':'{name} heeft het schort ingeleverd en is vertrokken.',
+    'sev.cantafford':'Je kon niet betalen — {name} nam dat niet goed op.',
+
+    'sev.raise.title':'{name} wil loonsverhoging',
+    'sev.raise.text':'"Ik maak lange dagen en de winkel loopt goed. Kan er iets bij?"',
+    'sev.raise.give':'Verhoging geven',
+    'sev.raise.promise':'Beloven erover na te denken',
+    'sev.raise.refuse':'Nee zeggen',
+
+    'sev.atecandy.title':'{name} heeft de handel opgegeten',
+    'sev.atecandy.text':'"Die lolly voor tafel drie… die lág daar gewoon. Ik wilde alleen even proeven."',
+    'sev.atecandy.laugh':'Erom lachen',
+    'sev.atecandy.notip':'Geen fooi deze dienst',
+    'sev.atecandy.warn':'Officiële waarschuwing',
+    'sev.atecandy.fire':'Ontslaan',
+
+    'sev.late.title':'{name} is weer te laat',
+    'sev.late.text':'"De tram, het weer, mijn wekker… eerlijk gezegd was het alle drie."',
+    'sev.late.forgive':'Door de vingers zien',
+    'sev.late.docked':'Uren inhouden',
+    'sev.late.warn':'Officiële waarschuwing',
+
+    'sev.sick.title':'{name} is ziek',
+    'sev.sick.text':'"Ik kan amper staan. Ik wil echt niet naast de truffels gaan niezen."',
+    'sev.sick.paid':'Ziekteverlof doorbetalen',
+    'sev.sick.unpaid':'Onbetaald — regels zijn regels',
+
+    'sev.greatday.title':'{name} had een topdienst',
+    'sev.greatday.text':'Drie klanten vroegen vandaag speciaal naar deze medewerker. De rij bleef lachen.',
+    'sev.greatday.bonus':'Bonus uitdelen',
+    'sev.greatday.praise':'Hartelijk complimenteren',
+    'sev.greatday.nothing':'Niets zeggen',
+
+    'sev.poached.title':'Iemand wil {name} wegkapen',
+    'sev.poached.text':'"De winkel aan de overkant biedt meer. Maar ik blijf liever hier…"',
+    'sev.poached.counter':'Tegenbod doen',
+    'sev.poached.letgo':'Succes wensen',
+
+    'sev.brokemould.title':'{name} brak een mal',
+    'sev.brokemould.text':'"Hij gleed uit mijn handen. Het was de mooie hartvorm. Het spijt me echt."',
+    'sev.brokemould.nevermind':'Ongelukjes gebeuren',
+    'sev.brokemould.paydamage':'Laten betalen',
+    'sev.brokemould.warn':'Officiële waarschuwing',
+
+    'sev.timeoff.title':'{name} vraagt een vrije dag',
+    'sev.timeoff.text':'"Mijn zus gaat trouwen. Ik heb echt maar die ene dag nodig."',
+    'sev.timeoff.grant':'Natuurlijk — ga maar',
+    'sev.timeoff.deny':'Deze week niet',
+
+    'sev.tastetest.title':'{name} wil proeven',
+    'sev.tastetest.text':'"Hoe moet ik de pistachevulling aanraden als ik hem nooit geproefd heb?"',
+    'sev.tastetest.allow':'Eén stukje per dag',
+    'sev.tastetest.nomore':'Absoluut niet',
     'store.manageStaff':'👥 Medewerkers beheren',
     'coll.close':'Sluiten',
     'coll.rewardOnly':' · levelbeloning',
@@ -677,6 +841,8 @@ const DICT = {
 const NAMES = {
   nl: {
     candy: {
+      truffle:'Truffel', cupcake:'Cupcake', cakepop:'Cakepop',
+      pretzel:'Chocoladekrakeling', icecream:'IJshoorntje',
       bar:'Chocoladereep', lolli:'Lolly', bonbon:'Bonbon', gummy:'Gummibeertje',
       marsh:'Marshmallow', cane:'Zuurstok', heart:'Chocoladehart', cookie:'Koekje',
       box:'Snoepdoos', donut:'Donut',
@@ -726,6 +892,19 @@ const NAMES = {
       rw_aurora_bow:'Poollichtstrik', rw_prism_glaze:'Prismaglazuur',
       rw_moon_dust:'Maanstof', rw_star_crown:'Sterrenkroon',
       rw_cocoa_pearls:'Cacaoparels', rw_velvet_rose:'Fluwelen roos',
+    },
+    tool: {
+      fill:'Vulspuit', dip:'Chocoladedoop', toast:'Suikerbrander',
+      dust:'Poederzeef', marble:'Marmerdraai', swirl:'Slagroomspuit',
+    },
+    filling: {
+      pistachio:'pistache', hazelnut:'hazelnoot', strawberry:'aardbeiencrème',
+      caramel:'karamel', mint:'muntcrème', raspberry:'frambozenjam',
+      vanilla:'vanillecrème', ganache:'pure ganache',
+    },
+    dust: {
+      sugar:'poedersuiker', cocoa:'cacao', matcha:'matcha',
+      freeze:'bessenpoeder', gold:'goudpoeder',
     },
     pack: {
       none:'Geen verpakking', bag:'Papieren zakje', cello:'Cellofaan', foil:'Folie',
@@ -892,6 +1071,8 @@ const CANDY_PLURAL_NL = {
   bar:'chocoladerepen', lolli:"lolly's", bonbon:'bonbons', gummy:'gummibeertjes',
   marsh:'marshmallows', cane:'zuurstokken', heart:'chocoladeharten', cookie:'koekjes',
   box:'snoepdozen', donut:'donuts',
+  truffle:'truffels', cupcake:'cupcakes', cakepop:'cakepops',
+  pretzel:'chocoladekrakelingen', icecream:'ijshoorntjes',
 };
 export const candyPluralNl = id => CANDY_PLURAL_NL[id];
 

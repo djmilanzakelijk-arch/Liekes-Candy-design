@@ -14,6 +14,7 @@ import {
 import { t, tName, tLines, getLang, phrases, candyPluralNl } from '../core/i18n.js';
 import { activeEvent } from '../data/events.js';
 import { getLocation } from '../data/upgrades.js';
+import { FILLINGS, DUSTS, toolsForCandy, toolLabel, TOOL_BY_ID } from '../data/tools.js';
 import { pick, pickN, randI, rand, uid, clamp, listJoin, shuffle } from '../core/utils.js';
 
 /* ── helpers: what can the player actually use right now? ── */
@@ -102,11 +103,25 @@ export function makeOrder(opt = {}){
   // ── quantity (cosmetic — affects payout) ──
   const quantity = Math.random() < .18 ? randI(2, 3) : 1;
 
+  // ── tools: fillings, dips, torching… ──
+  const tools = {};
+  const toolable = toolsForCandy(candy.id);
+  if (toolable.length && S.level >= 4){
+    const chance = vip ? .85 : .2 + diff * .45;
+    if (Math.random() < chance){
+      const howMany = vip && Math.random() < .5 ? 2 : 1;
+      for (const tool of pickN(toolable, howMany)){
+        tools[tool.id] = randomToolValue(tool.id, colors);
+      }
+    }
+  }
+
   const order = {
     id: uid(),
     candy: candy.id,
     color: color.id,
     wants,
+    tools,
     pack: pack ? pack.id : null,
     text,
     quantity,
@@ -118,6 +133,43 @@ export function makeOrder(opt = {}){
   order.line = describeOrder(order);
   order.checklist = orderChecklist(order);
   return order;
+}
+
+/** A concrete setting a customer can ask for, per tool. */
+function randomToolValue(id, colors){
+  switch (id){
+    case 'fill':   return pick(FILLINGS).id;
+    case 'dust':   return pick(DUSTS).id;
+    case 'toast':  return randI(1, 3);
+    case 'dip':    return { color: pick(colors).id, depth: pick([.28, .45, .72]) };
+    case 'marble': return pick(colors).id;
+    case 'swirl':  return pick(colors).id;
+    default:       return null;
+  }
+}
+
+
+/** Localised phrase for one configured tool, e.g. "pistachio". */
+export function toolPhrase(id, val){
+  if (val == null) return '';
+  switch (id){
+    case 'fill':   return tName('filling', val, FILLINGS.find(f => f.id === val)?.name ?? val);
+    case 'dust':   return tName('dust', val, DUSTS.find(d => d.id === val)?.name ?? val);
+    case 'toast':  return t('tool.toast' + val);
+    case 'dip':    return t('tool.dipPhrase', {
+                     color: tName('colorAdj', val.color, getColor(val.color).name.toLowerCase()),
+                     depth: t(val.depth > .6 ? 'tool.deep' : val.depth < .35 ? 'tool.tip' : 'tool.half'),
+                   });
+    case 'marble': return tName('colorAdj', val, getColor(val).name.toLowerCase());
+    case 'swirl':  return tName('colorAdj', val, getColor(val).name.toLowerCase());
+    default:       return String(val);
+  }
+}
+
+/** The clause appended to an order line for each requested tool. */
+function toolClauses(o){
+  return Object.entries(o.tools || {}).map(([id, val]) =>
+    t('tool.clause.' + id, { v: toolPhrase(id, val) }));
 }
 
 /** Human-readable one-liner shown to the player, in the active language. */
@@ -143,6 +195,8 @@ function describeEn(o){
   }).filter(Boolean);
 
   let s = `${qty}${colorWord} ${noun}`;
+  const tc = toolClauses(o);
+  if (tc.length) s += ' ' + listJoin(tc);
   if (decoBits.length) s += ` with ${listJoin(decoBits)}`;
   if (o.pack) s += `, in ${aOrAn(getPack(o.pack).name.toLowerCase())}`;
 
@@ -171,6 +225,8 @@ function describeNl(o){
   }).filter(Boolean);
 
   let s = `${qty}${colorWord} ${noun}`;
+  const tc = toolClauses(o);
+  if (tc.length) s += ' ' + listJoinNl(tc);
   if (decoBits.length) s += ` met ${listJoinNl(decoBits)}`;
   if (o.pack) s += `, in een ${tName('pack', o.pack, getPack(o.pack).name).toLowerCase()}`;
 
@@ -210,6 +266,13 @@ export function orderChecklist(o){
            + (w.color ? tName('color', w.color, getColor(w.color).name) + ' ' : '')
            + tName('deco', w.id, d.name),
       icon:'✨',
+    });
+  }
+  for (const [id, val] of Object.entries(o.tools || {})){
+    rows.push({
+      key:'tool:' + id,
+      label:`${tName('tool', id, TOOL_BY_ID[id]?.name ?? id)}: ${toolPhrase(id, val)}`,
+      icon:TOOL_BY_ID[id]?.emoji ?? '🔧',
     });
   }
   if (o.pack) rows.push({ key:'pack', label:tName('pack', o.pack, getPack(o.pack).name), icon:'🎁' });

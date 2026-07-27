@@ -112,12 +112,27 @@ export function staffBonuses(roster = []){
   let idleCoins = 0, tipMult = 1, patienceMult = 1;
   for (const e of roster){
     if (!e) continue;
-    idleCoins += e.idle || 0;
-    tipMult += e.tip || 0;
-    patienceMult += e.calm || 0;
+    const m = moraleMult(e);
+    idleCoins += (e.idle || 0) * m;
+    tipMult += (e.tip || 0) * m;
+    patienceMult += (e.calm || 0) * m;
   }
-  return { idleCoins, tipMult, patienceMult };
+  return { idleCoins: Math.round(idleCoins), tipMult, patienceMult };
 }
+
+/* ── morale ──────────────────────────────────────────
+   Kept here (rather than with the events) so it stays pure and
+   state.js can use it without a circular import. */
+
+export const moraleOf = emp => clamp(emp?.morale ?? 75, 0, 100);
+
+/** 0 morale → 60 % output, 75 → 100 %, 100 → 112 %. */
+export function moraleMult(emp){
+  return clamp(.6 + (moraleOf(emp) / 100) * .52, .6, 1.12);
+}
+
+export const moraleTone = m =>
+  m >= 85 ? 'great' : m >= 65 ? 'good' : m >= 40 ? 'okay' : m >= 20 ? 'low' : 'awful';
 
 /** Cost to throw the applicant list away and draw a fresh one. */
 export const REROLL_COST = 350;

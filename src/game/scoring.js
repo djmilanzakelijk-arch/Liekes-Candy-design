@@ -58,6 +58,32 @@ export function grade(design, order, { timeLeft = 0, timeTotal = 1 } = {}){
   }
   parts.push({ key:'deco', label:t('part.deco'), weight:30, score: decoScore });
 
+  /* tools — filling, dip, torch, dust, marble, cream */
+  const wantTools = Object.entries(order.tools || {});
+  if (wantTools.length){
+    let sum = 0;
+    for (const [id, want] of wantTools){
+      const got = (design.tools || {})[id];
+      let s = 0;
+      if (got != null){
+        if (id === 'dip'){
+          // right chocolate matters most, depth is worth a little
+          const colorOk = got.color === want.color ? 1 : 0;
+          const depthOk = Math.abs((got.depth ?? .45) - (want.depth ?? .45)) < .15 ? 1 : .4;
+          s = colorOk * .75 + depthOk * .25;
+        } else if (id === 'toast'){
+          const diff = Math.abs(got - want);
+          s = diff === 0 ? 1 : diff === 1 ? .55 : .15;
+        } else {
+          s = got === want ? 1 : .2;   // used the tool, wrong setting
+        }
+      }
+      checks['tool:' + id] = s >= .999;
+      sum += s;
+    }
+    parts.push({ key:'tools', label:t('part.tools'), weight:18, score: sum / wantTools.length });
+  }
+
   /* packaging */
   if (order.pack){
     const packOk = design.pack === order.pack;

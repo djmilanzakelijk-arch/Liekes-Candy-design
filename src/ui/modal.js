@@ -40,9 +40,10 @@ export function openModal(opt = {}){
   };
 
   if (opt.actions?.length){
-    const row = el('div.modal-actions');
-    for (const a of opt.actions){
-      if (!a) continue;
+    // three or more choices never fit side by side on a phone
+    const list = opt.actions.filter(Boolean);
+    const row = el('div.modal-actions' + (list.length > 2 ? '.stack' : ''));
+    for (const a of list){
       row.append(el('button.btn' + (a.cls ? '.' + a.cls : ''), {
         onclick: () => {
           sfx('tap');

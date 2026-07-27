@@ -66,6 +66,36 @@ export const CANDIES = [
     zone:{ x:.5, y:.5, w:.5, h:.5 },
     desc:'Special-event glazed ring with a fat icing drip.',
   },
+  {
+    id:'truffle', name:'Truffle', emoji:'🍫', art:'truffle',
+    unlock:4, base:50, time:1.0, shape:'round',
+    zone:{ x:.5, y:.52, w:.44, h:.44 },
+    desc:'Hand-rolled ganache under a matte cocoa coat.',
+  },
+  {
+    id:'cupcake', name:'Cupcake', emoji:'🧁', art:'cupcake',
+    unlock:6, base:66, time:1.1, shape:'domed',
+    zone:{ x:.5, y:.42, w:.42, h:.36 },
+    desc:'Sponge in a paper case under a tall frosting swirl.',
+  },
+  {
+    id:'cakepop', name:'Cake Pop', emoji:'🍡', art:'cakepop',
+    unlock:8, base:54, time:.95, shape:'round',
+    zone:{ x:.5, y:.42, w:.42, h:.42 },
+    desc:'A coated cake ball on a stick. Endlessly dippable.',
+  },
+  {
+    id:'pretzel', name:'Choc Pretzel', emoji:'🥨', art:'pretzel',
+    unlock:10, base:62, time:1.05, shape:'looped',
+    zone:{ x:.5, y:.5, w:.46, h:.44 },
+    desc:'Salted pretzel drowned in chocolate. Sweet and salty.',
+  },
+  {
+    id:'icecream', name:'Ice Cream Cone', emoji:'🍦', art:'icecream',
+    unlock:12, base:78, time:1.2, shape:'stacked',
+    zone:{ x:.5, y:.36, w:.4, h:.34 },
+    desc:'Two scoops on a waffle cone — melting slowly.',
+  },
 ];
 
 export const CANDY_BY_ID = Object.fromEntries(CANDIES.map(c => [c.id, c]));

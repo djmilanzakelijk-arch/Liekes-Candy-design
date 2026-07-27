@@ -388,3 +388,7 @@ body.studio-open #tabbar{
 @media (prefers-reduced-motion:reduce){
   *,*::before,*::after{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important}
 }
+
+/* Three or more choices stack instead of squeezing off the card edge. */
+.modal-actions.stack{flex-direction:column}
+.modal-actions.stack .btn{width:100%}

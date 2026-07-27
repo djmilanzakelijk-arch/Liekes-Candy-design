@@ -12,6 +12,8 @@ import { CANDIES, getCandy } from '../data/candies.js';
 import { DECORATIONS, DECO_CATS, getDeco, PACKAGING, getPack } from '../data/decorations.js';
 import { COLORS, FLAVORS, getColor, COLOR_UNLOCK, RARITY } from '../data/palette.js';
 import { activeEvent } from '../data/events.js';
+import { TOOLS, FILLINGS, DUSTS, toolsForCandy, pruneTools, TOOL_BY_ID } from '../data/tools.js';
+import { drawToolPreview } from '../render/tools.js';
 import { t, tName, tDesc } from '../core/i18n.js';
 
 /* ── module state ────────────────────────────────────── */
@@ -22,6 +24,7 @@ let rafId = 0, lastT = 0, elapsed = 0;
 let history = [];
 let onDoneCb = null;
 let tabId = 'candy';
+let toolSel = 'fill';
 let selToolsEl = null;
 let toolThumbs = [];
 
@@ -55,6 +58,7 @@ export function openStudio(opts){
     pack: 'none',
     text: '',
     items: [],
+    tools: {},
   };
   accent = design.color;
 
@@ -170,6 +174,8 @@ function tabs(){
     { id:'candy',  name:t('studio.tab.candy'),  emoji:'🍬' },
     { id:'color',  name:t('studio.tab.color'),  emoji:'🎨' },
     { id:'flavor', name:t('studio.tab.flavor'), emoji:'🍓' },
+    ...(toolsForCandy(design.candy).length
+        ? [{ id:'tools', name:t('studio.tab.tools'), emoji:'🔧' }] : []),
     ...DECO_CATS.map(c => ({ id:'cat:' + c.id, name:tName('cat', c.id, c.name), emoji:c.emoji })),
     { id:'pack',   name:t('studio.tab.pack'),   emoji:'🎁' },
     { id:'text',   name:t('studio.tab.text'),   emoji:'✍️' },
@@ -204,6 +210,7 @@ function renderTray(){
   if (tabId === 'flavor')     return renderFlavorTray(host);
   if (tabId === 'pack')       return renderPackTray(host);
   if (tabId === 'text')       return renderTextTray(host);
+  if (tabId === 'tools')      return renderToolsTray(host);
   if (tabId.startsWith('cat:')) return renderDecoTray(host, tabId.slice(4));
 }
 
@@ -214,7 +221,10 @@ function renderCandyTray(host){
       onclick: () => {
         if (!owned) return toast(t('lock.candyLevel', { n:c.unlock, name:tName('candy', c.id, c.name) }), 'warn', '🔒');
         pushHistory();
-        design.candy = c.id; sfx('place'); haptic(10); renderTray();
+        design.candy = c.id;
+        // drop any tool the new candy cannot use, and refresh the tab strip
+        design.tools = pruneTools(design.tools, c.id);
+        sfx('place'); haptic(10); renderTabs(); renderTray();
       },
     });
     const cv = el('canvas', { width:88, height:88 });
@@ -395,6 +405,113 @@ function renderPackTray(host){
       };
     }
     host.append(tool);
+  }
+}
+
+/* ── tools: things you do TO the candy ─────────────────
+   Every tool is free — it comes with the candy that supports it. */
+function renderToolsTray(host){
+  const avail = toolsForCandy(design.candy);
+  if (!avail.length){
+    host.append(el('p.tiny.muted.center', { style:{ width:'100%', padding:'12px' } },
+      t('studio.noTools')));
+    return;
+  }
+  if (!design.tools) design.tools = {};
+  if (!avail.some(x => x.id === toolSel)) toolSel = avail[0].id;
+
+  host.style.flexDirection = 'column';
+  host.style.alignItems = 'stretch';
+
+  /* row 1 — which tool */
+  const row = el('div', { style:{ display:'flex', gap:'9px', overflowX:'auto', paddingBottom:'6px' } });
+  for (const tool of avail){
+    const on = design.tools[tool.id] != null;
+    const btn = el('button.tool' + (toolSel === tool.id ? '.on' : ''), {
+      onclick: () => { toolSel = tool.id; sfx('tap'); renderTray(); },
+    });
+    const cv = el('canvas', { width:88, height:88 });
+    btn.append(cv, el('b', tName('tool', tool.id, tool.name)));
+    drawToolPreview(cv.getContext('2d'), 88, tool.id,
+      design.tools[tool.id] ?? defaultToolValue(tool.id), design.color);
+    if (on) btn.append(el('span.t-anim', '✓'));
+    row.append(btn);
+  }
+  host.append(row);
+
+  /* row 2 — options for the selected tool */
+  const tool = TOOL_BY_ID[toolSel];
+  const opts = el('div', { style:{ display:'flex', gap:'7px', overflowX:'auto', alignItems:'center' } });
+
+  const clearBtn = el('button.chip' + (design.tools[toolSel] == null ? '.on' : ''), {
+    onclick: () => { pushHistory(); delete design.tools[toolSel]; sfx('remove'); renderTray(); },
+  }, t('studio.toolOff'));
+  opts.append(clearBtn);
+
+  const setVal = v => { pushHistory(); design.tools[toolSel] = v; sfx('pour'); haptic(12); renderTray(); };
+
+  if (tool.kind === 'fill'){
+    for (const f of FILLINGS){
+      opts.append(el('button.chip' + (design.tools.fill === f.id ? '.on' : ''), {
+        onclick: () => setVal(f.id),
+      }, `${f.emoji} ${tName('filling', f.id, f.name)}`));
+    }
+  } else if (tool.kind === 'dust'){
+    for (const d of DUSTS){
+      opts.append(el('button.chip' + (design.tools.dust === d.id ? '.on' : ''), {
+        onclick: () => setVal(d.id),
+      }, `${d.emoji} ${tName('dust', d.id, d.name)}`));
+    }
+  } else if (tool.kind === 'level'){
+    [1, 2, 3].forEach(lv => {
+      opts.append(el('button.chip' + (design.tools.toast === lv ? '.on' : ''), {
+        onclick: () => setVal(lv),
+      }, ['', t('studio.toastLight'), t('studio.toastMed'), t('studio.toastDark')][lv]));
+    });
+  } else if (tool.kind === 'dip'){
+    const cur = design.tools.dip || { color:'brown', depth:.45 };
+    for (const c of COLORS){
+      if (!colorUnlocked(c.id)) continue;
+      opts.append(colorDot(c, design.tools.dip?.color === c.id,
+        () => setVal({ ...cur, color:c.id })));
+    }
+    opts.append(el('span', { style:{ width:'6px', flex:'0 0 auto' } }));
+    [[.28, t('studio.dipTip')], [.45, t('studio.dipHalf')], [.72, t('studio.dipDeep')]].forEach(([d, label]) => {
+      opts.append(el('button.chip' + (Math.abs((design.tools.dip?.depth ?? -1) - d) < .01 ? '.on' : ''), {
+        onclick: () => setVal({ ...cur, depth:d }),
+      }, label));
+    });
+  } else { // 'color' — marble and swirl
+    for (const c of COLORS){
+      if (!colorUnlocked(c.id)) continue;
+      opts.append(colorDot(c, design.tools[toolSel] === c.id, () => setVal(c.id)));
+    }
+  }
+  host.append(opts);
+  host.append(el('p.tiny.muted', { style:{ marginTop:'6px', textAlign:'center' } },
+    tDesc('tool', tool.id, tool.desc)));
+}
+
+function colorDot(c, on, onclick){
+  return el('button', {
+    style:{
+      flex:'0 0 auto', width:'32px', height:'32px', borderRadius:'11px',
+      background: swatchCss(c),
+      boxShadow: on ? '0 0 0 3px #f95f97' : '0 2px 5px rgba(180,110,150,.25)',
+    },
+    onclick,
+  });
+}
+
+function defaultToolValue(id){
+  switch (id){
+    case 'fill':   return 'pistachio';
+    case 'dust':   return 'sugar';
+    case 'toast':  return 2;
+    case 'dip':    return { color:'brown', depth:.45 };
+    case 'marble': return 'white';
+    case 'swirl':  return 'white';
+    default:       return null;
   }
 }
 

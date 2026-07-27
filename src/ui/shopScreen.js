@@ -20,6 +20,8 @@ import { getLocation } from '../data/upgrades.js';
 import { activeEvent } from '../data/events.js';
 import { getCandy } from '../data/candies.js';
 import { checkMissions } from './missions.js';
+import { maybeStaffEvent } from '../game/staffEvents.js';
+import { showPendingStaffEvent } from './staffEventUi.js';
 import { go } from './nav.js';
 import { t, tName, tDesc, tLines, onLangChange } from '../core/i18n.js';
 
@@ -437,11 +439,18 @@ function showResult({ res, result, pay, customer, order }){
     }, close:false },
   ];
 
+  // an employee may have got up to something while you were serving
+  const incident = maybeStaffEvent();
+  const withIncident = next => () => {
+    if (incident) setTimeout(() => showPendingStaffEvent(next), 260);
+    else next();
+  };
+
   if (mode){
-    actions.push({ label:t('mode.next'), cls:'mint', onClick: nextModeCustomer });
-    actions.push({ label:t('mode.end'), cls:'ghost', onClick: endModeRun });
+    actions.push({ label:t('mode.next'), cls:'mint', onClick: withIncident(nextModeCustomer) });
+    actions.push({ label:t('mode.end'), cls:'ghost', onClick: withIncident(endModeRun) });
   } else {
-    actions.push({ label:t('res.next'), cls:'mint', onClick: () => go('shop') });
+    actions.push({ label:t('res.next'), cls:'mint', onClick: withIncident(() => go('shop')) });
   }
 
   openModal({

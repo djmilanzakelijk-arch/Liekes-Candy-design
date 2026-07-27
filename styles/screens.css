@@ -666,3 +666,18 @@
   display:inline-block;margin-top:6px;padding:3px 10px;border-radius:var(--r-pill);
   background:rgba(0,0,0,.24);font-size:11px;font-weight:900;
 }
+
+/* staff: two stacked action buttons + morale */
+.staff-buttons{
+  flex:0 0 auto;display:flex;flex-direction:column;gap:5px;align-items:stretch;
+}
+.staff-buttons .staff-action{min-width:78px}
+.staff-action.raise{
+  background:linear-gradient(180deg,var(--gold-1),var(--gold-2));color:#6a4708;
+  box-shadow:0 3px 0 var(--gold-3);
+}
+.staff-action.raise.cant{filter:grayscale(.6) opacity(.6)}
+.staff-action.maxed{
+  background:var(--mint-100);color:#0d5943;border:1.5px solid var(--mint-300);
+  font-size:10.5px;
+}

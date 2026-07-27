@@ -15,8 +15,12 @@ import { toast, confetti, sparkleBurst } from '../core/fx.js';
 import { openModal, confirmModal } from './modal.js';
 import {
   makeEmployee, employeeStars, rollTier, legendChance, LEGEND_WINDOW,
-  TIERS, TRAITS, REROLL_COST,
+  TIERS, TRAITS, REROLL_COST, moraleOf, moraleTone,
 } from '../data/staff.js';
+import {
+  raiseCost, raiseLevel, MAX_RAISES, giveRaise, maybeStaffEvent,
+} from '../game/staffEvents.js';
+import { showPendingStaffEvent } from './staffEventUi.js';
 import { UPG_BY_ID } from '../data/upgrades.js';
 import { go, subHeader } from './nav.js';
 import { t, tName } from '../core/i18n.js';
@@ -135,6 +139,9 @@ export function mountStaff(host){
 
   host.append(wrap);
 
+  // an unanswered incident is waiting — deal with it first
+  if (S.staff?.pending) setTimeout(() => showPendingStaffEvent(() => go('staff')), 260);
+
   /* live countdown for the legendary applicant */
   clearInterval(tickTimer);
   tickTimer = setInterval(() => {
@@ -164,6 +171,7 @@ function employeeRow(emp, action){
         emp.expires ? el('span.staff-tier', { style:{ background:'#ffe9a8', color:'#8a5c05' } }, '⏳') : null),
       el('div.stars', ...Array.from({ length:5 }, (_, i) =>
         el('span.s' + (i < stars ? '.on' : ''), '⭐'))),
+      action === 'fire' ? moraleBar(emp) : null,
       el('div.staff-stats',
         el('span.staff-stat', `🪙 ${emp.idle}/u`),
         el('span.staff-stat', `💰 +${Math.round(emp.tip * 100)}%`),
@@ -173,7 +181,14 @@ function employeeRow(emp, action){
       ),
     ),
     action === 'fire'
-      ? el('button.staff-action.fire', { onclick: () => askFire(emp) }, t('staff.fire'))
+      ? el('div.staff-buttons',
+          raiseLevel(emp) < MAX_RAISES
+            ? el('button.staff-action.raise' + (canAfford(raiseCost(emp)) ? '' : '.cant'), {
+                onclick: () => askRaise(emp),
+              }, '💰 ' + fmt(raiseCost(emp)))
+            : el('div.staff-action.maxed', t('staff.raiseMax')),
+          el('button.staff-action.fire', { onclick: () => askFire(emp) }, t('staff.fire')),
+        )
       : el('button.staff-action.hire' + (affordable && !full ? '' : '.cant'), {
           onclick: () => askHire(emp, full, affordable),
         }, '🪙 ' + fmt(emp.fee)),
@@ -206,6 +221,39 @@ function askHire(emp, full, affordable){
       sfx('unlock'); haptic([12, 30, 12]);
       confetti(emp.tier === 'legend' ? 60 : 26);
       toast(t('staff.hired', { name: emp.name }), 'good', '🎉');
+      go('staff');
+    },
+  });
+}
+
+function moraleBar(emp){
+  const m = moraleOf(emp);
+  const cls = m >= 65 ? '.mint' : m >= 40 ? '.gold' : '';
+  return el('div', { style:{ margin:'5px 0 2px' } },
+    el('div.tiny', { style:{ color:'var(--ink-faint)', fontWeight:'800', marginBottom:'2px' } },
+      `${t('staff.morale')}: ${t('morale.' + moraleTone(m))}`),
+    el('div.bar' + cls, { style:{ height:'7px' } }, el('i', { style:{ width:m + '%' } })),
+  );
+}
+
+function askRaise(emp){
+  const cost = raiseCost(emp);
+  if (!canAfford(cost)){
+    sfx('error');
+    return toast(t('staff.cantAfford'), 'bad', '💸');
+  }
+  confirmModal({
+    icon:'💰',
+    title:t('staff.raiseTitle', { name: emp.name }),
+    sub:t('staff.raiseSub', { n: fmt(cost) }),
+    yes:t('staff.raiseYes'),
+    onYes: () => {
+      if (!spend(cost)) return;
+      giveRaise(emp);
+      save();
+      sfx('coin'); haptic([10, 25, 10]);
+      confetti(20);
+      toast(t('staff.raiseDone', { name: emp.name }), 'good', '💰');
       go('staff');
     },
   });

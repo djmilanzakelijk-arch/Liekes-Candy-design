@@ -33,7 +33,7 @@ export function mountMore(host){
     tile('🎁', t('more.daily'), daily.available ? t('more.dailyClaim') : t('more.dailyStreak', { n: S.daily.streak }),
          () => go('daily'), daily.available ? 1 : 0),
     tile('🧑‍🍳', t('more.staff'), t('more.staffSub', { a: (S.staff?.roster || []).length, b: staffSlots() }),
-         () => go('staff'), legendWaiting() ? 1 : 0),
+         () => go('staff'), staffBadge()),
     tile('📸', t('more.photos'), t('more.photosSub', { n: S.photos.length }), () => go('photos')),
     tile('🏅', t('more.leaderboard'), t('more.leaderboardSub'), () => go('leaderboard')),
     tile('🎉', t('more.events'),
@@ -64,6 +64,11 @@ export function mountMore(host){
 /** A legendary applicant waiting in the wings earns a badge on the tile. */
 function legendWaiting(){
   return (S.staff?.applicants || []).some(a => a.tier === 'legend' && a.expires > Date.now());
+}
+
+/** Badge count for the staff tile: pending incident + legendary applicant. */
+function staffBadge(){
+  return (S.staff?.pending ? 1 : 0) + (legendWaiting() ? 1 : 0);
 }
 
 function tile(ico, name, sub, onclick, badge = 0){

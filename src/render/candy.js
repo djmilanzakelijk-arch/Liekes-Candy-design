@@ -13,6 +13,8 @@ import { U, alpha, mix, roundRect, heartPath, gloss, specular, domeFill, linearF
 import { getCandy } from '../data/candies.js';
 import { getDeco, getPack } from '../data/decorations.js';
 import { getColor } from '../data/palette.js';
+import { pruneTools } from '../data/tools.js';
+import { applyTools } from './tools.js';
 import { TAU, rngFrom } from '../core/utils.js';
 
 /* ══════════════ packaging ══════════════ */
@@ -236,6 +238,52 @@ function drawText(ctx, text, colorId){
  * @param design  design object
  * @param t       time in seconds, drives animated decorations
  */
+/* ══════════════ cached candy base ══════════════
+   The base (candy + tools) never animates, so it is rendered once per
+   configuration and reused every frame. Without this, the tool effects
+   would repaint several full-size canvases 60 times a second. */
+const baseCache = new Map();
+const BASE_CACHE_MAX = 6;
+
+function baseSignature(design, size){
+  return [
+    size, design.candy, design.color, design.flavor,
+    JSON.stringify(design.tools || {}),
+  ].join('|');
+}
+
+/** Offscreen canvas holding just the candy with its tool effects applied. */
+export function renderCandyBase(size, design){
+  const sig = baseSignature(design, size);
+  const hit = baseCache.get(sig);
+  if (hit){
+    // refresh LRU position
+    baseCache.delete(sig); baseCache.set(sig, hit);
+    return hit;
+  }
+
+  const candy = getCandy(design.candy);
+  const cv = document.createElement('canvas');
+  cv.width = size; cv.height = size;
+  const c2 = cv.getContext('2d');
+  c2.save();
+  c2.scale(size / U, size / U);
+  drawCandyBase(c2, candy.art, { color: design.color, flavor: design.flavor, t: 0 });
+  c2.restore();
+
+  const tools = pruneTools(design.tools, design.candy);
+  if (Object.keys(tools).length) applyTools(cv, size, tools, design, candy.zone);
+
+  baseCache.set(sig, cv);
+  while (baseCache.size > BASE_CACHE_MAX){
+    baseCache.delete(baseCache.keys().next().value);
+  }
+  return cv;
+}
+
+/** Drop cached bases — call after a language/theme change or on reset. */
+export function clearBaseCache(){ baseCache.clear(); }
+
 export function drawDesign(ctx, size, design, t = 0, { clear = true, background = null } = {}){
   const candy = getCandy(design.candy);
   ctx.save();
@@ -244,13 +292,17 @@ export function drawDesign(ctx, size, design, t = 0, { clear = true, background 
     ctx.fillStyle = background;
     ctx.fillRect(0, 0, size, size);
   }
-  const s = size / U;
-  ctx.scale(s, s);
 
   const pack = getPack(design.pack);
+  ctx.save();
+  ctx.scale(size / U, size / U);
   packBack(ctx, pack.art, design.color);
+  ctx.restore();
 
-  drawCandyBase(ctx, candy.art, { color: design.color, flavor: design.flavor, t });
+  ctx.drawImage(renderCandyBase(size, design), 0, 0);
+
+  const s = size / U;
+  ctx.scale(s, s);
 
   const items = [...(design.items || [])].sort(
     (a, b) => (getDeco(a.id)?.layer ?? 4) - (getDeco(b.id)?.layer ?? 4)
