@@ -6,7 +6,7 @@
    of whatever candy is underneath — no per-candy code needed.
    ============================================================ */
 
-import { U, alpha, mix, roundRect, gloss, specular } from './shade.js';
+import { U, alpha, mix, roundRect, gloss, specular, domeFill } from './shade.js';
 import { getColor } from '../data/palette.js';
 import { FILL_BY_ID, DUST_BY_ID } from '../data/tools.js';
 import { TAU, rngFrom, clamp } from '../core/utils.js';
@@ -406,5 +406,140 @@ function applyToastPreview(ctx, cx, cy, r, lv){
     ctx.fillStyle = g;
     ctx.beginPath(); ctx.arc(x, y, rr, 0, TAU); ctx.fill();
   }
+  ctx.restore();
+}
+
+/* ══════════════ PIPED CREAM STROKES ══════════════
+   A stroke the player dragged with the piping bag. Drawn as a rope of
+   overlapping scallops so it reads as cream squeezed from a star tip,
+   rather than a flat line. */
+
+/** Distance below which two points are treated as the same. */
+const MIN_STEP = 14;
+
+/**
+ * Resample a raw pointer path to evenly spaced points along its length.
+ * Walks each segment with a parameter that only ever moves forward, so the
+ * loop is guaranteed to terminate however jittery the input is.
+ */
+function resample(points, step){
+  if (points.length < 2) return points.slice();
+  const s = Math.max(step, 0.5);
+  const out = [points[0]];
+  let carry = 0;
+
+  for (let i = 1; i < points.length && out.length < 400; i++){
+    const a = points[i - 1], b = points[i];
+    const dx = b.x - a.x, dy = b.y - a.y;
+    const d = Math.hypot(dx, dy);
+    if (d < 1e-6) continue;
+
+    let f = 0;                        // 0 → 1 along this segment
+    while (carry + (1 - f) * d >= s && out.length < 400){
+      f += (s - carry) / d;
+      out.push({ x: a.x + dx * f, y: a.y + dy * f });
+      carry = 0;
+    }
+    carry += (1 - f) * d;
+  }
+
+  if (out.length < 2) out.push(points[points.length - 1]);
+  return out;
+}
+
+/**
+ * @param stroke { color, width, points:[{x,y}] } in 0..1 design space
+ */
+export function drawPipedStroke(ctx, stroke, t = 0){
+  const pts = (stroke.points || []).map(p => ({ x:p.x * U, y:p.y * U }));
+  if (!pts.length) return;
+
+  const c = getColor(stroke.color || 'white');
+  const w = (stroke.width || 1) * 44;
+
+  ctx.save();
+  ctx.lineJoin = 'round';
+  ctx.lineCap = 'round';
+
+  const path = () => {
+    ctx.beginPath();
+    ctx.moveTo(pts[0].x, pts[0].y);
+    if (pts.length === 1){ ctx.lineTo(pts[0].x + .01, pts[0].y); return; }
+    // smooth the finger path through the midpoints of each pair
+    for (let i = 1; i < pts.length - 1; i++){
+      const mx = (pts[i].x + pts[i + 1].x) / 2;
+      const my = (pts[i].y + pts[i + 1].y) / 2;
+      ctx.quadraticCurveTo(pts[i].x, pts[i].y, mx, my);
+    }
+    ctx.lineTo(pts[pts.length - 1].x, pts[pts.length - 1].y);
+  };
+
+  // contact shadow so the rope sits on the candy rather than floating
+  ctx.save();
+  ctx.translate(w * .08, w * .13);
+  ctx.strokeStyle = 'rgba(110,65,100,.22)';
+  ctx.lineWidth = w;
+  path(); ctx.stroke();
+  ctx.restore();
+
+  // the rope body
+  ctx.strokeStyle = c.base;
+  ctx.lineWidth = w;
+  path(); ctx.stroke();
+
+  // Ridges: overlapping domes along the path. Drawing the rope as beads
+  // rather than more offset strokes is what makes it read as squeezed
+  // cream — and it survives the stroke crossing over itself.
+  const beads = resample(pts, Math.max(6, w * .34));
+  for (const p of beads){
+    const g = ctx.createRadialGradient(
+      p.x - w * .18, p.y - w * .22, w * .03,
+      p.x, p.y, w * .50);
+    g.addColorStop(0, mix(c.light, '#ffffff', .85));
+    g.addColorStop(.42, mix(c.light, '#ffffff', .25));
+    g.addColorStop(.82, c.base);
+    g.addColorStop(1, alpha(c.dark, .30));
+    ctx.fillStyle = g;
+    ctx.beginPath();
+    ctx.arc(p.x, p.y, w * .50, 0, TAU);
+    ctx.fill();
+  }
+
+  // tiny catch-lights along the crest
+  ctx.fillStyle = alpha('#ffffff', .55);
+  for (let i = 0; i < beads.length; i += 2){
+    const p = beads[i];
+    ctx.beginPath();
+    ctx.arc(p.x - w * .17, p.y - w * .21, w * .09, 0, TAU);
+    ctx.fill();
+  }
+
+  // a fatter dollop where the bag first touched down
+  const first = pts[0];
+  ctx.fillStyle = domeFill(ctx, stroke.color || 'white', first.x, first.y, w * .6);
+  ctx.beginPath(); ctx.arc(first.x, first.y, w * .58, 0, TAU); ctx.fill();
+  specular(ctx, first.x - w * .22, first.y - w * .26, w * .16, .9);
+
+  // and a soft peak where it lifted off
+  if (pts.length > 1){
+    const last = pts[pts.length - 1];
+    const prev = pts[pts.length - 2];
+    const a = Math.atan2(last.y - prev.y, last.x - prev.x);
+    ctx.save();
+    ctx.translate(last.x, last.y);
+    ctx.rotate(a);
+    ctx.beginPath();
+    ctx.moveTo(-w * .1, -w * .46);
+    ctx.quadraticCurveTo(w * .52, -w * .22, w * .66, 0);
+    ctx.quadraticCurveTo(w * .52, w * .22, -w * .1, w * .46);
+    ctx.closePath();
+    const g = ctx.createLinearGradient(0, -w * .5, 0, w * .5);
+    g.addColorStop(0, mix(c.light, '#ffffff', .7));
+    g.addColorStop(.55, c.light);
+    g.addColorStop(1, c.base);
+    ctx.fillStyle = g; ctx.fill();
+    ctx.restore();
+  }
+
   ctx.restore();
 }

@@ -63,7 +63,14 @@ export function grade(design, order, { timeLeft = 0, timeTotal = 1 } = {}){
   if (wantTools.length){
     let sum = 0;
     for (const [id, want] of wantTools){
-      const got = (design.tools || {})[id];
+      let got = (design.tools || {})[id];
+      // the cream whipper is painted on rather than switched on: any piped
+      // stroke of the requested colour counts as using it
+      if (id === 'swirl'){
+        const strokes = design.strokes || [];
+        got = strokes.some(k => k.color === want) ? want
+            : strokes.length ? strokes[0].color : null;
+      }
       let s = 0;
       if (got != null){
         if (id === 'dip'){

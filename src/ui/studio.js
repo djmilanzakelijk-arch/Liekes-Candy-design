@@ -7,7 +7,7 @@ import { S, bonuses, ownsDeco, ownsPack, colorUnlocked, flavorUnlocked, bump, sp
 import { sfx, haptic, duck } from '../core/audio.js';
 import { toast, sparkleBurst } from '../core/fx.js';
 import { openModal, confirmModal } from './modal.js';
-import { drawDesign, drawItem, drawDecoThumb, drawPackThumb, drawCandyThumb, itemRadius } from '../render/candy.js';
+import { drawDesign, drawItem, drawDecoThumb, drawPackThumb, drawCandyThumb, itemRadius, STUDIO_ZOOM } from '../render/candy.js';
 import { CANDIES, getCandy } from '../data/candies.js';
 import { DECORATIONS, DECO_CATS, getDeco, PACKAGING, getPack } from '../data/decorations.js';
 import { COLORS, FLAVORS, getColor, COLOR_UNLOCK, RARITY } from '../data/palette.js';
@@ -25,6 +25,9 @@ let history = [];
 let onDoneCb = null;
 let tabId = 'candy';
 let toolSel = 'fill';
+let pipeColor = 'white';
+let pipeWidth = 1;
+let piping = null;      // the stroke currently being drawn
 let selToolsEl = null;
 let toolThumbs = [];
 
@@ -59,6 +62,7 @@ export function openStudio(opts){
     text: '',
     items: [],
     tools: {},
+    strokes: [],
   };
   accent = design.color;
 
@@ -426,14 +430,17 @@ function renderToolsTray(host){
   /* row 1 — which tool */
   const row = el('div', { style:{ display:'flex', gap:'9px', overflowX:'auto', paddingBottom:'6px' } });
   for (const tool of avail){
-    const on = design.tools[tool.id] != null;
+    const on = tool.id === 'swirl'
+      ? (design.strokes || []).length > 0
+      : design.tools[tool.id] != null;
     const btn = el('button.tool' + (toolSel === tool.id ? '.on' : ''), {
       onclick: () => { toolSel = tool.id; sfx('tap'); renderTray(); },
     });
     const cv = el('canvas', { width:88, height:88 });
     btn.append(cv, el('b', tName('tool', tool.id, tool.name)));
     drawToolPreview(cv.getContext('2d'), 88, tool.id,
-      design.tools[tool.id] ?? defaultToolValue(tool.id), design.color);
+      tool.id === 'swirl' ? pipeColor
+        : (design.tools[tool.id] ?? defaultToolValue(tool.id)), design.color);
     if (on) btn.append(el('span.t-anim', '✓'));
     row.append(btn);
   }
@@ -442,6 +449,40 @@ function renderToolsTray(host){
   /* row 2 — options for the selected tool */
   const tool = TOOL_BY_ID[toolSel];
   const opts = el('div', { style:{ display:'flex', gap:'7px', overflowX:'auto', alignItems:'center' } });
+
+  if (toolSel === 'swirl'){
+    // the whipper is a brush, not a switch: pick a colour and a nozzle,
+    // then drag across the candy
+    opts.append(el('button.chip', {
+      onclick: () => {
+        if (!(design.strokes || []).length) return;
+        pushHistory();
+        design.strokes = [];
+        sfx('remove'); haptic(14);
+        renderTray();
+      },
+    }, t('studio.wipeCream')));
+
+    for (const c of COLORS){
+      if (!colorUnlocked(c.id)) continue;
+      opts.append(colorDot(c, pipeColor === c.id, () => {
+        pipeColor = c.id; sfx('tap'); renderTray();
+      }));
+    }
+    opts.append(el('span', { style:{ width:'6px', flex:'0 0 auto' } }));
+    [[.72, t('studio.nozzleS')], [1, t('studio.nozzleM')], [1.4, t('studio.nozzleL')]]
+      .forEach(([w, label]) => {
+        opts.append(el('button.chip' + (pipeWidth === w ? '.on' : ''), {
+          onclick: () => { pipeWidth = w; sfx('tap'); renderTray(); },
+        }, label));
+      });
+
+    host.append(opts);
+    host.append(el('p.tiny', { style:{
+      marginTop:'6px', textAlign:'center', fontWeight:'800', color:'var(--pink-600)',
+    }}, t('studio.pipeHint')));
+    return;
+  }
 
   const clearBtn = el('button.chip' + (design.tools[toolSel] == null ? '.on' : ''), {
     onclick: () => { pushHistory(); delete design.tools[toolSel]; sfx('remove'); renderTray(); },
@@ -605,17 +646,19 @@ function render(t){
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   // the stage is square-ish; centre the 1:1 design inside it
-  const side = Math.min(canvas.width, canvas.height);
-  const ox = (canvas.width - side) / 2, oy = (canvas.height - side) / 2;
+  const box = Math.min(canvas.width, canvas.height);
+  const ox = (canvas.width - box) / 2, oy = (canvas.height - box) / 2;
   ctx.save();
   ctx.translate(ox, oy);
-  drawDesign(ctx, side, design, t, { clear:false });
+  drawDesign(ctx, box, design, t, { clear:false, zoom: STUDIO_ZOOM });
 
-  // selection ring
+  // selection ring — lives in the same zoomed square as the design
+  const side = box * STUDIO_ZOOM;
+  const inset = (box - side) / 2;
   if (selected){
     const r = side * itemRadius(selected) * 1.15;
     ctx.save();
-    ctx.translate(selected.x * side, selected.y * side);
+    ctx.translate(inset + selected.x * side, inset + selected.y * side);
     ctx.strokeStyle = 'rgba(249,95,151,.95)';
     ctx.lineWidth = Math.max(2, side * .008);
     ctx.setLineDash([side * .03, side * .022]);
@@ -629,7 +672,9 @@ function render(t){
 /* map client coords → normalised design coords */
 function toDesign(clientX, clientY){
   const r = canvas.getBoundingClientRect();
-  const side = Math.min(r.width, r.height);
+  // must mirror drawDesign: the design square is scaled by STUDIO_ZOOM
+  // and centred, so touches map back through the same factor
+  const side = Math.min(r.width, r.height) * STUDIO_ZOOM;
   const ox = r.left + (r.width - side) / 2;
   const oy = r.top + (r.height - side) / 2;
   return { x: (clientX - ox) / side, y: (clientY - oy) / side };
@@ -728,8 +773,14 @@ function placeItem(deco, x, y, clientX, clientY){
 }
 
 function onStageDown(e){
-  if (dragging) return;
+  if (dragging || piping) return;
   const p = toDesign(e.clientX, e.clientY);
+
+  // piping bag selected: drag to squeeze out a rope of cream
+  if (pipeActive()){
+    startPiping(p, e);
+    return;
+  }
 
   // hit-test existing items, topmost first
   const r = canvas.getBoundingClientRect();
@@ -758,6 +809,69 @@ function onStageDown(e){
 
   selected = null;
   hideSelTools();
+}
+
+/* ══════════════════════════════════════════════════════
+   Piping bag — drag across the candy to squeeze out cream
+   ══════════════════════════════════════════════════════ */
+
+/** True while the Cream Whipper tab is open with a colour armed. */
+function pipeActive(){
+  return tabId === 'tools' && toolSel === 'swirl'
+      && toolsForCandy(design.candy).some(x => x.id === 'swirl');
+}
+
+/** Points closer together than this are dropped, in design units. */
+const PIPE_MIN_STEP = 0.012;
+
+function startPiping(p, e){
+  if (!design.strokes) design.strokes = [];
+  if (design.strokes.length >= 24){
+    sfx('error');
+    toast(t('studio.tooMuchCream'), 'warn', '🍦');
+    return;
+  }
+  pushHistory();
+  piping = {
+    color: pipeColor,
+    width: pipeWidth,
+    points: [{ x: clamp(p.x, 0, 1), y: clamp(p.y, 0, 1) }],
+  };
+  design.strokes.push(piping);
+  selected = null;
+  hideSelTools();
+  hideHint();
+  sfx('pour');
+  haptic(8);
+  try { canvas.setPointerCapture(e.pointerId); } catch {}
+  document.addEventListener('pointermove', onPipeMove, { passive:false });
+  document.addEventListener('pointerup', onPipeEnd);
+  document.addEventListener('pointercancel', onPipeEnd);
+}
+
+function onPipeMove(e){
+  if (!piping) return;
+  e.preventDefault();
+  const p = toDesign(e.clientX, e.clientY);
+  const last = piping.points[piping.points.length - 1];
+  if (dist(p.x, p.y, last.x, last.y) < PIPE_MIN_STEP) return;
+  piping.points.push({ x: clamp(p.x, -.05, 1.05), y: clamp(p.y, -.05, 1.05) });
+  // a little squeeze of sound and buzz every few beads
+  if (piping.points.length % 5 === 0){ sfx('pour'); haptic(4); }
+}
+
+function onPipeEnd(){
+  document.removeEventListener('pointermove', onPipeMove);
+  document.removeEventListener('pointerup', onPipeEnd);
+  document.removeEventListener('pointercancel', onPipeEnd);
+  if (!piping) return;
+  // a single tap leaves one rosette rather than nothing at all
+  const done = piping;
+  piping = null;
+  sfx('place');
+  haptic(12);
+  bump('decosPlaced');
+  renderTray();       // refresh the ✓ on the tool button
 }
 
 /* ── floating tools for the selected item ────────────── */
@@ -812,7 +926,7 @@ function clearAll(){
     icon:'🧹', title:t('studio.clearTitle'), sub:t('studio.clearSub'),
     yes:t('studio.clearYes'), onYes: () => {
       pushHistory();
-      design.items = []; design.text = '';
+      design.items = []; design.text = ''; design.strokes = [];
       selected = null; hideSelTools(); sfx('whoosh');
       renderTray();
     },

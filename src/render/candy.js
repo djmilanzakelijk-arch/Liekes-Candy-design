@@ -14,7 +14,7 @@ import { getCandy } from '../data/candies.js';
 import { getDeco, getPack } from '../data/decorations.js';
 import { getColor } from '../data/palette.js';
 import { pruneTools } from '../data/tools.js';
-import { applyTools } from './tools.js';
+import { applyTools, drawPipedStroke } from './tools.js';
 import { TAU, rngFrom } from '../core/utils.js';
 
 /* ══════════════ packaging ══════════════ */
@@ -284,8 +284,17 @@ export function renderCandyBase(size, design){
 /** Drop cached bases — call after a language/theme change or on reset. */
 export function clearBaseCache(){ baseCache.clear(); }
 
-export function drawDesign(ctx, size, design, t = 0, { clear = true, background = null } = {}){
-  const candy = getCandy(design.candy);
+/**
+ * How much bigger than its box the candy is drawn in the studio.
+ * The art leaves a margin inside the 1000-unit space, so without this
+ * the candy reads as small even when the stage fills the screen.
+ * The studio applies the same factor when mapping touches back to
+ * design coordinates, so dragging stays pixel-accurate.
+ */
+export const STUDIO_ZOOM = 1.22;
+
+export function drawDesign(ctx, size, design, t = 0,
+                           { clear = true, background = null, zoom = 1 } = {}){
   ctx.save();
   if (clear) ctx.clearRect(0, 0, size, size);
   if (background){
@@ -293,16 +302,27 @@ export function drawDesign(ctx, size, design, t = 0, { clear = true, background 
     ctx.fillRect(0, 0, size, size);
   }
 
+  // The whole design lives in a square of `px` pixels centred in the canvas.
+  // Rendering the cached base at that exact size keeps it pin sharp instead
+  // of upscaling a smaller bitmap.
+  const px = Math.round(size * zoom);
+  const off = (size - px) / 2;
   const pack = getPack(design.pack);
-  ctx.save();
-  ctx.scale(size / U, size / U);
+
+  ctx.translate(off, off);
+  ctx.scale(px / U, px / U);
+
   packBack(ctx, pack.art, design.color);
+
+  // drawImage obeys the current transform, so undo the unit scale for it
+  ctx.save();
+  ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.translate(off, off);
+  ctx.drawImage(renderCandyBase(px, design), 0, 0);
   ctx.restore();
 
-  ctx.drawImage(renderCandyBase(size, design), 0, 0);
-
-  const s = size / U;
-  ctx.scale(s, s);
+  // piped cream sits on the candy, under the charms and stickers
+  for (const stroke of design.strokes || []) drawPipedStroke(ctx, stroke, t);
 
   const items = [...(design.items || [])].sort(
     (a, b) => (getDeco(a.id)?.layer ?? 4) - (getDeco(b.id)?.layer ?? 4)
