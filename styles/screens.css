@@ -238,13 +238,19 @@
 .tray-body{
   display:flex;gap:9px;overflow-x:auto;padding:3px 10px 4px;min-height:78px;
   scrollbar-width:none;align-items:flex-start;
+  touch-action:pan-x;overscroll-behavior-x:contain;
+  -webkit-overflow-scrolling:touch;scroll-snap-type:none;
 }
 .tray-body::-webkit-scrollbar{display:none}
 .tool{
   flex:0 0 auto;width:64px;border-radius:var(--r-md);padding:6px 4px 5px;text-align:center;
   background:linear-gradient(180deg,#fff,var(--rar-a,#f7f9fc));
   border:1.5px solid var(--rar-b,var(--line));box-shadow:var(--sh-1);
-  transition:transform .12s;position:relative;touch-action:none;
+  transition:transform .12s;position:relative;
+  /* pan-x lets the browser scroll the row sideways while a vertical drag
+     still reaches our own handlers. `none` here made the tray unscrollable,
+     because a finger almost always lands on a tool rather than a gap. */
+  touch-action:pan-x;
 }
 .tool:active{transform:scale(.92)}
 .tool.on{box-shadow:0 0 0 2.5px var(--pink-400),var(--sh-2)}

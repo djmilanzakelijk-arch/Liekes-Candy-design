@@ -10,7 +10,7 @@
    update handed them.
    ============================================================ */
 
-export const BUILD = '2026-07-27.4';
+export const BUILD = '2026-07-27.5';
 
 /** Content revision. Raising this re-checks everything level-gated. */
 export const CONTENT_REV = 4;

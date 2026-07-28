@@ -720,6 +720,7 @@ function toDesign(clientX, clientY){
    ══════════════════════════════════════════════════════ */
 let dragging = null;   // { mode:'new'|'move', deco, item, ghost, pointerId }
 let suppressClick = false;   // a real drag must not also fire the tool's click
+let pendingDrag = null;      // touch is down on a tray item, direction unknown
 
 /** Fingers wobble; below this many pixels it is still a tap. */
 const DRAG_SLOP = 7;
@@ -733,6 +734,7 @@ function resetGestures(){
   if (dragging?.ghost) dragging.ghost.remove();
   dragging = null;
   piping = null;
+  endPending();
   stageEl?.classList.remove('dropping');
   document.removeEventListener('pointermove', onDragMove);
   document.removeEventListener('pointerup', onDragEnd);
@@ -742,11 +744,51 @@ function resetGestures(){
   document.removeEventListener('pointercancel', onPipeEnd);
 }
 
+/**
+ * Pointer went down on a tray item. We do NOT start dragging yet: the row
+ * scrolls sideways, so a horizontal swipe has to reach the browser. Only a
+ * clearly vertical move becomes a drag.
+ */
 function startToolDrag(e, deco){
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   if (dragging || piping) resetGestures();
-  e.preventDefault();
 
+  pendingDrag = {
+    deco, pointerId: e.pointerId,
+    x0: e.clientX, y0: e.clientY,
+    touch: e.pointerType === 'touch',
+  };
+  document.addEventListener('pointermove', onPendingMove, { passive:false });
+  document.addEventListener('pointerup', endPending);
+  document.addEventListener('pointercancel', endPending);
+}
+
+function onPendingMove(e){
+  if (!pendingDrag || e.pointerId !== pendingDrag.pointerId) return;
+  const dx = e.clientX - pendingDrag.x0;
+  const dy = e.clientY - pendingDrag.y0;
+  if (Math.hypot(dx, dy) < DRAG_SLOP) return;
+
+  // sideways on a touch screen means "scroll the row" — step aside
+  if (pendingDrag.touch && Math.abs(dx) > Math.abs(dy) * 1.1){
+    endPending();
+    return;
+  }
+
+  const deco = pendingDrag.deco;
+  endPending();
+  beginToolDrag(deco, e);
+}
+
+function endPending(){
+  pendingDrag = null;
+  document.removeEventListener('pointermove', onPendingMove);
+  document.removeEventListener('pointerup', endPending);
+  document.removeEventListener('pointercancel', endPending);
+}
+
+/** The finger committed to a drag: show the ghost and take over. */
+function beginToolDrag(deco, e){
   const ghost = el('div', { id:'dragGhost' });
   const cv = el('canvas', { width:132, height:132 });
   ghost.append(cv);
@@ -755,10 +797,11 @@ function startToolDrag(e, deco){
   moveGhost(ghost, e.clientX, e.clientY);
 
   dragging = {
-    mode:'new', deco, ghost, moved:false,
+    mode:'new', deco, ghost, moved:true,
     pointerId: e.pointerId, x0: e.clientX, y0: e.clientY,
   };
   sfx('pickup');
+  haptic(8);
   listenDrag();
 }
 
