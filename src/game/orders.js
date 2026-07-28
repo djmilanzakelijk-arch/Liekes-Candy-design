@@ -195,9 +195,12 @@ function describeEn(o){
   }).filter(Boolean);
 
   let s = `${qty}${colorWord} ${noun}`;
-  const tc = toolClauses(o);
-  if (tc.length) s += ' ' + listJoin(tc);
   if (decoBits.length) s += ` with ${listJoin(decoBits)}`;
+  // Tool clauses sit behind the decorations, each set off by a comma.
+  // Run together they read as one item — "dusted with matcha with drizzle"
+  // parses as a single "matcha drizzle" that does not exist.
+  const tc = toolClauses(o);
+  if (tc.length) s += ', ' + listJoin(tc);
   if (o.pack) s += `, in ${aOrAn(getPack(o.pack).name.toLowerCase())}`;
 
   const occ = OCCASIONS.find(x => x.id === o.occasion);
@@ -225,9 +228,12 @@ function describeNl(o){
   }).filter(Boolean);
 
   let s = `${qty}${colorWord} ${noun}`;
-  const tc = toolClauses(o);
-  if (tc.length) s += ' ' + listJoinNl(tc);
   if (decoBits.length) s += ` met ${listJoinNl(decoBits)}`;
+  // Gereedschapszinnen achter de versieringen, met een komma ertussen:
+  // "bestrooid met matcha met chocoladedruppels" leest anders als één
+  // product ("matcha chocoladedruppels") dat niet bestaat.
+  const tc = toolClauses(o);
+  if (tc.length) s += ', ' + listJoinNl(tc);
   if (o.pack) s += `, in een ${tName('pack', o.pack, getPack(o.pack).name).toLowerCase()}`;
 
   const occ = OCCASIONS.find(x => x.id === o.occasion);
@@ -237,6 +243,7 @@ function describeNl(o){
   return `${pick(p.openers)} ${s} — ${pick(p.closers)}`;
 }
 
+const cap = w => w.charAt(0).toUpperCase() + w.slice(1);
 const aOrAn = w => (/^[aeiou]/i.test(w) ? 'an ' : 'a ') + w;
 
 function listJoinNl(parts){
@@ -262,9 +269,11 @@ export function orderChecklist(o){
     const d = getDeco(w.id);
     rows.push({
       key:'deco:' + w.id,
+      // adjective form, so it reads "Witte sprinkels" not "Wit Sprinkels"
       label:(w.count > 1 ? w.count + '× ' : '')
-           + (w.color ? tName('color', w.color, getColor(w.color).name) + ' ' : '')
-           + tName('deco', w.id, d.name),
+           + (w.color ? cap(tName('colorAdj', w.color, getColor(w.color).name)) + ' '
+                        + tName('deco', w.id, d.name).toLowerCase()
+                      : tName('deco', w.id, d.name)),
       icon:'✨',
     });
   }

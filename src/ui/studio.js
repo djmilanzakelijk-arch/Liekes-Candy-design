@@ -943,13 +943,30 @@ function showChecklist(){
   const o = session.customer.order;
   const list = el('div', { style:{ display:'flex', flexDirection:'column', gap:'7px' } });
   for (const row of o.checklist){
+    // point at the tray tab that holds this, so nothing looks unobtainable
+    const where = row.key.startsWith('tool:') ? t('studio.tab.tools')
+                : row.key.startsWith('deco:')  ? tName('cat', getDeco(row.key.slice(5))?.cat,
+                                                   getDeco(row.key.slice(5))?.cat)
+                : row.key === 'pack'  ? t('studio.tab.pack')
+                : row.key === 'color' ? t('studio.tab.color')
+                : row.key === 'candy' ? t('studio.tab.candy')
+                : row.key === 'text'  ? t('studio.tab.text') : null;
+
     list.append(el('div.row', { style:{
       padding:'9px 11px', borderRadius:'14px', background:'var(--surface-2)',
       border:'1.5px solid var(--line)',
     }},
       el('span', { style:{ fontSize:'17px' } }, row.icon),
-      el('span', { style:{ fontSize:'13px', fontWeight:'800' } }, row.label),
+      el('span', { style:{ fontSize:'13px', fontWeight:'800', flex:'1' } }, row.label),
+      where ? el('span', { style:{
+        fontSize:'10px', fontWeight:'800', color:'var(--ink-faint)',
+        whiteSpace:'nowrap', paddingLeft:'6px',
+      }}, where) : null,
     ));
+  }
+  if (Object.keys(o.tools || {}).length){
+    list.append(el('p.tiny.muted', { style:{ marginTop:'4px', textAlign:'center' } },
+      t('studio.toolsLive')));
   }
   openModal({
     icon: session.customer.face,
