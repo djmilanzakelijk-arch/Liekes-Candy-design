@@ -10,7 +10,7 @@ import { drawDecoThumb, drawPackThumb, drawCandyThumb } from '../render/candy.js
 import { CANDIES } from '../data/candies.js';
 import { DECORATIONS, PACKAGING, DECO_CATS } from '../data/decorations.js';
 import { RARITY, RARITY_ORDER } from '../data/palette.js';
-import { activeEvent } from '../data/events.js';
+import { activeEvent, eventRunning } from '../data/events.js';
 import { go } from './nav.js';
 import { t, tName, tDesc } from '../core/i18n.js';
 
@@ -88,7 +88,7 @@ function allEntries(){
       owned: S.owned.candies.includes(c.id), desc:c.desc, cat:'candy', unlock:c.unlock });
   }
   for (const d of DECORATIONS){
-    if (d.event && d.event !== ev?.id && !ownsDeco(d.id)) continue;
+    if (d.event && !eventRunning(d.event) && !ownsDeco(d.id)) continue;
     out.push({ kind:'deco', id:d.id, name:d.name, rarity:d.rarity, owned:ownsDeco(d.id),
       desc:d.desc, cat:d.cat, unlock:d.unlock, fixed:d.fixed, reward:d.reward });
   }

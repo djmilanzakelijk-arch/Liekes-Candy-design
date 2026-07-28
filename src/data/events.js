@@ -48,17 +48,42 @@ export const EVENTS = [
   },
 ];
 
-/** Returns the event running on `date`, or null. */
+/** Rough length of an event window in days, for picking between overlaps. */
+function windowDays(e){
+  const days = (m, d) => m * 31 + d;
+  const a = days(e.from[0], e.from[1]);
+  const b = days(e.to[0], e.to[1]);
+  return b >= a ? b - a : (12 * 31 - a) + b;
+}
+
+/**
+ * The event running on `date`, or null.
+ * Windows may overlap — Birthday Week sits inside the Summer Event — so the
+ * narrowest match wins, otherwise the short specific one could never run.
+ */
 export function activeEvent(date = new Date()){
+  const all = activeEvents(date);
+  if (!all.length) return null;
+  return all.reduce((a, b) => windowDays(b) < windowDays(a) ? b : a);
+}
+
+/**
+ * Every event running on `date`. Used to decide which exclusives are on
+ * sale, so an overlapping window never takes another event's items away.
+ */
+export function activeEvents(date = new Date()){
   const m = date.getMonth() + 1, d = date.getDate();
   const v = m * 100 + d;
-  for (const e of EVENTS){
+  return EVENTS.filter(e => {
     const a = e.from[0] * 100 + e.from[1];
     const b = e.to[0] * 100 + e.to[1];
-    if (a <= b ? (v >= a && v <= b) : (v >= a || v <= b)) return e;
-  }
-  return null;
+    return a <= b ? (v >= a && v <= b) : (v >= a || v <= b);
+  });
 }
+
+/** Is this event's shop open right now? */
+export const eventRunning = (id, date = new Date()) =>
+  !!id && activeEvents(date).some(e => e.id === id);
 
 export const EVENT_BY_ID = Object.fromEntries(EVENTS.map(e => [e.id, e]));
 

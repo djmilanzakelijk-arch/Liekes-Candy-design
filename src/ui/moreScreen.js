@@ -11,7 +11,7 @@ import { sfx, haptic, setVolume, setMusicEnabled } from '../core/audio.js';
 import { toast, confetti, coinFly, candyRain, bumpPill } from '../core/fx.js';
 import { openModal, confirmModal } from './modal.js';
 import { drawDesign } from '../render/candy.js';
-import { DAILY_REWARDS, MYSTERY_LOOT, EVENTS, activeEvent } from '../data/events.js';
+import { DAILY_REWARDS, MYSTERY_LOOT, EVENTS, activeEvent, eventRunning } from '../data/events.js';
 import { DECORATIONS, getDeco } from '../data/decorations.js';
 import { RARITY } from '../data/palette.js';
 import { getLocation, LOCATIONS } from '../data/upgrades.js';
@@ -179,7 +179,7 @@ function grantRandomDeco(minRarity = 'common'){
     !S.owned.decos.includes(d.id) &&
     order.indexOf(d.rarity) >= min &&
     d.unlock <= S.level + 3 &&
-    (!d.event || d.event === ev?.id));
+    (!d.event || eventRunning(d.event)));
   if (!pool.length) return null;
   const d = pool[Math.floor(Math.random() * pool.length)];
   grantDeco(d.id);

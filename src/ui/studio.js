@@ -11,7 +11,7 @@ import { drawDesign, drawItem, drawDecoThumb, drawPackThumb, drawCandyThumb, ite
 import { CANDIES, getCandy } from '../data/candies.js';
 import { DECORATIONS, DECO_CATS, getDeco, PACKAGING, getPack } from '../data/decorations.js';
 import { COLORS, FLAVORS, getColor, COLOR_UNLOCK, RARITY } from '../data/palette.js';
-import { activeEvent } from '../data/events.js';
+import { activeEvent, eventRunning } from '../data/events.js';
 import { TOOLS, FILLINGS, DUSTS, toolsForCandy, pruneTools, TOOL_BY_ID } from '../data/tools.js';
 import { drawToolPreview } from '../render/tools.js';
 import { t, tName, tDesc } from '../core/i18n.js';
@@ -306,8 +306,10 @@ function renderDecoTray(host, cat){
   const ev = activeEvent();
   const list = DECORATIONS.filter(d =>
     d.cat === cat &&
-    (!d.event || d.event === ev?.id) &&
-    (!d.reward || ownsDeco(d.id)));      // level rewards only show once earned
+    // Anything owned is always usable. Event pieces are only *offered*
+    // during their season, but once bought they stay in the tray forever —
+    // otherwise a Christmas snowflake would vanish every January.
+    (ownsDeco(d.id) || (!d.event || eventRunning(d.event)) && !d.reward));
 
   const grid = el('div', { style:{ display:'flex', gap:'9px' } });
   for (const d of list){

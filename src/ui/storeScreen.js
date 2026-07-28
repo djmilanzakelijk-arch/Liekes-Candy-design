@@ -14,7 +14,7 @@ import { drawDecoThumb, drawPackThumb } from '../render/candy.js';
 import { DECORATIONS, DECO_CATS, PACKAGING, getDeco } from '../data/decorations.js';
 import { RARITY, RARITY_ORDER } from '../data/palette.js';
 import { UPGRADES, MAX_UPG_LEVEL, LOCATIONS, getLocation } from '../data/upgrades.js';
-import { activeEvent } from '../data/events.js';
+import { activeEvent, eventRunning } from '../data/events.js';
 import { go, subHeader } from './nav.js';
 import { t, tName, tDesc } from '../core/i18n.js';
 
@@ -71,9 +71,14 @@ function renderDecos(host){
   }
 
   // reward-only decorations are never for sale — they come from level-up grids
-  let list = DECORATIONS.filter(d => !d.reward && (!d.event || d.event === ev?.id));
-  if (decoFilter === 'owned') list = list.filter(d => ownsDeco(d.id));
-  else if (decoFilter !== 'all') list = list.filter(d => d.cat === decoFilter);
+  // "Owned" is a shelf of everything she has, including out-of-season event
+  // pieces and level rewards that are never for sale.
+  let list = decoFilter === 'owned'
+    ? DECORATIONS.filter(d => ownsDeco(d.id))
+    : DECORATIONS.filter(d => !d.reward && (!d.event || eventRunning(d.event)));
+  if (decoFilter !== 'owned' && decoFilter !== 'all'){
+    list = list.filter(d => d.cat === decoFilter);
+  }
 
   list.sort((a, b) => (a.unlock - b.unlock) || (RARITY_ORDER.indexOf(a.rarity) - RARITY_ORDER.indexOf(b.rarity)));
 

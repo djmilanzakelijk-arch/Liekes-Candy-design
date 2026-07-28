@@ -15,7 +15,7 @@ import { openModal } from './modal.js';
 import { drawDecoThumb, drawPackThumb } from '../render/candy.js';
 import { DECORATIONS, PACKAGING, getDeco, getPack } from '../data/decorations.js';
 import { RARITY } from '../data/palette.js';
-import { activeEvent } from '../data/events.js';
+import { activeEvent, eventRunning } from '../data/events.js';
 import { t, tName } from '../core/i18n.js';
 
 const PICKS = 2;
@@ -26,7 +26,7 @@ function decoCandidates(level){
   const ev = activeEvent();
   return DECORATIONS.filter(d =>
     !ownsDeco(d.id) &&
-    (!d.event || d.event === ev?.id) &&
+    (!d.event || eventRunning(d.event)) &&
     (d.reward || d.unlock <= level + 4));
 }
 
