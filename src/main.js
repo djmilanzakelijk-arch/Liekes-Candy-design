@@ -16,6 +16,8 @@ import {
   mountMore, mountDaily, mountPhotos, mountLeaderboard, mountEvents, mountSettings,
 } from './ui/moreScreen.js';
 import { mountStaff } from './ui/staffScreen.js';
+import { mountDelivery } from './ui/deliveryScreen.js';
+import { showPayday } from './ui/financeUi.js';
 import { openLevelReward, hasPendingLevelReward } from './ui/levelReward.js';
 import { captureIncoming, hasIncoming } from './core/transfer.js';
 import { handleIncomingTransfer } from './ui/transferUi.js';
@@ -83,6 +85,7 @@ function registerScreens(){
   registerScreen('events', mountEvents);
   registerScreen('settings', mountSettings);
   registerScreen('staff', mountStaff);
+  registerScreen('delivery', mountDelivery);
 }
 
 /* ══════════════ HUD ══════════════ */
@@ -144,8 +147,16 @@ function afterBoot(){
   document.addEventListener('pointerdown', kick);
   document.addEventListener('keydown', kick);
 
-  // idle earnings from the Employee upgrade
+  // idle earnings from the Employee upgrade, then the wage bill for the
+  // days that passed — earnings first, so the till has a chance to cover it
   const idle = collectIdle();
+  // a first-time player has no team and no wages yet; a shop arriving from
+  // a transfer link gets its payday on the next launch instead
+  const payday = () => {
+    if (!S.tutorialDone || hasIncoming()) return;
+    showPayday();
+  };
+  const afterIdle = () => setTimeout(payday, 260);
   if (idle > 0){
     setTimeout(() => {
       openModal({
@@ -153,9 +164,13 @@ function afterBoot(){
         sub:t('idle.sub'),
         body: el('p.center', { style:{ fontSize:'22px', fontWeight:'900', color:'#c98f14' } },
           `🪙 +${fmt(idle)}`),
-        actions:[{ label:t('idle.collect'), cls:'gold', onClick: () => { sfx('coin'); bumpPill('#hudCoins'); } }],
+        actions:[{ label:t('idle.collect'), cls:'gold', onClick: () => {
+          sfx('coin'); bumpPill('#hudCoins'); afterIdle();
+        }}],
       });
     }, 700);
+  } else {
+    setTimeout(payday, 1100);
   }
 
   // seasonal greeting

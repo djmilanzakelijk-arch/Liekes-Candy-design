@@ -39,13 +39,21 @@ const NAMES = [
   'Kaya','Bram','Iris','Levi','Fay','Dex','Sien','Job','Noor','Ravi',
 ];
 const FACES = ['🧑‍🍳','👩‍🍳','👨‍🍳','🧑‍🎨','👩‍🎨','👨‍🎨','🧑‍🏭','👩‍🔬','🧙','🦸','🧑‍🚀','🕺'];
+const COURIER_FACES = ['🧑‍✈️','🚴','🚴‍♀️','🛵','🧑‍🔧','👩‍✈️','🏍️','🛴'];
+
+/* ── roles ───────────────────────────────────────────────
+   Everyone hired before roles existed counts as shop staff, so no
+   existing employee changes what they do. */
+export const ROLES = ['shop', 'courier'];
+export const roleOf = emp => (emp?.role === 'courier' ? 'courier' : 'shop');
+export const isCourier = emp => roleOf(emp) === 'courier';
 
 const between = ([a, b], q) => a + (b - a) * q;
 
 /**
  * Roll a new employee.
  * @param tier one of TIER_ORDER
- * @param opt  { forceTrait, noBadTraits }
+ * @param opt  { forceTrait, noBadTraits, role }
  */
 export function makeEmployee(tier = 'rookie', opt = {}){
   const T = TIERS[tier] || TIERS.rookie;
@@ -63,10 +71,13 @@ export function makeEmployee(tier = 'rookie', opt = {}){
   const tip  = Math.max(0, between(T.tip, quality) + (tr?.tipAdd ?? 0));
   const calm = Math.max(0, between(T.calm, quality) + (tr?.calmAdd ?? 0));
 
+  const role = opt.role === 'courier' ? 'courier' : 'shop';
+
   return {
     id: uid(),
     name: pick(NAMES),
-    face: pick(FACES),
+    face: pick(role === 'courier' ? COURIER_FACES : FACES),
+    role,
     tier,
     quality: Math.round(quality * 100) / 100,
     trait,
@@ -77,6 +88,49 @@ export function makeEmployee(tier = 'rookie', opt = {}){
     hiredAt: 0,
     shifts: 0,
   };
+}
+
+/* ── wages ───────────────────────────────────────────────
+   Hiring is a one-off fee; keeping somebody on costs a wage every
+   shop day. A raise makes them better AND more expensive. */
+
+/** Daily wage, as a slice of what they cost to hire. */
+export function wageOf(emp){
+  if (!emp) return 0;
+  const raises = emp.raises || 0;
+  return Math.max(5, Math.round(emp.fee * .045 * (1 + raises * .28) / 5) * 5);
+}
+
+/** What the whole team costs you per shop day. */
+export const payrollOf = (roster = []) => roster.reduce((n, e) => n + wageOf(e), 0);
+
+/* ── couriers ────────────────────────────────────────────
+   A courier does not stand behind the counter, so they still bring
+   their idle/tip/calm — they additionally unlock deliveries. */
+
+/** How many parcels one courier can have on the road at once. */
+const COURIER_SLOTS = { rookie:1, skilled:2, expert:3, legend:5 };
+
+export function courierStats(emp){
+  const T = TIERS[emp.tier] || TIERS.rookie;
+  return {
+    slots: COURIER_SLOTS[emp.tier] || 1,
+    /** higher is faster; divides the delivery time */
+    speed: 1 + T.order * .30 + (emp.quality || 0) * .40,
+    /** delivery fee multiplier */
+    payMult: 1 + T.order * .07 + (emp.quality || 0) * .10,
+  };
+}
+
+export const couriers = (roster = []) => roster.filter(isCourier);
+
+/** Total parcels that can be out at once. 0 means no deliveries yet. */
+export const deliverySlots = (roster = []) =>
+  couriers(roster).reduce((n, e) => n + courierStats(e).slots, 0);
+
+/** The fastest courier on the books does the next run. */
+export function bestCourier(roster = []){
+  return couriers(roster).sort((a, b) => courierStats(b).speed - courierStats(a).speed)[0] || null;
 }
 
 /** 1–5 stars used everywhere in the UI. */

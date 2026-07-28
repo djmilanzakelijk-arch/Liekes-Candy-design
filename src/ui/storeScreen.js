@@ -5,8 +5,9 @@
 import { el, $, $$, fmt } from '../core/utils.js';
 import {
   S, spend, canAfford, grantDeco, grantPack, ownsDeco, ownsPack,
-  upgLevel, setUpgLevel, save, markFresh,
+  upgLevel, setUpgLevel, save, markFresh, sellLocation, RESALE, inDebt, debtAmount,
 } from '../core/state.js';
+import { askSellUpgrade } from './financeUi.js';
 import { sfx, haptic } from '../core/audio.js';
 import { toast, confetti, bumpPill } from '../core/fx.js';
 import { openModal, confirmModal } from './modal.js';
@@ -27,6 +28,16 @@ export function mountStore(host){
 
   wrap.append(el('div.section-head', el('h2', t('store.title')), el('span.spacer'),
     el('span.tiny.muted', `🪙 ${fmt(S.coins)}  💎 ${S.gems}`)));
+
+  // in the red: say so here, where the things you can sell actually are
+  if (inDebt()){
+    wrap.append(el('div.card.danger',
+      el('div.card-title', el('span.ico', '🔴'), t('pay.inRedTitle')),
+      el('p.tiny.center', { style:{ fontWeight:'900', color:'#c0392b' } },
+        t('pay.inRed', { n: fmt(debtAmount()) })),
+      el('p.tiny.muted.center', { style:{ marginTop:'4px' } }, t('store.sellHint')),
+    ));
+  }
 
   const tabs = el('div.chipbar',
     ...[['deco',t('store.decorations')], ['pack',t('store.packaging')],
@@ -240,11 +251,18 @@ function renderUpgrades(host){
               onclick: e => { e.stopPropagation(); go('staff'); } }, t('store.manageStaff'))
           : null,
       ),
-      maxed
-        ? el('div.upg-buy.max', t('store.max'))
-        : el('button.upg-buy' + (affordable ? '' : '.cant'), {
-            onclick: () => buyUpgrade(u, lv, cost),
-          }, '🪙 ', fmt(cost)),
+      el('div', { style:{ display:'flex', flexDirection:'column', gap:'5px', alignItems:'stretch' } },
+        maxed
+          ? el('div.upg-buy.max', t('store.max'))
+          : el('button.upg-buy' + (affordable ? '' : '.cant'), {
+              onclick: () => buyUpgrade(u, lv, cost),
+            }, '🪙 ', fmt(cost)),
+        // selling a level back is how a shop in the red digs itself out
+        lv > 0
+          ? el('button.upg-sell', { onclick: () => askSellUpgrade(u, () => go('store')) },
+              '💸 ' + fmt(Math.round((u.cost[lv] || 0) * RESALE)))
+          : null,
+      ),
     ));
   }
 }
@@ -285,9 +303,16 @@ function renderLocations(host){
           t('store.payout', { n:loc.payMult.toFixed(2) })),
       ),
       owned
-        ? (active
-            ? el('div.upg-buy.max', t('store.here'))
-            : el('button.upg-buy', { onclick: () => moveTo(loc) }, t('store.move')))
+        ? el('div', { style:{ display:'flex', flexDirection:'column', gap:'5px' } },
+            active
+              ? el('div.upg-buy.max', t('store.here'))
+              : el('button.upg-buy', { onclick: () => moveTo(loc) }, t('store.move')),
+            // the village is home — there always has to be somewhere to bake
+            loc.id !== 'village'
+              ? el('button.upg-sell', { onclick: () => askSellLocation(loc) },
+                  '💸 ' + fmt(Math.round(loc.cost * RESALE)))
+              : null,
+          )
         : !levelOk
           ? el('div.si-lock', `🔒 Lv ${loc.level}`)
           : el('button.upg-buy' + (canAfford(loc.cost) ? '' : '.cant'), {
@@ -296,6 +321,24 @@ function renderLocations(host){
     );
     host.append(card);
   }
+}
+
+/** Sell a shop back and move home — the manual way out of the red. */
+function askSellLocation(loc){
+  const name = tName('location', loc.id, loc.name);
+  const back = Math.round(loc.cost * RESALE);
+  confirmModal({
+    icon:'🚚',
+    title: t('store.sellLocTitle', { name }),
+    sub: t('store.sellLocSub', { n: fmt(back) }),
+    yes: t('store.sellYes'),
+    onYes: () => {
+      const got = sellLocation(loc.id);
+      sfx('coin'); haptic(20);
+      toast(t('store.sold', { name, n: fmt(got) }), 'good', '💸');
+      go('store');
+    },
+  });
 }
 
 function moveTo(loc){

@@ -7,7 +7,8 @@
 
 import { el, $, fmt, todayKey, clamp } from '../core/utils.js';
 import {
-  S, save, spend, canAfford, staffSlots, roster,
+  S, save, spend, canAfford, staffSlots, courierSlots, roster,
+  shopStaff, courierStaff, slotsFor, usedSlots, DELIVERY_LEVEL,
   hireEmployee, fireEmployee, seedLegacyStaff, bonuses,
 } from '../core/state.js';
 import { sfx, haptic } from '../core/audio.js';
@@ -16,7 +17,9 @@ import { openModal, confirmModal } from './modal.js';
 import {
   makeEmployee, employeeStars, rollTier, legendChance, LEGEND_WINDOW,
   TIERS, TRAITS, REROLL_COST, moraleOf, moraleTone,
+  roleOf, isCourier, wageOf, courierStats,
 } from '../data/staff.js';
+import { payrollCard } from './financeUi.js';
 import {
   raiseCost, raiseLevel, MAX_RAISES, giveRaise, maybeStaffEvent,
 } from '../game/staffEvents.js';
@@ -45,11 +48,19 @@ export function ensureApplicants(force = false){
   if (!force && S.staff.applicantsDate === today && S.staff.applicants?.length) return;
 
   const list = [];
-  for (let i = 0; i < 3; i++) list.push(makeEmployee(rollTier(S.level)));
+  for (let i = 0; i < 3; i++){
+    // Once deliveries are open a third of the applicants ride a scooter —
+    // and if she has nobody delivering yet, one is guaranteed.
+    const role = S.level >= DELIVERY_LEVEL && Math.random() < .34 ? 'courier' : 'shop';
+    list.push(makeEmployee(rollTier(S.level), { role }));
+  }
+  if (S.level >= DELIVERY_LEVEL && !courierStaff().length && !list.some(isCourier)){
+    list[list.length - 1] = makeEmployee(rollTier(S.level), { role:'courier' });
+  }
 
   // …and occasionally a legend walks in, but only for a few hours
   if (Math.random() < legendChance(S.level)){
-    const legend = makeEmployee('legend');
+    const legend = makeEmployee('legend', { role: Math.random() < .3 ? 'courier' : 'shop' });
     legend.expires = Date.now() + LEGEND_WINDOW;
     list.unshift(legend);
   }
@@ -102,16 +113,21 @@ export function mountStaff(host){
     ),
   ));
 
-  /* the team */
+  /* what the team costs */
+  wrap.append(payrollCard());
+
+  /* the team behind the counter */
+  const shopCrew = shopStaff();
   const team = el('div.card',
-    el('div.card-title', el('span.ico', '👥'), t('staff.yourTeam')));
+    el('div.card-title', el('span.ico', '👥'), t('staff.yourTeam'), el('span.spacer'),
+      el('span.sub', t('staff.slotsUsed', { a: shopCrew.length, b: slots }))));
 
   if (slots === 0){
     team.append(el('p.tiny.muted.center', { style:{ padding:'8px 0' } }, t('staff.noSlots')));
     team.append(el('button.btn.gold.block.sm', { onclick: () => go('store') }, t('staff.goStore')));
   } else {
-    for (const emp of hired) team.append(employeeRow(emp, 'fire'));
-    for (let i = hired.length; i < slots; i++){
+    for (const emp of shopCrew) team.append(employeeRow(emp, 'fire'));
+    for (let i = shopCrew.length; i < slots; i++){
       team.append(el('div.staff-slot.empty', t('staff.emptySlot')));
     }
     if (slots < 4){
@@ -119,6 +135,29 @@ export function mountStaff(host){
     }
   }
   wrap.append(team);
+
+  /* couriers ride their own slots, so hiring one never costs a shop hand */
+  const cSlots = courierSlots();
+  if (cSlots > 0 || courierStaff().length){
+    const crew = courierStaff();
+    const box = el('div.card',
+      el('div.card-title', el('span.ico', '🛵'), t('staff.couriers'), el('span.spacer'),
+        el('span.sub', t('staff.slotsUsed', { a: crew.length, b: cSlots }))));
+    for (const emp of crew) box.append(employeeRow(emp, 'fire'));
+    for (let i = crew.length; i < cSlots; i++){
+      box.append(el('div.staff-slot.empty', t('staff.emptyCourier')));
+    }
+    box.append(crew.length
+      ? el('button.btn.mint.block.sm', { style:{ marginTop:'8px' }, onclick: () => go('delivery') },
+          t('staff.toDelivery'))
+      : el('p.tiny.muted.center', { style:{ marginTop:'8px' } }, t('staff.courierHint')));
+    wrap.append(box);
+  } else if (S.level < DELIVERY_LEVEL){
+    wrap.append(el('div.card',
+      el('div.card-title', el('span.ico', '🔒'), t('staff.couriers')),
+      el('p.tiny.muted.center', { style:{ padding:'6px 0' } },
+        t('deliv.lockedLevel', { n: DELIVERY_LEVEL }))));
+  }
 
   /* applicants */
   const appl = el('div.card',
@@ -161,13 +200,17 @@ function employeeRow(emp, action){
   const stars = employeeStars(emp);
   const trait = emp.trait ? TRAITS[emp.trait] : null;
   const affordable = canAfford(emp.fee);
-  const full = roster().length >= staffSlots();
+  const role = roleOf(emp);
+  const full = usedSlots(role) >= slotsFor(role);
+  const cs = role === 'courier' ? courierStats(emp) : null;
 
   const row = el('div.staff-slot.rar-' + tier.rarity,
     el('div.staff-face.rar-' + tier.rarity, emp.face),
     el('div.staff-info',
       el('div.s-name', emp.name,
         el('span.staff-tier', t('staff.tier.' + emp.tier)),
+        el('span.staff-tier' + (role === 'courier' ? '.courier' : ''),
+          role === 'courier' ? '🛵 ' + t('role.courier') : '🍬 ' + t('role.shop')),
         emp.expires ? el('span.staff-tier', { style:{ background:'#ffe9a8', color:'#8a5c05' } }, '⏳') : null),
       el('div.stars', ...Array.from({ length:5 }, (_, i) =>
         el('span.s' + (i < stars ? '.on' : ''), '⭐'))),
@@ -176,6 +219,8 @@ function employeeRow(emp, action){
         el('span.staff-stat', `🪙 ${emp.idle}/u`),
         el('span.staff-stat', `💰 +${Math.round(emp.tip * 100)}%`),
         el('span.staff-stat', `⏳ +${Math.round(emp.calm * 100)}%`),
+        cs ? el('span.staff-stat', `📦 ${cs.slots} · ⚡ ×${cs.speed.toFixed(2)}`) : null,
+        el('span.staff-stat.wage', `🧾 ${fmt(wageOf(emp))}/${t('pay.dayShort')}`),
         trait ? el('span.staff-trait' + (trait.good ? '.good' : '.bad'),
           `${trait.emoji} ${t('trait.' + trait.id)}`) : null,
       ),
@@ -200,7 +245,7 @@ function employeeRow(emp, action){
 function askHire(emp, full, affordable){
   if (full){
     sfx('error');
-    return toast(t('staff.fullWarn'), 'warn', '👥');
+    return toast(isCourier(emp) ? t('staff.courierFull') : t('staff.fullWarn'), 'warn', '👥');
   }
   if (!affordable){
     sfx('error');
@@ -210,7 +255,8 @@ function askHire(emp, full, affordable){
   confirmModal({
     icon: emp.face,
     title: t('staff.hireTitle', { name: emp.name }),
-    sub: `${t('staff.tier.' + emp.tier)} · ${'⭐'.repeat(stars)} · 🪙 ${fmt(emp.fee)}`,
+    sub: `${t('staff.tier.' + emp.tier)} · ${'⭐'.repeat(stars)} · 🪙 ${fmt(emp.fee)}`
+       + ` · 🧾 ${fmt(wageOf(emp))}/${t('pay.dayShort')}`,
     yes: t('staff.hire'),
     onYes: () => {
       if (!spend(emp.fee)) return;

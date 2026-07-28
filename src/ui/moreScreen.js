@@ -6,7 +6,9 @@ import { el, $, $$, fmt, clamp, pickWeighted, randI, todayKey, rngFrom } from '.
 import {
   S, SAVE_KEY, addCoins, addGems, grantDeco, save, hardReset, dailyStatus, claimDaily,
   deletePhoto, shopSatisfaction, xpForLevel, staffSlots, lockSave,
+  canDeliver, DELIVERY_LEVEL,
 } from '../core/state.js';
+import { deliveryBadge } from './deliveryScreen.js';
 import { sfx, haptic, setVolume, setMusicEnabled } from '../core/audio.js';
 import { toast, confetti, coinFly, candyRain, bumpPill } from '../core/fx.js';
 import { openModal, confirmModal } from './modal.js';
@@ -38,6 +40,7 @@ export function mountMore(host){
          () => go('daily'), daily.available ? 1 : 0),
     tile('🧑‍🍳', t('more.staff'), t('more.staffSub', { a: (S.staff?.roster || []).length, b: staffSlots() }),
          () => go('staff'), staffBadge()),
+    tile('🚚', t('more.delivery'), deliverySub(), () => go('delivery'), deliveryBadge()),
     tile('📸', t('more.photos'), t('more.photosSub', { n: S.photos.length }), () => go('photos')),
     tile('🏅', t('more.leaderboard'), t('more.leaderboardSub'), () => go('leaderboard')),
     tile('🎉', t('more.events'),
@@ -73,6 +76,14 @@ function legendWaiting(){
 /** Badge count for the staff tile: pending incident + legendary applicant. */
 function staffBadge(){
   return (S.staff?.pending ? 1 : 0) + (legendWaiting() ? 1 : 0);
+}
+
+/** Delivery tile: how many jobs are waiting, or why it is still closed. */
+function deliverySub(){
+  if (S.level < DELIVERY_LEVEL) return t('more.deliveryLocked', { n: DELIVERY_LEVEL });
+  if (!canDeliver()) return t('more.deliveryNoCourier');
+  const out = (S.delivery?.active || []).length;
+  return t('more.deliverySub', { n: out });
 }
 
 function tile(ico, name, sub, onclick, badge = 0){

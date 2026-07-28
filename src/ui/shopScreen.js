@@ -256,14 +256,16 @@ function updatePatienceBars(){
 }
 
 /* ══════════════ starting an order ══════════════ */
-export function startOrder(customer){
+/** @param opt.delivery  the delivery job this order belongs to, if any */
+export function startOrder(customer, opt = {}){
   sfx('door'); haptic(12);
   mounted = false;
   cancelAnimationFrame(shopRaf);
+  const job = opt.delivery || null;
   openStudio({
     customer,
-    onServe: res => finishOrder(res, customer),
-    onQuit: () => { go('shop'); },
+    onServe: res => finishOrder(res, customer, job),
+    onQuit: () => { go(job ? 'delivery' : 'shop'); },
   });
 }
 
@@ -331,7 +333,7 @@ function nextModeCustomer(){
 }
 
 /* ══════════════ result ══════════════ */
-function finishOrder(res, customer){
+function finishOrder(res, customer, job = null){
   closeStudio();
   const order = customer.order;
   const result = grade(res.design, order, { timeLeft: res.timeLeft, timeTotal: res.timeTotal });
@@ -341,6 +343,19 @@ function finishOrder(res, customer){
   const perfect = result.perfect && result.stars === 5;
   pushStreak(perfect);
   const pay = payout(res.design, order, result, customer);
+
+  // A delivery is not paid at the counter — the courier carries the money
+  // home with them, so the parcel banks it when it arrives.
+  if (job){
+    nudgeSatisfaction(satisfactionDelta(result.stars));
+    queue = queue.filter(c => c.id !== customer.id);
+    duck(900);
+    import('./deliveryScreen.js').then(({ finishDelivery }) => {
+      finishDelivery(job, pay, result.stars, res.design, () => go('delivery'));
+    });
+    save();
+    return;
+  }
 
   // ── bank it ──
   addCoins(pay.total);

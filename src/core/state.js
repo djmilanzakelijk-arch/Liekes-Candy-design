@@ -7,8 +7,8 @@ import { todayKey, daysBetween, uid, clamp } from './utils.js';
 import { STARTER_CANDIES, CANDIES } from '../data/candies.js';
 import { STARTER_DECOS, STARTER_PACKS, DECORATIONS, PACKAGING } from '../data/decorations.js';
 import { COLOR_UNLOCK, FLAVORS } from '../data/palette.js';
-import { computeBonuses } from '../data/upgrades.js';
-import { staffBonuses, makeEmployee } from '../data/staff.js';
+import { computeBonuses, UPGRADES, UPG_BY_ID, LOC_BY_ID } from '../data/upgrades.js';
+import { staffBonuses, makeEmployee, roleOf, wageOf, payrollOf } from '../data/staff.js';
 import { CONTENT_REV } from './version.js';
 
 export const SAVE_KEY = 'liekes-candy-design/save/v1';
@@ -54,6 +54,12 @@ function freshState(){
 
     /* hired employees + today's applicant pool */
     staff: { roster: [], applicants: [], applicantsDate: '', seededFromUpgrade: 0, seedDone: false },
+
+    /* wages, overdraft and everything the bank did about it */
+    finance: { lastPayday: '', redDays: 0, interest: 0, paidTotal: 0, log: [] },
+
+    /* delivery service: the board of jobs and the parcels on the road */
+    delivery: { board: [], boardDate: '', active: [], done: 0, earned: 0 },
 
     counters: {
       orders:0, fiveStars:0, perfect:0, coinsEarned:0, decosPlaced:0,
@@ -115,12 +121,18 @@ function migrate(old){
   const base = freshState();
   const merged = { ...base, ...old, v: SAVE_VERSION };
   // deep-merge the nested objects so new fields appear for old saves
-  for (const key of ['owned','counters','missions','daily','records','settings','staff','levelRewards']){
+  for (const key of ['owned','counters','missions','daily','records','settings','staff',
+                     'levelRewards','finance','delivery']){
     merged[key] = { ...base[key], ...(old[key] || {}) };
   }
   merged.staff.roster = [...(old.staff?.roster || [])];
   merged.staff.applicants = [...(old.staff?.applicants || [])];
   merged.levelRewards.pending = [...(old.levelRewards?.pending || [])];
+  merged.finance.log = [...(old.finance?.log || [])];
+  merged.delivery.board = [...(old.delivery?.board || [])];
+  merged.delivery.active = [...(old.delivery?.active || [])];
+  // Everyone hired before roles existed keeps doing exactly what they did.
+  for (const e of merged.staff.roster) if (!e.role) e.role = 'shop';
   merged.owned = {
     candies: [...new Set([...base.owned.candies, ...(old.owned?.candies || [])])],
     decos:   [...new Set([...base.owned.decos,   ...(old.owned?.decos   || [])])],
@@ -225,14 +237,28 @@ export const colorUnlocked = id => (COLOR_UNLOCK[id] ?? 99) <= S.level;
 export const flavorUnlocked = id => (FLAVORS.find(f => f.id === id)?.unlock ?? 99) <= S.level;
 
 /* ── currency ────────────────────────────────────────── */
-export function addCoins(n){
-  S.coins = Math.max(0, S.coins + n);
+
+/**
+ * @param opt.allowDebt  wages may push the till below zero — that is the
+ *                       overdraft the bank then charges you for. Nothing
+ *                       else in the game is allowed to.
+ *
+ * The floor is `min(coins, 0)`, not 0: a shop that is already in the red
+ * must keep its debt when it earns, instead of quietly having it wiped.
+ */
+export function addCoins(n, { allowDebt = false } = {}){
+  const next = S.coins + n;
+  S.coins = allowDebt ? next : Math.max(Math.min(S.coins, 0), next);
   if (n > 0){
     S.counters.coinsEarned += n;
     bumpDaily('coinsEarned', n);
   }
   emit('coins', n); emit('state'); save();
 }
+
+/** True while the shop owes the bank money. */
+export const inDebt = () => S.coins < 0;
+export const debtAmount = () => Math.max(0, -S.coins);
 export function addGems(n){
   S.gems = Math.max(0, S.gems + n);
   emit('gems', n); emit('state'); save();
@@ -316,11 +342,89 @@ export const bonuses = () => {
   };
 };
 
+/* ── selling the shop back ───────────────────────────────
+   You get part of your money back. This is how a shop in trouble digs
+   itself out — and how the bank digs for you if you let it slide. */
+
+export const RESALE = .6;
+
+/** Sell one level of an upgrade back. @returns coins refunded */
+export function sellUpgradeLevel(id){
+  const lv = upgLevel(id);
+  if (lv <= 0) return 0;
+  const paid = UPG_BY_ID[id]?.cost?.[lv] ?? 0;
+  const back = Math.round(paid * RESALE);
+  S.upgrades[id] = lv - 1;
+  addCoins(back, { allowDebt: true });
+  emit('state'); save();
+  return back;
+}
+
+/** The upgrade level worth the most right now — what the bank takes first. */
+export function priciestUpgrade(){
+  let best = null, bestVal = 0;
+  for (const u of UPGRADES){
+    const lv = upgLevel(u.id);
+    if (lv <= 0) continue;
+    const val = u.cost?.[lv] ?? 0;
+    if (val > bestVal){ bestVal = val; best = u.id; }
+  }
+  return best;
+}
+
+/**
+ * Sell a location back and move home. The village can never be sold —
+ * there has to be somewhere left to make candy.
+ */
+export function sellLocation(id){
+  if (id === 'village' || !S.locations.includes(id)) return 0;
+  const loc = LOC_BY_ID[id];
+  const back = Math.round((loc?.cost || 0) * RESALE);
+  S.locations = S.locations.filter(l => l !== id);
+  if (S.location === id) S.location = fallbackLocation();
+  addCoins(back, { allowDebt: true });
+  emit('state'); save();
+  return back;
+}
+
+/** The best location still on the books after a forced sale. */
+export function fallbackLocation(){
+  const owned = S.locations.map(l => LOC_BY_ID[l]).filter(Boolean);
+  owned.sort((a, b) => b.payMult - a.payMult);
+  return owned[0]?.id || 'village';
+}
+
+/** The grandest location you own, village aside — the bank's last resort. */
+export function priciestLocation(){
+  const owned = S.locations.map(l => LOC_BY_ID[l]).filter(l => l && l.id !== 'village');
+  owned.sort((a, b) => b.cost - a.cost);
+  return owned[0]?.id || null;
+}
+
 /* ── staff roster ────────────────────────────────────── */
 
-/** Slots come from the Employee upgrade level. */
+/** Level at which the delivery service opens up. */
+export const DELIVERY_LEVEL = 5;
+
+/** Counter slots come from the Employee upgrade level. */
 export const staffSlots = () => upgLevel('staff');
+
+/**
+ * Couriers ride their own slots, so hiring one never costs you the
+ * shop assistant you already had.
+ */
+export const courierSlots = () =>
+  S.level >= DELIVERY_LEVEL ? 1 + Math.floor(upgLevel('staff') / 2) : 0;
+
 export const roster = () => S.staff?.roster || [];
+export const shopStaff = () => roster().filter(e => roleOf(e) !== 'courier');
+export const courierStaff = () => roster().filter(e => roleOf(e) === 'courier');
+export const slotsFor = role => (role === 'courier' ? courierSlots() : staffSlots());
+export const usedSlots = role =>
+  (role === 'courier' ? courierStaff() : shopStaff()).length;
+
+/** Deliveries need somebody to ride them. */
+export const canDeliver = () => S.level >= DELIVERY_LEVEL && courierStaff().length > 0;
 
 /**
  * Players who bought the Employee upgrade before the roster existed
@@ -349,13 +453,19 @@ export function seedLegacyStaff(){
 }
 
 export function hireEmployee(emp){
-  if (roster().length >= staffSlots()) return false;
+  const role = roleOf(emp);
+  if (usedSlots(role) >= slotsFor(role)) return false;
   emp.hiredAt = Date.now();
+  emp.role = role;
   S.staff.roster.push(emp);
   S.staff.applicants = S.staff.applicants.filter(a => a.id !== emp.id);
   emit('state'); save();
   return true;
 }
+
+/** What the team costs you every shop day. */
+export const dailyWages = () => payrollOf(roster());
+export { wageOf };
 
 export function fireEmployee(id){
   const before = roster().length;
