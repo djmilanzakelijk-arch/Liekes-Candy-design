@@ -12,8 +12,11 @@ import { CANDIES, getCandy } from '../data/candies.js';
 import { DECORATIONS, DECO_CATS, getDeco, PACKAGING, getPack } from '../data/decorations.js';
 import { COLORS, FLAVORS, getColor, COLOR_UNLOCK, RARITY } from '../data/palette.js';
 import { activeEvent, eventRunning } from '../data/events.js';
-import { TOOLS, FILLINGS, DUSTS, toolsForCandy, pruneTools, TOOL_BY_ID } from '../data/tools.js';
+import { TOOLS, FILLINGS, DUSTS, toolsForCandy, pruneTools, TOOL_BY_ID,
+         FILL_BY_ID, DUST_BY_ID } from '../data/tools.js';
 import { drawToolPreview } from '../render/tools.js';
+import { drawChocolateBowl, drawDipRipple, drawPipingBag, drawTorch,
+         drawSieve, drawInjector, bowlInnerPath } from '../render/toolProps.js';
 import { t, tName, tDesc } from '../core/i18n.js';
 
 /* ── module state ────────────────────────────────────── */
@@ -30,6 +33,24 @@ let pipeWidth = 1;
 let piping = null;      // the stroke currently being drawn
 let selToolsEl = null;
 let toolThumbs = [];
+
+/* The materials currently loaded into the physical tools. Tapping a chip
+   swaps them out; the gesture then applies whatever is loaded. */
+let dipColor = 'brown';
+let dustSel = 'sugar';
+let fillSel = 'pistachio';
+let marbleColor = 'white';
+
+/* Dipping: how the candy is framed above the bowl, and how far it travels.
+   DIP_TRAVEL is tuned so a full drag submerges about as much of the candy
+   as the depth value it writes — what you see is what you get. */
+const DIP_SCALE = .72;      // candy shrinks to make room for the bowl
+const DIP_CY = .431;        // its centre, as a fraction of the stage
+const DIP_TRAVEL = .576;    // full drag distance, same fraction
+const DIP_SURFACE = .80;    // where the chocolate surface sits
+
+let gest = null;            // physical tool gesture in progress
+let dipOffset = 0;          // px the candy is pushed down; springs back
 
 const DPR = () => Math.min(window.devicePixelRatio || 1, 2.5);
 
@@ -62,9 +83,12 @@ export function openStudio(opts){
     text: '',
     items: [],
     tools: {},
+    toolFx: {},
     strokes: [],
   };
+  if (!design.toolFx) design.toolFx = {};
   accent = design.color;
+  gest = null; dipOffset = 0;
 
   host.innerHTML = '';
   document.body.classList.add('studio-open');
@@ -457,7 +481,14 @@ function renderToolsTray(host){
     return;
   }
   if (!design.tools) design.tools = {};
+  if (!design.toolFx) design.toolFx = {};
   if (!avail.some(x => x.id === toolSel)) toolSel = avail[0].id;
+
+  // keep the loaded materials in step with whatever is already on the candy
+  if (design.tools.dip?.color) dipColor = design.tools.dip.color;
+  if (design.tools.dust) dustSel = design.tools.dust;
+  if (design.tools.fill) fillSel = design.tools.fill;
+  if (design.tools.marble) marbleColor = design.tools.marble;
 
   host.style.flexDirection = 'column';
   host.style.alignItems = 'stretch';
@@ -528,14 +559,14 @@ function renderToolsTray(host){
 
   if (tool.kind === 'fill'){
     for (const f of FILLINGS){
-      opts.append(el('button.chip' + (design.tools.fill === f.id ? '.on' : ''), {
-        onclick: () => setVal(f.id),
+      opts.append(el('button.chip' + (fillSel === f.id ? '.on' : ''), {
+        onclick: () => { fillSel = f.id; if (design.tools.fill != null) setVal(f.id); else { sfx('tap'); renderTray(); } },
       }, `${f.emoji} ${tName('filling', f.id, f.name)}`));
     }
   } else if (tool.kind === 'dust'){
     for (const d of DUSTS){
-      opts.append(el('button.chip' + (design.tools.dust === d.id ? '.on' : ''), {
-        onclick: () => setVal(d.id),
+      opts.append(el('button.chip' + (dustSel === d.id ? '.on' : ''), {
+        onclick: () => { dustSel = d.id; if (design.tools.dust != null) setVal(d.id); else { sfx('tap'); renderTray(); } },
       }, `${d.emoji} ${tName('dust', d.id, d.name)}`));
     }
   } else if (tool.kind === 'level'){
@@ -545,27 +576,35 @@ function renderToolsTray(host){
       }, ['', t('studio.toastLight'), t('studio.toastMed'), t('studio.toastDark')][lv]));
     });
   } else if (tool.kind === 'dip'){
-    const cur = design.tools.dip || { color:'brown', depth:.45 };
+    const cur = design.tools.dip || { color: dipColor, depth:.45 };
     for (const c of COLORS){
       if (!colorUnlocked(c.id)) continue;
-      opts.append(colorDot(c, design.tools.dip?.color === c.id,
-        () => setVal({ ...cur, color:c.id })));
+      opts.append(colorDot(c, dipColor === c.id, () => {
+        dipColor = c.id;
+        if (design.tools.dip) setVal({ ...cur, color:c.id });
+        else { sfx('tap'); renderTray(); }
+      }));
     }
     opts.append(el('span', { style:{ width:'6px', flex:'0 0 auto' } }));
     [[.28, t('studio.dipTip')], [.45, t('studio.dipHalf')], [.72, t('studio.dipDeep')]].forEach(([d, label]) => {
       opts.append(el('button.chip' + (Math.abs((design.tools.dip?.depth ?? -1) - d) < .01 ? '.on' : ''), {
-        onclick: () => setVal({ ...cur, depth:d }),
+        onclick: () => setVal({ color: dipColor, depth:d }),
       }, label));
     });
-  } else { // 'color' — marble and swirl
+  } else { // 'color' — marble
     for (const c of COLORS){
       if (!colorUnlocked(c.id)) continue;
-      opts.append(colorDot(c, design.tools[toolSel] === c.id, () => setVal(c.id)));
+      opts.append(colorDot(c, marbleColor === c.id, () => {
+        marbleColor = c.id;
+        if (design.tools[toolSel] != null) setVal(c.id);
+        else { sfx('tap'); renderTray(); }
+      }));
     }
   }
   host.append(opts);
-  host.append(el('p.tiny.muted', { style:{ marginTop:'6px', textAlign:'center' } },
-    tDesc('tool', tool.id, tool.desc)));
+  host.append(el('p.tiny', { style:{
+    marginTop:'6px', textAlign:'center', fontWeight:'800', color:'var(--pink-600)',
+  }}, t('studio.gest.' + tool.id)));
 }
 
 function colorDot(c, on, onclick){
@@ -644,7 +683,7 @@ function startLoop(){
     lastT = now;
     if (!session.expired && session.timeLimit) tick(dt);
     elapsed += dt;
-    render(now / 1000);
+    render(now / 1000, dt);
     // animated tray thumbnails
     for (const t of toolThumbs){
       if (t.animated) drawDecoThumb(t.ctx, t.size, t.id, getDeco(t.id).fixed || accent, now / 1000);
@@ -674,23 +713,48 @@ function tick(dt){
   }
 }
 
-function render(t){
+function render(t, dt = 0){
   if (!ctx) return;
-  const size = canvas.width;
   ctx.setTransform(1, 0, 0, 1, 0, 0);
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
+  const W = canvas.width, H = canvas.height;
   // the stage is square-ish; centre the 1:1 design inside it
-  const box = Math.min(canvas.width, canvas.height);
-  const ox = (canvas.width - box) / 2, oy = (canvas.height - box) / 2;
+  const box = Math.min(W, H);
+  const ox = (W - box) / 2, oy = (H - box) / 2;
+
+  const mode = toolMode();
+  const dipMode = mode === 'dip';
+
+  tickToast();
+  // the candy sinks while you hold it under, and floats back up after
+  const wantOff = gest?.tool === 'dip' ? gest.offset : 0;
+  dipOffset += (wantOff - dipOffset) * Math.min(1, dt * 16);
+  if (Math.abs(dipOffset - wantOff) < .5) dipOffset = wantOff;
+
   ctx.save();
+  if (dipMode){
+    // the candy may only exist above the chocolate or inside the bowl —
+    // otherwise a deep dunk hangs out below the rim
+    const surfaceY = oy + box * DIP_SURFACE;
+    ctx.beginPath();
+    ctx.rect(0, 0, W, surfaceY);
+    bowlInnerPath(ctx, W, H, surfaceY);
+    ctx.clip();
+  }
   ctx.translate(ox, oy);
+  if (dipMode){
+    // lift and shrink the candy so there is a bowl to lower it into
+    ctx.translate(box / 2, box * DIP_CY + dipOffset);
+    ctx.scale(DIP_SCALE, DIP_SCALE);
+    ctx.translate(-box / 2, -box / 2);
+  }
   drawDesign(ctx, box, design, t, { clear:false, zoom: STUDIO_ZOOM });
 
   // selection ring — lives in the same zoomed square as the design
   const side = box * STUDIO_ZOOM;
   const inset = (box - side) / 2;
-  if (selected){
+  if (selected && !mode){
     const r = side * itemRadius(selected) * 1.15;
     ctx.save();
     ctx.translate(inset + selected.x * side, inset + selected.y * side);
@@ -702,6 +766,64 @@ function render(t){
     ctx.restore();
   }
   ctx.restore();
+
+  drawProps(t, W, H, box, ox, oy, mode);
+}
+
+/* ── the tools you can see in your hand ───────────────── */
+function drawProps(t, W, H, box, ox, oy, mode){
+  if (mode === 'dip'){
+    const surfaceY = oy + box * DIP_SURFACE;
+    drawChocolateBowl(ctx, W, H, surfaceY, dipColor, t, !!gest);
+    if (gest?.tool === 'dip' && dipOffset > box * .02){
+      drawDipRipple(ctx, W / 2, surfaceY, box * .24, dipColor, t);
+    }
+    return;
+  }
+
+  if (mode === 'swirl'){
+    // the bag rides the tip of the rope while you squeeze
+    if (!piping || !piping.points.length) return;
+    const pts = piping.points;
+    const last = pts[pts.length - 1];
+    const prev = pts[Math.max(0, pts.length - 3)];
+    const side = box * STUDIO_ZOOM;
+    const inset = (box - side) / 2;
+    const x = ox + inset + last.x * side;
+    const y = oy + inset + last.y * side;
+    const a = pts.length > 2 ? Math.atan2(last.y - prev.y, last.x - prev.x) : -Math.PI / 2;
+    drawPipingBag(ctx, x, y, box * .30, piping.color, a, .6 + Math.sin(t * 14) * .4);
+    return;
+  }
+
+  if (!gest) return;
+  const p = toCanvasPx(gest.px, gest.py);
+
+  if (gest.tool === 'toast'){
+    drawTorch(ctx, p.x + box * .10, p.y - box * .06, box * .34, t, gest.power || 0);
+  } else if (gest.tool === 'dust'){
+    drawSieve(ctx, p.x, p.y - box * .16, box * .34,
+              DUST_BY_ID[dustSel]?.color || '#ffffff', t, true);
+  } else if (gest.tool === 'fill'){
+    drawInjector(ctx, p.x, p.y, box * .34, FILL_BY_ID[fillSel]?.base || '#fff0d0', t, true);
+  } else if (gest.tool === 'marble' && gest.angle != null){
+    const s = toCanvasPx(gest.x0, gest.y0);
+    ctx.save();
+    ctx.strokeStyle = 'rgba(255,255,255,.75)';
+    ctx.lineWidth = box * .05;
+    ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(s.x, s.y); ctx.lineTo(p.x, p.y); ctx.stroke();
+    ctx.restore();
+  }
+}
+
+/* map client coords → canvas pixels (props are drawn in that space) */
+function toCanvasPx(clientX, clientY){
+  const r = canvas.getBoundingClientRect();
+  return {
+    x: (clientX - r.left) * canvas.width / r.width,
+    y: (clientY - r.top) * canvas.height / r.height,
+  };
 }
 
 /* map client coords → normalised design coords */
@@ -734,6 +856,7 @@ function resetGestures(){
   if (dragging?.ghost) dragging.ghost.remove();
   dragging = null;
   piping = null;
+  gest = null;
   endPending();
   stageEl?.classList.remove('dropping');
   document.removeEventListener('pointermove', onDragMove);
@@ -742,6 +865,9 @@ function resetGestures(){
   document.removeEventListener('pointermove', onPipeMove);
   document.removeEventListener('pointerup', onPipeEnd);
   document.removeEventListener('pointercancel', onPipeEnd);
+  document.removeEventListener('pointermove', onGestMove);
+  document.removeEventListener('pointerup', onGestEnd);
+  document.removeEventListener('pointercancel', onGestEnd);
 }
 
 /**
@@ -902,14 +1028,14 @@ function placeItem(deco, x, y, clientX, clientY){
 
 function onStageDown(e){
   // a previous gesture the browser cancelled must never block this one
-  if (dragging || piping) resetGestures();
+  if (dragging || piping || gest) resetGestures();
   const p = toDesign(e.clientX, e.clientY);
 
-  // piping bag selected: drag to squeeze out a rope of cream
-  if (pipeActive()){
-    startPiping(p, e);
-    return;
-  }
+  // With the Tools tab open the stage belongs to the tool in your hand:
+  // dip the candy, hold the torch on it, rub the sieve over it, and so on.
+  const mode = toolMode();
+  if (mode === 'swirl'){ startPiping(p, e); return; }
+  if (mode){ startToolGesture(mode, p, e); return; }
 
   // hit-test existing items, topmost first
   const r = canvas.getBoundingClientRect();
@@ -947,10 +1073,11 @@ function onStageDown(e){
    Piping bag — drag across the candy to squeeze out cream
    ══════════════════════════════════════════════════════ */
 
-/** True while the Cream Whipper tab is open with a colour armed. */
-function pipeActive(){
-  return tabId === 'tools' && toolSel === 'swirl'
-      && toolsForCandy(design.candy).some(x => x.id === 'swirl');
+/** Which physical tool the stage is currently holding, if any. */
+function toolMode(){
+  if (tabId !== 'tools') return null;
+  if (!toolsForCandy(design.candy).some(x => x.id === toolSel)) return null;
+  return toolSel;
 }
 
 /** Points closer together than this are dropped, in design units. */
@@ -1004,6 +1131,112 @@ function onPipeEnd(){
   haptic(12);
   bump('decosPlaced');
   renderTray();       // refresh the ✓ on the tool button
+}
+
+/* ══════════════════════════════════════════════════════
+   Physical tools — dip, torch, sieve, injector, marble
+
+   Every one of these is a gesture on the stage rather than a button:
+   you push the candy into the chocolate, hold the flame on it, rub the
+   powder over it. The chips in the tray only load the material.
+   ══════════════════════════════════════════════════════ */
+
+function startToolGesture(mode, p, e){
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  pushHistory();
+  if (!design.toolFx) design.toolFx = {};
+  selected = null; hideSelTools(); hideHint();
+
+  gest = {
+    tool: mode, pointerId: e.pointerId,
+    x0: e.clientX, y0: e.clientY,
+    px: e.clientX, py: e.clientY,
+    p0: p, p, t0: performance.now(),
+    travel: 0, offset: 0, power: 0, angle: null,
+  };
+
+  try { canvas.setPointerCapture(e.pointerId); } catch {}
+  document.addEventListener('pointermove', onGestMove, { passive:false });
+  document.addEventListener('pointerup', onGestEnd);
+  document.addEventListener('pointercancel', onGestEnd);
+
+  sfx(mode === 'dip' ? 'pickup' : 'pour');
+  haptic(8);
+}
+
+function onGestMove(e){
+  if (!gest || (gest.pointerId != null && e.pointerId !== gest.pointerId)) return;
+  e.preventDefault();
+  const p = toDesign(e.clientX, e.clientY);
+  const prev = gest.p;
+  gest.px = e.clientX; gest.py = e.clientY; gest.p = p;
+
+  if (gest.tool === 'dip'){
+    const r = canvas.getBoundingClientRect();
+    const minSide = Math.min(r.width, r.height);
+    const maxT = minSide * DIP_TRAVEL;
+    const travel = clamp(e.clientY - gest.y0, 0, maxT);
+    gest.offset = travel * (canvas.width / Math.max(1, r.width));
+    // quantised, so the cached candy base does not thrash on every pixel
+    const depth = Math.round((.12 + (travel / maxT) * .78) * 20) / 20;
+    const cur = design.tools.dip;
+    if (!cur || cur.depth !== depth || cur.color !== dipColor){
+      design.tools.dip = { color: dipColor, depth };
+      if (!cur || Math.abs(cur.depth - depth) > .09){ sfx('pour'); haptic(4); }
+    }
+  } else if (gest.tool === 'dust'){
+    gest.travel += dist(p.x, p.y, prev.x, prev.y);
+    design.tools.dust = dustSel;
+    design.toolFx.dustLv = Math.round(clamp(gest.travel / 1.6, .1, 1) * 10) / 10;
+    if (Math.floor(gest.travel * 6) !== Math.floor((gest.travel - .01) * 6)) haptic(3);
+  } else if (gest.tool === 'marble'){
+    if (dist(p.x, p.y, gest.p0.x, gest.p0.y) > .05){
+      gest.angle = Math.atan2(p.y - gest.p0.y, p.x - gest.p0.x);
+      design.tools.marble = marbleColor;
+      design.toolFx.marbleAngle = Math.round(gest.angle * 24) / 24;
+    }
+  }
+  // 'toast' and 'fill' need no move handling — the torch and the syringe
+  // simply follow the finger, and tickToast() counts the hold.
+}
+
+/** Holding the torch on the candy browns it further the longer you stay. */
+function tickToast(){
+  if (gest?.tool !== 'toast') return;
+  const hold = (performance.now() - gest.t0) / 1000;
+  gest.power = clamp(hold / 1.7, 0, 1);
+  if (hold < .22) return;
+  const lv = clamp(Math.ceil(gest.power * 3), 1, 3);
+  if (design.tools.toast !== lv){
+    design.tools.toast = lv;
+    sfx('pour'); haptic(6);
+  }
+}
+
+function onGestEnd(e){
+  if (gest && gest.pointerId != null && e?.pointerId != null &&
+      e.pointerId !== gest.pointerId) return;
+
+  document.removeEventListener('pointermove', onGestMove);
+  document.removeEventListener('pointerup', onGestEnd);
+  document.removeEventListener('pointercancel', onGestEnd);
+
+  if (!gest) return;
+  const g = gest;
+  gest = null;
+
+  if (g.tool === 'fill'){
+    // pressing the injector is what cuts the candy open
+    design.toolFx.fillAt = { x: clamp(g.p.x, .22, .78), y: clamp(g.p.y, .22, .78) };
+    design.tools.fill = fillSel;
+    sparkleBurst(g.px, g.py, 8);
+  }
+  const did = g.tool === 'dip' ? design.tools.dip
+            : g.tool === 'dust' ? g.travel > .02
+            : g.tool === 'marble' ? g.angle != null
+            : g.tool === 'toast' ? design.tools.toast : true;
+  if (did){ sfx('place'); haptic(14); bump('decosPlaced'); }
+  renderTray();
 }
 
 /* ── floating tools for the selected item ────────────── */
@@ -1155,3 +1388,6 @@ function savePhotoNow(){
 
 /** Read-only access for other screens. */
 export const currentDesign = () => design;
+
+// handy from the console when something looks wrong on a real phone
+if (typeof window !== 'undefined') window.__studioDesign = currentDesign;

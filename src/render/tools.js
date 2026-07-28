@@ -38,7 +38,7 @@ function tintCopy(src, size, index, fill){
 /* ══════════════ CREAM FILLER ══════════════
    Takes a bite out of the candy and reveals a shell rim with a
    cream centre behind it. */
-function applyFill(canvas, size, fillId, zone, colorId){
+function applyFill(canvas, size, fillId, zone, colorId, at){
   const filling = FILL_BY_ID[fillId];
   if (!filling) return;
   const ctx = canvas.getContext('2d');
@@ -71,10 +71,11 @@ function applyFill(canvas, size, fillId, zone, colorId){
     x.restore();
   }
 
-  // A window bitten out of the upper-right, kept fully inside the candy so
-  // the cut is ringed by chocolate on every side.
-  const bx = (zone.x + zone.w * .20) * U;
-  const by = (zone.y - zone.h * .20) * U;
+  // A window bitten out of the candy, kept fully inside it so the cut is
+  // ringed by chocolate on every side. `at` is where the player pressed the
+  // injector; without it we fall back to the candy's own sweet spot.
+  const bx = (at ? clamp(at.x, .22, .78) : zone.x + zone.w * .20) * U;
+  const by = (at ? clamp(at.y, .22, .78) : zone.y - zone.h * .20) * U;
   const br = Math.min(zone.w, zone.h) * U * .34;
 
   ctx.save();
@@ -132,22 +133,27 @@ function applyFill(canvas, size, fillId, zone, colorId){
 }
 
 /* ══════════════ MARBLE ══════════════ */
-function applyMarble(canvas, size, colorId){
+function applyMarble(canvas, size, colorId, angle = 0){
   const ctx = canvas.getContext('2d');
   const c = getColor(colorId);
   const rng = rngFrom('marble' + colorId);
   ctx.save();
   ctx.globalCompositeOperation = 'source-atop';
+  // the bands run along the direction the player swiped
+  ctx.translate(size / 2, size / 2);
+  ctx.rotate(angle);
+  ctx.translate(-size / 2, -size / 2);
   ctx.lineCap = 'round';
-  for (let band = 0; band < 5; band++){
+  // drawn well past the edges so rotating never uncovers a corner
+  for (let band = 0; band < 10; band++){
     ctx.strokeStyle = alpha(band % 2 ? c.light : c.base, .78);
     ctx.lineWidth = size * (.045 + rng() * .05);
     ctx.beginPath();
-    const y0 = size * (.1 + band * .19);
-    for (let i = 0; i <= 24; i++){
-      const p = i / 24;
-      const x = p * size;
-      const y = y0 + Math.sin(p * Math.PI * 2.6 + band) * size * .07;
+    const y0 = size * (-.6 + band * .19);
+    for (let i = 0; i <= 34; i++){
+      const p = i / 34;
+      const x = (-.6 + p * 2.2) * size;
+      const y = y0 + Math.sin(p * Math.PI * 5.7 + band) * size * .07;
       i ? ctx.lineTo(x, y) : ctx.moveTo(x, y);
     }
     ctx.stroke();
@@ -235,9 +241,11 @@ function applyToast(canvas, size, level){
 }
 
 /* ══════════════ SUGAR DUSTER ══════════════ */
-function applyDust(canvas, size, dustId){
+/** @param lv 0..1 — how long the sieve was rubbed over the candy. */
+function applyDust(canvas, size, dustId, lv = 1){
   const dust = DUST_BY_ID[dustId];
   if (!dust) return;
+  const amt = clamp(lv, .22, 1);
   const ctx = canvas.getContext('2d');
   const rng = rngFrom('dust' + dustId);
 
@@ -245,16 +253,17 @@ function applyDust(canvas, size, dustId){
   ctx.globalCompositeOperation = 'source-atop';
   // heavier where it settled on top
   const g = ctx.createLinearGradient(0, 0, 0, size);
-  g.addColorStop(0, alpha(dust.color, .40));
-  g.addColorStop(.55, alpha(dust.color, .12));
-  g.addColorStop(1, alpha(dust.color, .03));
+  g.addColorStop(0, alpha(dust.color, .40 * amt));
+  g.addColorStop(.55, alpha(dust.color, .12 * amt));
+  g.addColorStop(1, alpha(dust.color, .03 * amt));
   ctx.fillStyle = g;
   ctx.fillRect(0, 0, size, size);
 
-  for (let i = 0; i < 420; i++){
+  const grains = Math.round(420 * amt);
+  for (let i = 0; i < grains; i++){
     const x = rng() * size;
     const y = Math.pow(rng(), 1.5) * size;
-    ctx.fillStyle = alpha(dust.color, .18 + rng() * .55);
+    ctx.fillStyle = alpha(dust.color, (.18 + rng() * .55) * (.45 + amt * .55));
     ctx.beginPath();
     ctx.arc(x, y, rng() * size * .006 + size * .0015, 0, TAU);
     ctx.fill();
@@ -311,11 +320,15 @@ export function applyTools(canvas, size, tools, design, zone){
   if (!tools) return;
   const ctx = canvas.getContext('2d');
 
-  if (tools.marble) applyMarble(canvas, size, tools.marble);
-  if (tools.fill)   applyFill(canvas, size, tools.fill, zone, design.color);
+  // extras the physical tools record: where the injector went in, how far
+  // the sieve was rubbed, which way the marble was swiped
+  const fx = design.toolFx || {};
+
+  if (tools.marble) applyMarble(canvas, size, tools.marble, fx.marbleAngle || 0);
+  if (tools.fill)   applyFill(canvas, size, tools.fill, zone, design.color, fx.fillAt);
   if (tools.dip)    applyDip(canvas, size, tools.dip);
   if (tools.toast)  applyToast(canvas, size, tools.toast);
-  if (tools.dust)   applyDust(canvas, size, tools.dust);
+  if (tools.dust)   applyDust(canvas, size, tools.dust, fx.dustLv ?? 1);
 
   if (tools.swirl){
     ctx.save();

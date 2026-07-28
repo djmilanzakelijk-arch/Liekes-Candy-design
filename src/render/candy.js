@@ -243,12 +243,15 @@ function drawText(ctx, text, colorId){
    configuration and reused every frame. Without this, the tool effects
    would repaint several full-size canvases 60 times a second. */
 const baseCache = new Map();
-const BASE_CACHE_MAX = 6;
+/* Physical tools nudge the settings continuously while you drag, so the
+   cache has to hold a handful of neighbouring steps to stay useful. */
+const BASE_CACHE_MAX = 20;
 
 function baseSignature(design, size){
   return [
     size, design.candy, design.color, design.flavor,
     JSON.stringify(design.tools || {}),
+    JSON.stringify(design.toolFx || {}),
   ].join('|');
 }
 
@@ -308,18 +311,22 @@ export function drawDesign(ctx, size, design, t = 0,
   const px = Math.round(size * zoom);
   const off = (size - px) / 2;
   const pack = getPack(design.pack);
+  const unit = px / U;
 
+  // Everything below is relative to whatever transform the caller set up —
+  // the studio slides and shrinks the whole design while you dip it, so we
+  // must never reset the matrix here.
   ctx.translate(off, off);
-  ctx.scale(px / U, px / U);
 
-  packBack(ctx, pack.art, design.color);
-
-  // drawImage obeys the current transform, so undo the unit scale for it
   ctx.save();
-  ctx.setTransform(1, 0, 0, 1, 0, 0);
-  ctx.translate(off, off);
-  ctx.drawImage(renderCandyBase(px, design), 0, 0);
+  ctx.scale(unit, unit);
+  packBack(ctx, pack.art, design.color);
   ctx.restore();
+
+  // the cached base is already px×px, so it goes down before the unit scale
+  ctx.drawImage(renderCandyBase(px, design), 0, 0);
+
+  ctx.scale(unit, unit);
 
   // piped cream sits on the candy, under the charms and stickers
   for (const stroke of design.strokes || []) drawPipedStroke(ctx, stroke, t);
