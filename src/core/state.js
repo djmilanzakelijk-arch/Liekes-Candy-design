@@ -9,6 +9,7 @@ import { STARTER_DECOS, STARTER_PACKS, DECORATIONS, PACKAGING } from '../data/de
 import { COLOR_UNLOCK, FLAVORS } from '../data/palette.js';
 import { computeBonuses } from '../data/upgrades.js';
 import { staffBonuses, makeEmployee } from '../data/staff.js';
+import { CONTENT_REV } from './version.js';
 
 export const SAVE_KEY = 'liekes-candy-design/save/v1';
 const SAVE_VERSION = 1;
@@ -78,10 +79,15 @@ function freshState(){
     settings: { music:true, sfx:true, haptics:true, volume:.65, hints:true },
 
     tutorialDone: false,
+    contentRev: 0,
   };
 }
 
 export let S = freshState();
+
+/** Content granted during this boot, for the "what's new" notice. */
+let bootGains = [];
+export const getBootUnlocks = () => bootGains;
 
 /* ── load / save ─────────────────────────────────────── */
 export function load(){
@@ -96,7 +102,12 @@ export function load(){
     S = freshState();
   }
   rolloverDaily();
-  syncUnlocks();
+  // Only announce new content to players who were already playing —
+  // a first-time save has nothing to catch up on.
+  const returning = (S.contentRev || 0) < CONTENT_REV && (S.counters?.orders || 0) > 0;
+  bootGains = syncUnlocks();
+  S.contentRev = CONTENT_REV;
+  if (!returning) bootGains = [];
   return S;
 }
 
@@ -203,6 +214,10 @@ export function syncUnlocks(){
       gained.push({ kind:'candy', id:c.id, name:c.name, emoji:c.emoji });
     }
   }
+  // Persist immediately. Leaving the grant in memory meant a player who
+  // closed the tab without doing anything else had to earn it again next
+  // launch, and any later write could race it away.
+  if (gained.length) save(true);
   return gained;
 }
 

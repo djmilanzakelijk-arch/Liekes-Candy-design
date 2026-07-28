@@ -19,6 +19,7 @@ import { claimableCount, refreshMissionBadge } from './missions.js';
 import { go, subHeader } from './nav.js';
 import { openStudio } from './studio.js';
 import { t, tName, tDesc, LANGS, getLang, setLang } from '../core/i18n.js';
+import { BUILD } from '../core/version.js';
 import { openTransferSheet, maybeShowMoveBanner } from './transferUi.js';
 import { encodeSave, decodeSave, downloadSaveFile, pickSaveFile } from '../core/transfer.js';
 
@@ -422,6 +423,9 @@ export function mountSettings(host){
     el('div.card-title', el('span.ico', '🍬'), "Lieke's Candy Design"),
     el('p.tiny.muted', t('set.aboutText')),
     el('p.tiny.muted', { style:{ marginTop:'6px' } }, t('set.tipText')),
+    // makes "which version are you on?" answerable without guessing
+    el('p.tiny.muted.center', { style:{ marginTop:'10px', opacity:'.7' } },
+      t('set.build', { v: BUILD })),
   ));
 
   host.append(wrap);

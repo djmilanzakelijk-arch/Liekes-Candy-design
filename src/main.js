@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { el, $, $$, fmt, clamp, sleep } from './core/utils.js';
-import { S, load, save, on, xpForLevel, collectIdle, syncUnlocks, seedLegacyStaff } from './core/state.js';
+import { S, load, save, on, xpForLevel, collectIdle, syncUnlocks, seedLegacyStaff, getBootUnlocks } from './core/state.js';
 import { unlock as unlockAudio, sfx, startMusic, setVolume, duck } from './core/audio.js';
 import { toast, confetti, candyRain, bumpPill } from './core/fx.js';
 import { openModal } from './ui/modal.js';
@@ -164,6 +164,13 @@ function afterBoot(){
     setTimeout(() => toast(t('ev.toast', { name: tName('event', ev.id, ev.name) }), 'good', ev.emoji), 1400);
   }
 
+  // an update added candy this player already qualifies for — say so,
+  // otherwise it just quietly appears at the end of a long tray
+  const fresh = getBootUnlocks();
+  if (fresh.length && S.tutorialDone && !hasIncoming()){
+    setTimeout(() => showWhatsNew(fresh), 800);
+  }
+
   if (hasIncoming()){
     setTimeout(() => { handleIncomingTransfer(); }, 400);
   } else if (!S.tutorialDone){
@@ -176,6 +183,23 @@ function afterBoot(){
   // save on the way out
   window.addEventListener('pagehide', () => save(true));
   document.addEventListener('visibilitychange', () => { if (document.hidden) save(true); });
+}
+
+/** "The update brought you these" — shown once per content revision. */
+function showWhatsNew(gains){
+  const row = el('div.chipbar', { style:{ justifyContent:'center', flexWrap:'wrap' } });
+  for (const g of gains){
+    row.append(el('div.chip.on', `${g.emoji} ${tName('candy', g.id, g.name)}`));
+  }
+  sfx('unlock');
+  confetti(40);
+  openModal({
+    icon:'🎁',
+    title: t('new.title'),
+    sub: t('new.sub', { n: gains.length }),
+    body: [row, el('p.center.tiny.muted', { style:{ marginTop:'10px' } }, t('new.where'))],
+    actions:[{ label:t('new.ok'), cls:'mint' }],
+  });
 }
 
 /** Static chrome outside the screen system: tab labels, boot logo. */
@@ -243,8 +267,27 @@ function showTutorial(){
 
 /* ══════════════ service worker (offline play) ══════════════ */
 if ('serviceWorker' in navigator && location.protocol.startsWith('http')){
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('./sw.js').catch(() => {});
+  window.addEventListener('load', async () => {
+    try {
+      // updateViaCache:'none' stops the browser serving sw.js itself from
+      // the HTTP cache, which could otherwise pin a player to an old build
+      // for a day — long enough to miss newly added candies entirely.
+      const reg = await navigator.serviceWorker.register('./sw.js', { updateViaCache:'none' });
+
+      // once a new worker takes over, reload so the page runs the new code
+      let reloading = false;
+      navigator.serviceWorker.addEventListener('controllerchange', () => {
+        if (reloading) return;
+        reloading = true;
+        location.reload();
+      });
+
+      reg.update().catch(() => {});
+      // and check again whenever the game comes back to the foreground
+      document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) reg.update().catch(() => {});
+      });
+    } catch { /* offline or unsupported — the game still runs */ }
   });
 }
 
