@@ -695,3 +695,21 @@
 .move-banner .btn{
   flex:0 0 auto;background:#fff;color:#5b2ec2;box-shadow:0 3px 0 rgba(0,0,0,.18);
 }
+
+/* Marks the exact candy / colour / decoration the customer asked for, so a
+   request can never look like something she does not stock. */
+.tool.asked, .swatch.asked{
+  box-shadow:0 0 0 2.5px var(--gold-2), var(--sh-2);
+  background:linear-gradient(180deg,#fffaf0,var(--gold-1));
+}
+.tool.asked.on, .swatch.asked.on{
+  box-shadow:0 0 0 2.5px var(--pink-400), 0 0 0 5px var(--gold-1), var(--sh-2);
+}
+.t-asked{
+  position:absolute;top:-5px;left:-5px;
+  width:19px;height:19px;border-radius:50%;
+  display:grid;place-items:center;font-size:11px;line-height:1;
+  background:linear-gradient(180deg,var(--gold-1),var(--gold-2));color:#6a4708;
+  box-shadow:0 2px 5px rgba(201,143,20,.5),inset 0 0 0 1.5px #fff;
+}
+.swatch{position:relative}

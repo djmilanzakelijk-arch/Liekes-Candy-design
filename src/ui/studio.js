@@ -88,9 +88,8 @@ export function closeStudio(){
   rafId = 0;
   document.body.classList.remove('studio-open');
   hideSelTools();
+  resetGestures();
   window.removeEventListener('resize', sizeCanvas);
-  document.removeEventListener('pointermove', onDragMove);
-  document.removeEventListener('pointerup', onDragEnd);
   root = null; canvas = null; ctx = null;
 }
 
@@ -218,10 +217,23 @@ function renderTray(){
   if (tabId.startsWith('cat:')) return renderDecoTray(host, tabId.slice(4));
 }
 
+/** What the current customer asked for, or an empty order. */
+const wanted = () => session?.customer?.order ?? {};
+
 function renderCandyTray(host){
-  for (const c of CANDIES){
+  // The list is long enough to scroll off screen, so bring what the customer
+  // actually asked for to the front and mark it — otherwise a request for a
+  // truffle looks like a candy she does not have.
+  const want = wanted().candy;
+  const ordered = [...CANDIES].sort((a, b) => {
+    const rank = c => (c.id === want ? 0 : S.owned.candies.includes(c.id) ? 1 : 2);
+    return rank(a) - rank(b);
+  });
+
+  for (const c of ordered){
     const owned = S.owned.candies.includes(c.id);
-    const tool = el('button.tool' + (design.candy === c.id ? '.on' : ''), {
+    const asked = c.id === want;
+    const tool = el('button.tool' + (design.candy === c.id ? '.on' : '') + (asked ? '.asked' : ''), {
       onclick: () => {
         if (!owned) return toast(t('lock.candyLevel', { n:c.unlock, name:tName('candy', c.id, c.name) }), 'warn', '🔒');
         pushHistory();
@@ -233,6 +245,7 @@ function renderCandyTray(host){
     });
     const cv = el('canvas', { width:88, height:88 });
     tool.append(cv, el('b', tName('candy', c.id, c.name)));
+    if (asked) tool.append(el('span.t-asked', '★'));
     if (!owned) tool.append(el('div.t-lock', '🔒'));
     host.append(tool);
     const cc = cv.getContext('2d');
@@ -258,6 +271,10 @@ function renderColorTray(host, target){
     const chip = el('i');
     chip.style.background = swatchCss(c);
     sw.append(chip, el('b', tName('color', c.id, c.name)));
+    if (target === 'candy' && c.id === wanted().color){
+      sw.classList.add('asked');
+      sw.append(el('span.t-asked', '★'));
+    }
     if (locked) sw.append(el('div.t-lock', '🔒'));
     host.append(sw);
   }
@@ -311,11 +328,20 @@ function renderDecoTray(host, cat){
     // otherwise a Christmas snowflake would vanish every January.
     (ownsDeco(d.id) || (!d.event || eventRunning(d.event)) && !d.reward));
 
+  const asks = new Set((wanted().wants || []).map(w => w.id));
+  // requested decorations to the front of the row, same reason as the candy
+  const sorted = [...list].sort((a, b) => {
+    const rank = d => (asks.has(d.id) ? 0 : ownsDeco(d.id) ? 1 : 2);
+    return rank(a) - rank(b);
+  });
+
   const grid = el('div', { style:{ display:'flex', gap:'9px' } });
-  for (const d of list){
+  for (const d of sorted){
     const owned = ownsDeco(d.id);
     const levelOk = S.level >= d.unlock;
-    const tool = el('button.tool.rar-' + d.rarity + (activeTool === d.id ? '.on' : ''), {
+    const asked = asks.has(d.id);
+    const tool = el('button.tool.rar-' + d.rarity + (activeTool === d.id ? '.on' : '')
+                    + (asked ? '.asked' : ''), {
       dataset: { deco: d.id },
     });
     const cv = el('canvas', { width:88, height:88 });
@@ -324,7 +350,8 @@ function renderDecoTray(host, cat){
     toolThumbs.push({ ctx: cc, id: d.id, size: 88, animated: RARITY[d.rarity].animated });
     drawDecoThumb(cc, 88, d.id, d.fixed || accent, 0);
 
-    if (RARITY[d.rarity].animated) tool.append(el('span.t-anim', '✦'));
+    if (asked) tool.append(el('span.t-asked', '★'));
+    else if (RARITY[d.rarity].animated) tool.append(el('span.t-anim', '✦'));
 
     if (!owned){
       if (!levelOk){
@@ -338,6 +365,9 @@ function renderDecoTray(host, cat){
     } else {
       tool.addEventListener('pointerdown', e => startToolDrag(e, d));
       tool.addEventListener('click', () => {
+        // a finished drag also fires a click on some browsers; that must not
+        // arm tap-to-place and drop a second decoration on the next touch
+        if (suppressClick) return;
         activeTool = activeTool === d.id ? null : d.id;
         sfx('pickup');
         renderTray();
@@ -375,9 +405,12 @@ function renderPackTray(host){
   for (const p of PACKAGING){
     const owned = ownsPack(p.id);
     const levelOk = S.level >= p.unlock;
-    const tool = el('button.tool.rar-' + p.rarity + (design.pack === p.id ? '.on' : ''));
+    const asked = p.id === wanted().pack;
+    const tool = el('button.tool.rar-' + p.rarity + (design.pack === p.id ? '.on' : '')
+                    + (asked ? '.asked' : ''));
     const cv = el('canvas', { width:88, height:88 });
     tool.append(cv, el('b', tName('pack', p.id, p.name)));
+    if (asked) tool.append(el('span.t-asked', '★'));
     drawPackThumb(cv.getContext('2d'), 88, p.id, design.color, 0);
 
     if (!owned){
@@ -685,11 +718,35 @@ function toDesign(clientX, clientY){
 /* ══════════════════════════════════════════════════════
    Placing / moving decorations
    ══════════════════════════════════════════════════════ */
-let dragging = null;   // { mode:'new'|'move', deco, item, ghost }
+let dragging = null;   // { mode:'new'|'move', deco, item, ghost, pointerId }
+let suppressClick = false;   // a real drag must not also fire the tool's click
+
+/** Fingers wobble; below this many pixels it is still a tap. */
+const DRAG_SLOP = 7;
+
+/**
+ * Wipe any half-finished gesture. Phones fire pointercancel whenever the
+ * browser decides a touch was a scroll, and without this the studio would
+ * stay stuck mid-drag with a ghost on screen and a dead stage.
+ */
+function resetGestures(){
+  if (dragging?.ghost) dragging.ghost.remove();
+  dragging = null;
+  piping = null;
+  stageEl?.classList.remove('dropping');
+  document.removeEventListener('pointermove', onDragMove);
+  document.removeEventListener('pointerup', onDragEnd);
+  document.removeEventListener('pointercancel', onDragEnd);
+  document.removeEventListener('pointermove', onPipeMove);
+  document.removeEventListener('pointerup', onPipeEnd);
+  document.removeEventListener('pointercancel', onPipeEnd);
+}
 
 function startToolDrag(e, deco){
   if (e.pointerType === 'mouse' && e.button !== 0) return;
+  if (dragging || piping) resetGestures();
   e.preventDefault();
+
   const ghost = el('div', { id:'dragGhost' });
   const cv = el('canvas', { width:132, height:132 });
   ghost.append(cv);
@@ -697,10 +754,18 @@ function startToolDrag(e, deco){
   document.body.append(ghost);
   moveGhost(ghost, e.clientX, e.clientY);
 
-  dragging = { mode:'new', deco, ghost, moved:false };
+  dragging = {
+    mode:'new', deco, ghost, moved:false,
+    pointerId: e.pointerId, x0: e.clientX, y0: e.clientY,
+  };
   sfx('pickup');
+  listenDrag();
+}
+
+function listenDrag(){
   document.addEventListener('pointermove', onDragMove, { passive:false });
   document.addEventListener('pointerup', onDragEnd);
+  document.addEventListener('pointercancel', onDragEnd);
 }
 
 function moveGhost(ghost, x, y){
@@ -710,16 +775,21 @@ function moveGhost(ghost, x, y){
 
 function onDragMove(e){
   if (!dragging) return;
+  // ignore a second finger joining in
+  if (dragging.pointerId != null && e.pointerId !== dragging.pointerId) return;
   e.preventDefault();
+
+  if (!dragging.moved &&
+      Math.hypot(e.clientX - dragging.x0, e.clientY - dragging.y0) < DRAG_SLOP) return;
   dragging.moved = true;
+
   if (dragging.ghost) moveGhost(dragging.ghost, e.clientX, e.clientY);
   if (dragging.mode === 'move'){
     const p = toDesign(e.clientX, e.clientY);
     dragging.item.x = clamp(p.x, .04, .96);
     dragging.item.y = clamp(p.y, .04, .96);
   } else {
-    const over = overStage(e.clientX, e.clientY);
-    stageEl.classList.toggle('dropping', over);
+    stageEl.classList.toggle('dropping', overStage(e.clientX, e.clientY));
   }
 }
 
@@ -729,21 +799,34 @@ function overStage(x, y){
 }
 
 function onDragEnd(e){
+  if (dragging && dragging.pointerId != null &&
+      e.pointerId !== dragging.pointerId) return;
+
   document.removeEventListener('pointermove', onDragMove);
   document.removeEventListener('pointerup', onDragEnd);
+  document.removeEventListener('pointercancel', onDragEnd);
   stageEl?.classList.remove('dropping');
+
   if (!dragging) return;
   const d = dragging;
   dragging = null;
   d.ghost?.remove();
 
+  // the browser took the gesture away — drop it quietly
+  if (e.type === 'pointercancel'){
+    if (d.mode === 'move') showSelTools();
+    return;
+  }
+
   if (d.mode === 'new'){
-    if (!d.moved) return;                       // treated as a tap → handled by click
+    if (!d.moved) return;                       // a tap: the click handler deals with it
+    suppressClick = true;                       // …but a real drag must not click
+    setTimeout(() => { suppressClick = false; }, 350);
     if (!overStage(e.clientX, e.clientY)) { sfx('remove'); return; }
     const p = toDesign(e.clientX, e.clientY);
     placeItem(d.deco, p.x, p.y, e.clientX, e.clientY);
   } else {
-    sfx('place'); haptic(8);
+    if (d.moved){ sfx('place'); haptic(8); }
     showSelTools();
   }
 }
@@ -775,7 +858,8 @@ function placeItem(deco, x, y, clientX, clientY){
 }
 
 function onStageDown(e){
-  if (dragging || piping) return;
+  // a previous gesture the browser cancelled must never block this one
+  if (dragging || piping) resetGestures();
   const p = toDesign(e.clientX, e.clientY);
 
   // piping bag selected: drag to squeeze out a rope of cream
@@ -796,10 +880,13 @@ function onStageDown(e){
   if (hit){
     selected = hit;
     hideSelTools();
-    dragging = { mode:'move', item: hit, moved:false };
+    dragging = {
+      mode:'move', item: hit, moved:false,
+      pointerId: e.pointerId, x0: e.clientX, y0: e.clientY,
+    };
     sfx('pickup');
-    document.addEventListener('pointermove', onDragMove, { passive:false });
-    document.addEventListener('pointerup', onDragEnd);
+    try { canvas.setPointerCapture(e.pointerId); } catch {}
+    listenDrag();
     return;
   }
 
