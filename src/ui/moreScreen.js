@@ -13,6 +13,8 @@ import { socialBadge } from './socialScreen.js';
 import { seasonBadge } from './seasonScreen.js';
 import { contestBadge } from './contestScreen.js';
 import { recipeBadge } from './shopLifeScreen.js';
+import { petBadge } from './petScreen.js';
+import { hasPet, pet as thePet, unlocked as petOpen, PET_LEVEL } from '../game/pet.js';
 import { theme as contestTheme } from '../game/contest.js';
 import { regulars } from '../game/regulars.js';
 import { cased as recipeCased, CASE_SLOTS } from '../game/recipes.js';
@@ -56,6 +58,7 @@ export function mountMore(host){
     tile('🏆', t('more.contest'), t('ct.theme.' + contestTheme().id + '.name'), () => go('contest'), contestBadge()),
     tile('💛', t('more.regulars'), t('more.regularsSub', { n: regulars().length }), () => go('regulars')),
     tile('📗', t('more.recipes'), t('more.recipesSub', { a: recipeCased().length, b: CASE_SLOTS }), () => go('recipes'), recipeBadge()),
+    tile('🐾', t('more.pet'), petSub(), () => go('pet'), petBadge()),
     tile('📸', t('more.photos'), t('more.photosSub', { n: S.photos.length }), () => go('photos')),
     tile('🏅', t('more.leaderboard'), t('more.leaderboardSub'), () => go('leaderboard')),
     tile('🎉', t('more.events'),
@@ -99,6 +102,12 @@ function seasonSub(){
     a: seasonTier(), b: SEASON_TIERS,
     tag: hasPass() ? t('pass.owned') : t('pass.free'),
   });
+}
+
+/** Pet tile: their name, or an invitation to adopt one. */
+function petSub(){
+  if (!petOpen()) return t('more.petLocked', { n: PET_LEVEL });
+  return hasPet() ? thePet().name : t('more.petNone');
 }
 
 /** Social tile: the follower count, or why it is still closed. */

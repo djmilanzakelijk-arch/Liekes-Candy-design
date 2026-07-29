@@ -10,6 +10,7 @@ import { COLOR_UNLOCK, FLAVORS } from '../data/palette.js';
 import { computeBonuses, UPGRADES, UPG_BY_ID, LOC_BY_ID } from '../data/upgrades.js';
 import { staffBonuses, makeEmployee, roleOf, wageOf, payrollOf } from '../data/staff.js';
 import { fameTier } from '../data/social.js';
+import { moodOf as petMood, bonusFor as petBonus } from '../data/pet.js';
 import { CONTENT_REV } from './version.js';
 
 export const SAVE_KEY = 'liekes-candy-design/save/v1';
@@ -70,6 +71,12 @@ function freshState(){
 
     /* the weekly candy contest */
     contest: { idx: null, entry: null, history: [], won: 0 },
+
+    /* the shop pet */
+    pet: null,
+
+    /* today's three-candy menu */
+    menu: { date: '', picks: [] },
 
     /* customers who come back, and the candies she bottled */
     regulars: [],
@@ -136,7 +143,7 @@ function migrate(old){
   const merged = { ...base, ...old, v: SAVE_VERSION };
   // deep-merge the nested objects so new fields appear for old saves
   for (const key of ['owned','counters','missions','daily','records','settings','staff',
-                     'levelRewards','finance','delivery','social','season','contest','recipes']){
+                     'levelRewards','finance','delivery','social','season','contest','recipes','menu']){
     merged[key] = { ...base[key], ...(old[key] || {}) };
   }
   merged.social.posts = [...(old.social?.posts || [])];
@@ -359,12 +366,15 @@ export const bonuses = () => {
   const st = staffBonuses(S.staff?.roster || []);
   // fame is worth something at the till: people tip a shop they follow
   const fame = fameTier(S.social?.followers || 0);
+  // …and so is a happy animal by the counter
+  const petB = petBonus(petMood(S.pet));
   return {
     ...base,
     idleCoins:    base.idleCoins + st.idleCoins,
-    tipMult:      base.tipMult * st.tipMult * fame.tipMult,
+    tipMult:      base.tipMult * st.tipMult * fame.tipMult * petB.tipMult,
     patienceMult: base.patienceMult * st.patienceMult,
     queue:        base.queue + fame.queue,
+    satisfaction: base.satisfaction + petB.satisfaction,
   };
 };
 

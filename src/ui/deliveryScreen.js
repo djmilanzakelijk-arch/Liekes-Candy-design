@@ -12,12 +12,13 @@ import {
 } from '../core/state.js';
 import { sfx, haptic } from '../core/audio.js';
 import { toast, confetti, coinFly, bumpPill } from '../core/fx.js';
-import { openModal } from './modal.js';
+import { openModal, confirmModal } from './modal.js';
 import { drawDesign } from '../render/candy.js';
 import {
   ensureBoard, store, jobById, claimJob, declineJob, nextJobIn, dispatch,
   activeParcels, parcelSlots, roadIsFull, arrivedParcels, collect, collectAll,
   minutesLeft, parcelArrived,
+  subs, subOffer, acceptOffer, declineOffer, cancelSub, subDueIn,
 } from '../game/delivery.js';
 import { courierStats } from '../data/staff.js';
 import { getCandy } from '../data/candies.js';
@@ -85,6 +86,55 @@ export function mountDelivery(host){
     }
   }
   wrap.append(road);
+
+  /* ── standing orders ── */
+  const offer = subOffer();
+  if (offer){
+    wrap.append(el('div.card.shine', { style:{
+      background:'linear-gradient(125deg,#e8f7ff,#f4ecff)',
+    }},
+      el('div.card-title', el('span.ico', offer.face), t('sub.offerTitle', { name: offer.name })),
+      el('p.tiny', { style:{ fontWeight:'800', lineHeight:'1.45' } },
+        t('sub.offerBody', { every: offer.every, addr: offer.address, n: fmt(offer.fee) })),
+      el('div.row', { style:{ gap:'8px', marginTop:'10px' } },
+        el('button.btn.ghost.grow.sm', { onclick: () => {
+          declineOffer(); sfx('remove'); go('delivery');
+        }}, t('sub.decline')),
+        el('button.btn.mint.grow.sm', { onclick: () => {
+          acceptOffer(); sfx('unlock'); haptic(12); confetti(24);
+          toast(t('sub.accepted', { name: offer.name }), 'good', '📬');
+          go('delivery');
+        }}, t('sub.accept')),
+      ),
+    ));
+  }
+
+  const list = subs();
+  if (list.length){
+    const card = el('div.card',
+      el('div.card-title', el('span.ico', '📬'), t('sub.title'), el('span.spacer'),
+        el('span.sub', t('sub.count', { n: list.length }))));
+    for (const sub of list){
+      card.append(el('div.row', { style:{
+        padding:'9px 11px', borderRadius:'13px', background:'var(--surface-2)',
+        border:'1.5px solid var(--line)', marginTop:'6px',
+      }},
+        el('span', { style:{ fontSize:'19px' } }, sub.face),
+        el('div', { style:{ flex:'1', minWidth:'0' } },
+          el('b', { style:{ fontSize:'13px', fontWeight:'800' } }, sub.name),
+          el('div.tiny.muted', t('sub.every', { n: sub.every, addr: sub.address })),
+          el('div.tiny', { style:{ fontWeight:'800', color:'var(--pink-600)' } },
+            t('sub.due', { n: subDueIn(sub) }) + ' · ' + '💛'.repeat(Math.max(0, sub.health ?? 3))),
+        ),
+        el('button.upg-sell', { onclick: () => confirmModal({
+          icon:'📬', title:t('sub.cancelTitle', { name: sub.name }), sub:t('sub.cancelSub'),
+          yes:t('sub.cancelYes'),
+          onYes: () => { cancelSub(sub.id); sfx('remove'); go('delivery'); },
+        })}, '🚫'),
+      ));
+    }
+    wrap.append(card);
+  }
 
   /* ── the board ── */
   const d = store();
@@ -181,9 +231,11 @@ function jobRow(job){
   const full = roadIsFull();
   const distLabel = [t('deliv.near'), t('deliv.town'), t('deliv.far')][job.distance];
 
-  return el('div.cust-card' + (c.vip ? '.vip' : ''), { style:{ width:'100%', marginBottom:'8px' } },
+  return el('div.cust-card' + (c.vip ? '.vip' : '') + (job.sub ? '.subbed' : ''),
+    { style:{ width:'100%', marginBottom:'8px' } },
     el('div.cust-face', c.face),
-    el('div.cust-name', c.name),
+    el('div.cust-name', job.sub ? job.subName : c.name),
+    job.sub ? el('div.cust-tag', '📬 ' + t('sub.tag')) : null,
     el('div.cust-pers', `📍 ${job.address} · ${distLabel} · ~${job.minutes}m`),
     el('div.cust-want', c.order.line),
     el('div', { style:{ display:'flex', gap:'8px', alignItems:'center', marginTop:'8px' } },

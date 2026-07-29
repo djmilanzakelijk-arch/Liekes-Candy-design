@@ -7,6 +7,7 @@ import { getCandy } from '../data/candies.js';
 import { getDeco, getPack } from '../data/decorations.js';
 import { RARITY } from '../data/palette.js';
 import { getLocation } from '../data/upgrades.js';
+import { onMenu, MENU_BONUS } from './menu.js';
 import { activeEvent } from '../data/events.js';
 import { clamp } from '../core/utils.js';
 import { t, tLines } from '../core/i18n.js';
@@ -147,7 +148,9 @@ export function payout(design, order, result, customer){
   const base = candy.base * order.quantity
     * b.priceMult * loc.payMult * packBonus * rarityMult
     * (ev ? ev.payMult : 1)
-    * (order.vip ? 2.2 : 1);
+    * (order.vip ? 2.2 : 1)
+    // today's menu sells for more — that is the point of picking one
+    * (onMenu(order.candy) ? MENU_BONUS : 1);
 
   // stars scale the actual payment
   const starMult = [0, .35, .6, .9, 1.15, 1.45][result.stars];

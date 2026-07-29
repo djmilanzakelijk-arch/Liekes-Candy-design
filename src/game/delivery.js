@@ -28,8 +28,19 @@ const JOB_LIFETIME_MS = 3 * 3600 * 1000;
 /** Minutes between one order coming in and the next. */
 const JOB_GAP_MIN = [14, 38];
 
+/** A standing order pays this much more than a walk-in delivery. */
+const SUB_BONUS = 1.55;
+/** How often a subscriber's box is due, in hours. */
+const SUB_EVERY = [6, 12, 24];
+/** Missing this many boxes in a row and they cancel. */
+const SUB_HEALTH = 3;
+
 export const store = () => {
-  if (!S.delivery) S.delivery = { board:[], boardDate:'', active:[], done:0, earned:0, nextJobAt:0 };
+  if (!S.delivery){
+    S.delivery = { board:[], boardDate:'', active:[], done:0, earned:0,
+                   nextJobAt:0, subs:[], offer:null };
+  }
+  if (!S.delivery.subs) S.delivery.subs = [];
   return S.delivery;
 };
 
@@ -88,10 +99,102 @@ export function ensureBoard(){
   }
   if (d.nextJobAt <= now) d.nextJobAt = now + gapMs();
 
+  tickSubs(d);
+  maybeOffer(d);
+
   d.boardDate = todayKey();
   if (added || guard) save();
   return d;
 }
+
+/* ══════════════ standing orders ══════════════
+   A subscriber wants the same kind of box on a fixed rhythm. Keep it
+   up and it pays half again as much, every time, for as long as they
+   stay signed up. */
+
+export const subs = () => store().subs;
+export const subOffer = () => store().offer;
+
+/** Post the boxes that have come due, and drop subscribers you kept ignoring. */
+function tickSubs(d){
+  const now = Date.now();
+  for (const sub of d.subs){
+    if (sub.nextAt > now) continue;
+
+    // last box never got made — that is a strike
+    if (sub.pendingJob && !d.board.some(j => j.id === sub.pendingJob)){
+      // it left the board without being taken (claimJob clears jobDone)
+      if (!sub.jobDone) sub.health = (sub.health || SUB_HEALTH) - 1;
+    }
+    sub.jobDone = false;
+    sub.pendingJob = null;
+
+    if ((sub.health ?? SUB_HEALTH) <= 0){ sub.cancelled = true; continue; }
+
+    if (d.board.length < boardSize() + 1){
+      const job = makeJob();
+      job.sub = sub.id;
+      job.subName = sub.name;
+      job.fee = Math.round(job.fee * SUB_BONUS);
+      job.expires = now + sub.every * 3600000 * .9;
+      d.board.push(job);
+      sub.pendingJob = job.id;
+    }
+    sub.nextAt = now + sub.every * 3600000;
+  }
+  const before = d.subs.length;
+  d.subs = d.subs.filter(s => !s.cancelled);
+  if (d.subs.length !== before) save();
+}
+
+/** Occasionally somebody asks to sign up for a standing order. */
+function maybeOffer(d){
+  if (d.offer || d.subs.length >= 3) return;
+  if ((d.done || 0) < 3) return;                 // prove you can deliver first
+  if (Math.random() > .18) return;
+
+  const customer = makeCustomer({ difficulty: Math.min(1, .3 + S.level / 24) });
+  d.offer = {
+    id: uid(),
+    name: customer.name,
+    face: customer.face,
+    every: pick(SUB_EVERY),
+    address: pick(ADDRESSES),
+    fee: Math.round(customer.budget * .4 * SUB_BONUS),
+  };
+  save();
+}
+
+export function acceptOffer(){
+  const d = store();
+  if (!d.offer) return null;
+  const o = d.offer;
+  d.offer = null;
+  d.subs.push({
+    id: o.id, name: o.name, face: o.face, address: o.address,
+    every: o.every, fee: o.fee,
+    health: SUB_HEALTH, nextAt: Date.now(), boxes: 0,
+    pendingJob: null, jobDone: false,
+  });
+  bump('subs');
+  save(); emit('state');
+  return d.subs[d.subs.length - 1];
+}
+
+export function declineOffer(){
+  const d = store();
+  d.offer = null;
+  save(); emit('state');
+}
+
+export function cancelSub(id){
+  const d = store();
+  d.subs = d.subs.filter(s => s.id !== id);
+  save(); emit('state');
+}
+
+/** Minutes until a subscriber's next box. */
+export const subDueIn = sub => Math.max(0, Math.ceil((sub.nextAt - Date.now()) / 60000));
 
 /** Minutes until the next order comes in, or null when the board is full. */
 export function nextJobIn(){
@@ -140,6 +243,16 @@ export const jobById = id => store().board.find(j => j.id === id) || null;
 /** Take a job off the board — call this once the studio opens. */
 export function claimJob(id){
   const d = store();
+  const job = d.board.find(j => j.id === id);
+  if (job?.sub){
+    const sub = d.subs.find(s => s.id === job.sub);
+    if (sub){
+      sub.jobDone = true;
+      sub.boxes = (sub.boxes || 0) + 1;
+      // a box made on time restores their faith
+      sub.health = SUB_HEALTH;
+    }
+  }
   d.board = d.board.filter(j => j.id !== id);
   save();
   return d;

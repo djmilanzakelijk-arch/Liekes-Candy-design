@@ -3,7 +3,8 @@
    ============================================================ */
 
 import { el, $, $$, clamp, uid, rand, dist, TAU } from '../core/utils.js';
-import { S, bonuses, ownsDeco, ownsPack, colorUnlocked, flavorUnlocked, bump, spend, grantDeco, grantPack } from '../core/state.js';
+import { S, bonuses, ownsDeco, ownsPack, colorUnlocked, flavorUnlocked, bump, spend, grantDeco, grantPack, shopStaff } from '../core/state.js';
+import { TIERS as STAFF_TIERS, moraleMult } from '../data/staff.js';
 import { sfx, haptic, duck } from '../core/audio.js';
 import { toast, sparkleBurst } from '../core/fx.js';
 import { openModal, confirmModal } from './modal.js';
@@ -57,6 +58,9 @@ let guided = false;
 let stepIx = 0;
 let guidedCat = 'icing';
 
+/** One order, one helping hand. */
+let helpUsed = false;
+
 const DPR = () => Math.min(window.devicePixelRatio || 1, 2.5);
 
 /* ══════════════════════════════════════════════════════
@@ -79,6 +83,7 @@ export function openStudio(opts){
   history = [];
   selected = null;
   activeTool = null;
+  helpUsed = false;
   guided = !!S.settings.guided;
   stepIx = 0;
   guidedCat = DECO_CATS[0].id;
@@ -190,6 +195,11 @@ function buildDom(){
       'aria-label': t('studio.undo') }, '↩︎'),
     el('button.btn.ghost.act-icon', { onclick: clearAll, title: t('studio.clear'),
       'aria-label': t('studio.clear') }, '🧹'),
+    // a shop assistant can lay out part of the order for you, once
+    session.customer && !session.contest && helper()
+      ? el('button.btn.ghost.act-icon', { id:'helpBtn', onclick: askHelp,
+          title: t('help.title'), 'aria-label': t('help.title') }, helper().face)
+      : null,
     // free play can also bottle a design as a recipe you can make again
     session.freeplay && !session.contest
       ? el('button.btn.ghost.act-icon', { onclick: saveRecipeNow, title: t('rec.save'),
@@ -1546,6 +1556,102 @@ function quit(){
     icon:'🚪', title:t('studio.leaveTitle'), sub:t('studio.leaveSub'),
     yes:t('studio.leaveYes'), onYes: () => { closeStudio(); session.onQuit?.(); },
   });
+}
+
+/* ══════════════════════════════════════════════════════
+   Your assistant lending a hand
+
+   The best-rested person behind the counter lays out some of what the
+   customer asked for. They are quick, not perfect: pieces land roughly
+   where they should and the colours are right, but you still finish
+   the job. Once per order.
+   ══════════════════════════════════════════════════════ */
+
+/** Whoever is in the best shape to help right now. */
+function helper(){
+  const crew = shopStaff();
+  if (!crew.length) return null;
+  return [...crew].sort((a, b) =>
+    (STAFF_TIERS[b.tier]?.order ?? 0) * moraleMult(b) -
+    (STAFF_TIERS[a.tier]?.order ?? 0) * moraleMult(a))[0];
+}
+
+/** How many pieces they can lay out — better staff manage more. */
+function helpCount(emp){
+  const tier = STAFF_TIERS[emp.tier]?.order ?? 0;
+  return Math.max(1, Math.round((1 + tier) * moraleMult(emp)));
+}
+
+function askHelp(){
+  const emp = helper();
+  if (!emp) return;
+  if (helpUsed){
+    sfx('error');
+    return toast(t('help.used', { name: emp.name }), 'warn', emp.face);
+  }
+  const todo = wantedMissing();
+  if (!todo.length){
+    sfx('error');
+    return toast(t('help.nothing', { name: emp.name }), '', emp.face);
+  }
+  confirmModal({
+    icon: emp.face,
+    title: t('help.askTitle', { name: emp.name }),
+    sub: t('help.askSub', { n: Math.min(helpCount(emp), todo.length) }),
+    yes: t('help.yes'),
+    onYes: () => doHelp(emp, todo),
+  });
+}
+
+/** Decorations the order asks for that are not on the candy yet. */
+function wantedMissing(){
+  const order = session.customer?.order;
+  if (!order) return [];
+  const out = [];
+  for (const w of order.wants || []){
+    const have = (design.items || []).filter(i => i.id === w.id).length;
+    for (let i = have; i < (w.count || 1); i++){
+      if (ownsDeco(w.id)) out.push(w);
+    }
+  }
+  return out;
+}
+
+function doHelp(emp, todo){
+  const n = Math.min(helpCount(emp), todo.length);
+  const cap = bonuses().maxDecos;
+  pushHistory();
+
+  let placed = 0;
+  for (const w of todo.slice(0, n)){
+    if (design.items.length >= cap) break;
+    const deco = getDeco(w.id);
+    if (!deco) continue;
+    // laid out in a loose ring, roughly where a person would put them
+    const a = rand(0, TAU);
+    const r = rand(.14, .28);
+    design.items.push({
+      uid: uid(),
+      id: deco.id,
+      x: clamp(.5 + Math.cos(a) * r, .12, .88),
+      y: clamp(.5 + Math.sin(a) * r * .9, .12, .88),
+      rot: rand(-.22, .22),
+      scale: 1,
+      color: deco.fixed || w.color || accent,
+      seed: uid(),
+    });
+    placed++;
+  }
+  if (!placed) return;
+
+  helpUsed = true;
+  bump('decosPlaced', placed);
+  bump('helped');
+  selected = null; hideSelTools(); hideHint();
+  sfx('sparkle'); haptic([10, 20, 10]);
+  toast(t('help.done', { name: emp.name, n: placed }), 'good', emp.face);
+  const btn = $('#helpBtn', root);
+  if (btn) btn.classList.add('used');
 }
 
 /** Enter this candy in the weekly contest. */

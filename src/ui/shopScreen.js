@@ -23,7 +23,9 @@ import { POINTS as SEASON_POINTS } from '../data/season.js';
 import { grade, payout, reactionLine, satisfactionDelta } from '../game/scoring.js';
 import { getLocation } from '../data/upgrades.js';
 import { activeEvent } from '../data/events.js';
-import { getCandy } from '../data/candies.js';
+import { getCandy, CANDIES } from '../data/candies.js';
+import { picks as menuPicks, setMenu, suggestMenu, available as menuAvailable, MENU_SIZE, MENU_BONUS } from '../game/menu.js';
+import { drawCandyThumb } from '../render/candy.js';
 import { checkMissions } from './missions.js';
 import { maybeStaffEvent } from '../game/staffEvents.js';
 import { showPendingStaffEvent } from './staffEventUi.js';
@@ -125,6 +127,9 @@ export function mountShop(host){
     el('span.tiny.muted', { id:'queueCount' }, t('shop.waiting', { n: queue.length }))));
   wrap.append(el('div.queue', { id:'queueRow' }));
 
+  /* today's menu */
+  wrap.append(menuCard());
+
   /* today's special */
   wrap.append(el('div.card',
     el('div.card-title', el('span.ico', '🌟'), t('shop.special'), el('span.spacer'),
@@ -214,6 +219,66 @@ export function mountShop(host){
 }
 
 const stat = (v, label) => el('div.stat', el('b', v), el('span', label));
+
+/* ══════════════ today's menu ══════════════ */
+function menuCard(){
+  const picks = menuPicks();
+  const card = el('div.card',
+    el('div.card-title', el('span.ico', '📋'), t('menu.title'), el('span.spacer'),
+      el('span.sub', t('menu.bonus', { n: Math.round((MENU_BONUS - 1) * 100) }))));
+
+  if (!picks.length){
+    card.append(el('p.tiny.muted.center', { style:{ padding:'4px 0 8px' } }, t('menu.none')));
+  } else {
+    const row = el('div.menu-row');
+    for (const id of picks){
+      const c = getCandy(id);
+      const cv = el('canvas', { width:110, height:110 });
+      drawCandyThumb(cv.getContext('2d'), 110, id, 'pink', 'milk');
+      row.append(el('div.menu-item', cv, el('b', tName('candy', id, c?.name ?? id))));
+    }
+    card.append(row);
+  }
+  card.append(el('button.btn.ghost.block.sm', { style:{ marginTop:'8px' }, onclick: pickMenu },
+    picks.length ? t('menu.change') : t('menu.set')));
+  return card;
+}
+
+function pickMenu(){
+  const chosen = new Set(menuPicks());
+  const grid = el('div.menu-picker');
+  const cards = [];
+
+  for (const c of menuAvailable()){
+    const cv = el('canvas', { width:110, height:110 });
+    drawCandyThumb(cv.getContext('2d'), 110, c.id, 'pink', 'milk');
+    const node = el('button.pick' + (chosen.has(c.id) ? '.on' : ''), { onclick: () => {
+      if (chosen.has(c.id)) chosen.delete(c.id);
+      else if (chosen.size >= MENU_SIZE) return toast(t('menu.max', { n: MENU_SIZE }), 'warn', '📋');
+      else chosen.add(c.id);
+      cards.forEach(x => x.node.classList.toggle('on', chosen.has(x.id)));
+      sfx('tap');
+    }}, cv, el('b', tName('candy', c.id, c.name)));
+    cards.push({ node, id: c.id });
+    grid.append(node);
+  }
+
+  openModal({
+    icon:'📋', title:t('menu.pickTitle'), sub:t('menu.pickSub', { n: MENU_SIZE }),
+    body: grid,
+    actions:[
+      { label:t('menu.surprise'), cls:'ghost', onClick: () => {
+        setMenu(suggestMenu()); sfx('swipe'); go('shop');
+      }},
+      { label:t('more.save'), cls:'mint', onClick: () => {
+        setMenu([...chosen]);
+        sfx('unlock'); haptic(12);
+        toast(t('menu.saved'), 'good', '📋');
+        go('shop');
+      }},
+    ],
+  });
+}
 
 /**
  * Turn a freshly rolled customer into a visit from a regular: same

@@ -21,6 +21,7 @@ import { mountSocial } from './ui/socialScreen.js';
 import { mountSeason } from './ui/seasonScreen.js';
 import { mountContest, showContestResult } from './ui/contestScreen.js';
 import { mountRegulars, mountRecipes } from './ui/shopLifeScreen.js';
+import { mountPet } from './ui/petScreen.js';
 import { settleContest } from './game/contest.js';
 import { rolloverSeason, rewardLabel } from './game/seasonPass.js';
 import { tickSocial } from './game/social.js';
@@ -106,6 +107,7 @@ function registerScreens(){
   registerScreen('contest', mountContest);
   registerScreen('regulars', mountRegulars);
   registerScreen('recipes', mountRecipes);
+  registerScreen('pet', mountPet);
 }
 
 /* ══════════════ HUD ══════════════ */
