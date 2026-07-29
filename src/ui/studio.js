@@ -71,6 +71,7 @@ export function openStudio(opts){
     freeplay: !opts.customer,
     onServe: opts.onServe,
     onQuit: opts.onQuit,
+    contest: !!opts.contest,
     expired: false,
   };
   onDoneCb = opts.onDone || null;
@@ -189,9 +190,16 @@ function buildDom(){
       'aria-label': t('studio.undo') }, '↩︎'),
     el('button.btn.ghost.act-icon', { onclick: clearAll, title: t('studio.clear'),
       'aria-label': t('studio.clear') }, '🧹'),
-    session.freeplay
-      ? el('button.btn.grape.act-main', { onclick: savePhotoNow }, el('span', t('studio.save')))
-      : el('button.btn.mint.act-main', { id:'serveBtn', onclick: serve }, el('span', t('studio.serve'))),
+    // free play can also bottle a design as a recipe you can make again
+    session.freeplay && !session.contest
+      ? el('button.btn.ghost.act-icon', { onclick: saveRecipeNow, title: t('rec.save'),
+          'aria-label': t('rec.save') }, '📗')
+      : null,
+    session.contest
+      ? el('button.btn.gold.act-main', { id:'serveBtn', onclick: submitContest }, el('span', t('ct.submit')))
+      : session.freeplay
+        ? el('button.btn.grape.act-main', { onclick: savePhotoNow }, el('span', t('studio.save')))
+        : el('button.btn.mint.act-main', { id:'serveBtn', onclick: serve }, el('span', t('studio.serve'))),
   );
   studio.append(actions);
 
@@ -1538,6 +1546,34 @@ function quit(){
     icon:'🚪', title:t('studio.leaveTitle'), sub:t('studio.leaveSub'),
     yes:t('studio.leaveYes'), onYes: () => { closeStudio(); session.onQuit?.(); },
   });
+}
+
+/** Enter this candy in the weekly contest. */
+function submitContest(){
+  const d = JSON.parse(JSON.stringify(design));
+  closeStudio();
+  import('./contestScreen.js').then(({ submitEntry }) => submitEntry(d));
+}
+
+/** Bottle this design as a signature recipe. */
+function saveRecipeNow(){
+  const input = el('input.text-field', { type:'text', maxlength:22,
+    placeholder: t('rec.namePlaceholder') });
+  openModal({
+    icon:'📗', title:t('rec.saveTitle'), sub:t('rec.saveSub'),
+    body: input,
+    actions:[
+      { label:t('more.cancel'), cls:'ghost' },
+      { label:t('rec.save'), cls:'mint', onClick: () => {
+        import('../game/recipes.js').then(({ saveRecipe }) => {
+          const r = saveRecipe(design, input.value);
+          sfx(r ? 'unlock' : 'error');
+          toast(r ? t('rec.saved', { name: r.name }) : t('rec.full'), r ? 'good' : 'warn', '📗');
+        });
+      }},
+    ],
+  });
+  setTimeout(() => input.focus(), 120);
 }
 
 function savePhotoNow(){

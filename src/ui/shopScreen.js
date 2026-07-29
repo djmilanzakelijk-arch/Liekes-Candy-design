@@ -16,6 +16,8 @@ import { drawShop } from '../render/shop.js';
 import { drawDesign } from '../render/candy.js';
 import { makeCustomer, makeOrder, makeDailySpecial, describeOrder, orderChecklist } from '../game/orders.js';
 import { followersFromCustomer } from '../game/social.js';
+import { maybeAdopt, recordVisit, regularChance, nextRegular, findRegular,
+         loyaltyTipMult } from '../game/regulars.js';
 import { addPoints as seasonPoints, scoreOrder } from '../game/seasonPass.js';
 import { POINTS as SEASON_POINTS } from '../data/season.js';
 import { grade, payout, reactionLine, satisfactionDelta } from '../game/scoring.js';
@@ -42,6 +44,11 @@ function fillQueue(){
   const want = queueSize();
   while (queue.length < want){
     const c = makeCustomer();
+    // one of your regulars may be the one who walks in
+    if (!c.vip && Math.random() < regularChance()){
+      const reg = nextRegular();
+      if (reg && !queue.some(q => q.regularId === reg.id)) dressAsRegular(c, reg);
+    }
     c.entering = true;
     c.walk = 0;                       // 0 → 1 as they cross the shop floor
     c.wantEmoji = getCandy(c.order.candy).emoji;
@@ -208,6 +215,33 @@ export function mountShop(host){
 
 const stat = (v, label) => el('div.stat', el('b', v), el('span', label));
 
+/**
+ * Turn a freshly rolled customer into a visit from a regular: same
+ * order machinery, but their name, face and taste come along, and the
+ * order leans towards what they are known to like.
+ */
+function dressAsRegular(c, reg){
+  c.regularId = reg.id;
+  c.name = reg.name;
+  c.face = reg.face;
+  c.fromSocial = false;
+  c.influencer = false;
+  c.order = makeOrder({
+    difficulty: Math.min(1, (S.level - 1) / 16),
+    forceCandy: S.owned.candies.includes(reg.loves.candy) ? reg.loves.candy : undefined,
+    forceColor: reg.loves.color,
+    forceDecos: reg.loves.deco && S.owned.decos.includes(reg.loves.deco) ? [reg.loves.deco] : null,
+  });
+  c.order.line = describeOrder(c.order);
+  c.order.checklist = orderChecklist(c.order);
+  c.favColor = c.order.color;
+  c.favCandy = c.order.candy;
+  // they know you, so they wait a little longer and tip better
+  c.patience *= 1.2;
+  c.maxPatience = c.patience;
+  c.budget = Math.round(c.budget * loyaltyTipMult(reg));
+}
+
 function modeTile(id, ico, name, desc, minLevel){
   const locked = S.level < minLevel;
   return el('button.mode-tile.' + id + (locked ? '.locked' : ''), {
@@ -235,7 +269,8 @@ function renderQueue(){
       el('div.cust-face', c.face),
       el('div.cust-name', c.name),
       // people who found the shop online say so — that is what fame looks like
-      c.influencer ? el('div.cust-tag.influencer', '🤳 ' + t('soc.influencer'))
+      c.regularId ? el('div.cust-tag.regular', '💛 ' + t('reg.tag'))
+        : c.influencer ? el('div.cust-tag.influencer', '🤳 ' + t('soc.influencer'))
         : c.fromSocial ? el('div.cust-tag', '📱 ' + t('soc.viaSocial')) : null,
       el('div.cust-pers', `${c.pers.emoji} ${tName('pers', c.pers.id, c.pers.name)}`),
       el('div.cust-want', c.order.line),
@@ -447,6 +482,16 @@ function finishOrder(res, customer, job = null, deal = null, wish = null){
   const newFans = followersFromCustomer(customer, result.stars);
   seasonPoints(scoreOrder(result.stars, perfect));
 
+  // regulars: a visit recorded, or a stranger deciding to come back
+  let regularNews = null;
+  if (customer.regularId){
+    const res = recordVisit(customer.regularId, result.stars);
+    if (res?.gift) regularNews = { kind:'gift', reg: findRegular(customer.regularId), res };
+  } else {
+    const adopted = maybeAdopt(customer, result.stars);
+    if (adopted) regularNews = { kind:'new', reg: adopted };
+  }
+
   if (customer.isDailySpecial) dailySpecialDone = todayKey();
   if (mode){
     mode.served++; mode.stars += result.stars; mode.coins += pay.total;
@@ -462,11 +507,11 @@ function finishOrder(res, customer, job = null, deal = null, wish = null){
   else if (result.stars >= 3) { sfx('coin'); haptic(12); }
   else sfx('fail');
 
-  showResult({ res, result, pay, customer, order, newFans });
+  showResult({ res, result, pay, customer, order, newFans, regularNews });
   save();
 }
 
-function showResult({ res, result, pay, customer, order, newFans = 0 }){
+function showResult({ res, result, pay, customer, order, newFans = 0, regularNews = null }){
   const body = [];
 
   /* preview of what the player made */
@@ -540,8 +585,17 @@ function showResult({ res, result, pay, customer, order, newFans = 0 }){
   // an employee may have got up to something while you were serving
   const incident = maybeStaffEvent();
   const withIncident = next => () => {
-    if (incident) setTimeout(() => showPendingStaffEvent(next), 260);
-    else next();
+    const afterRegular = () => {
+      if (incident) setTimeout(() => showPendingStaffEvent(next), 260);
+      else next();
+    };
+    if (regularNews){
+      import('./shopLifeScreen.js').then(m => {
+        if (regularNews.kind === 'new') m.celebrateNewRegular(regularNews.reg);
+        else m.celebrateLoyalty(regularNews.reg, regularNews.res);
+        setTimeout(afterRegular, 260);
+      });
+    } else afterRegular();
   };
 
   if (mode){

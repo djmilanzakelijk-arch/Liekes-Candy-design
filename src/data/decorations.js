@@ -113,6 +113,12 @@ export const DECORATIONS = [
   { id:'sp_frost_lace',  name:'Frost Lace',      cat:'ribbon',   art:'lace',     rarity:'epic',      price:0, unlock:1, colorable:false, fixed:'silver', layer:3, size:1.1,  season:true, desc:'Candy Pass — the pattern frost leaves on glass.' },
   { id:'sp_icicle_drip', name:'Icicle Drizzle',  cat:'icing',    art:'drizzle',  rarity:'legendary', price:0, unlock:1, colorable:false, fixed:'white',  layer:1, size:1.25, season:true, desc:'Candy Pass — clear sugar frozen mid-drip.' },
   { id:'sp_polar_dust',  name:'Polar Dust',      cat:'sprinkle', art:'starDust', rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'blue',   layer:5, size:1.25, season:true, desc:'Candy Pass — snow that never quite lands.' },
+
+  /* ── CONTEST TROPHIES ──────────────────────────────────
+     Won in the weekly candy contest and nowhere else. */
+  { id:'ct_gold_trophy',   name:'Gold Trophy',   cat:'charm', art:'crown',   rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'gold',   layer:4, size:1.2,  season:true, desc:'Contest — first place, and everybody saw.' },
+  { id:'ct_silver_trophy', name:'Silver Trophy', cat:'charm', art:'diamond', rarity:'legendary', price:0, unlock:1, colorable:false, fixed:'silver', layer:4, size:1.1,  season:true, desc:'Contest — a podium finish.' },
+  { id:'ct_bronze_trophy', name:'Bronze Ribbon', cat:'ribbon',art:'bow',     rarity:'epic',      price:0, unlock:1, colorable:false, fixed:'brown',  layer:4, size:1.1,  season:true, desc:'Contest — you made the top six.' },
 ];
 
 export const DECO_BY_ID = Object.fromEntries(DECORATIONS.map(d => [d.id, d]));

@@ -11,6 +11,11 @@ import {
 import { deliveryBadge } from './deliveryScreen.js';
 import { socialBadge } from './socialScreen.js';
 import { seasonBadge } from './seasonScreen.js';
+import { contestBadge } from './contestScreen.js';
+import { recipeBadge } from './shopLifeScreen.js';
+import { theme as contestTheme } from '../game/contest.js';
+import { regulars } from '../game/regulars.js';
+import { cased as recipeCased, CASE_SLOTS } from '../game/recipes.js';
 import { theme as seasonTheme, tier as seasonTier, hasPass } from '../game/seasonPass.js';
 import { TIERS as SEASON_TIERS } from '../data/season.js';
 import { followers, tier, unlocked as socialOpen, SOCIAL_LEVEL } from '../game/social.js';
@@ -48,6 +53,9 @@ export function mountMore(host){
     tile('🚚', t('more.delivery'), deliverySub(), () => go('delivery'), deliveryBadge()),
     tile('📱', t('more.social'), socialSub(), () => go('social'), socialBadge()),
     tile(seasonTheme().emoji, t('more.season'), seasonSub(), () => go('season'), seasonBadge()),
+    tile('🏆', t('more.contest'), t('ct.theme.' + contestTheme().id + '.name'), () => go('contest'), contestBadge()),
+    tile('💛', t('more.regulars'), t('more.regularsSub', { n: regulars().length }), () => go('regulars')),
+    tile('📗', t('more.recipes'), t('more.recipesSub', { a: recipeCased().length, b: CASE_SLOTS }), () => go('recipes'), recipeBadge()),
     tile('📸', t('more.photos'), t('more.photosSub', { n: S.photos.length }), () => go('photos')),
     tile('🏅', t('more.leaderboard'), t('more.leaderboardSub'), () => go('leaderboard')),
     tile('🎉', t('more.events'),

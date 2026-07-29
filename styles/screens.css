@@ -917,3 +917,29 @@
 }
 .step-dot.done{background:var(--mint-300)}
 .step-dot.on{background:var(--grape-500);transform:scale(1.35)}
+
+/* ═══════════════ CONTEST / REGULARS / RECIPES ═══════════════ */
+.contest-brief{background:linear-gradient(150deg,#fff,var(--gold-1))}
+.lb-row.you{background:linear-gradient(90deg,var(--mint-100),#fff);border-color:var(--mint-300)}
+.lb-pos{
+  width:26px;flex:0 0 auto;text-align:center;font-size:12px;font-weight:900;color:var(--ink-faint);
+}
+.lb-row.you .lb-pos{color:var(--mint-500)}
+
+.cust-tag.regular{background:var(--gold-1);color:#6a4708;border-color:var(--gold-2)}
+.cust-card.regular{border-color:var(--gold-2)}
+
+.recipe-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.recipe{
+  position:relative;background:var(--surface);border:1.5px solid var(--line);
+  border-radius:var(--r-lg);box-shadow:var(--sh-1);padding:9px;text-align:center;
+}
+.recipe.cased{border-color:var(--mint-500);box-shadow:0 0 0 2px var(--mint-100),var(--sh-1)}
+.recipe canvas{width:100%;height:auto;aspect-ratio:1;display:block;border-radius:var(--r-md)}
+.recipe b{display:block;font-size:12.5px;font-weight:800;margin-top:5px;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-badge{
+  position:absolute;top:6px;right:6px;z-index:2;font-size:13px;
+  background:rgba(255,255,255,.92);border-radius:var(--r-pill);padding:1px 6px;box-shadow:var(--sh-1);
+}
+.bar.gold i{background:linear-gradient(90deg,var(--gold-1),var(--gold-2))}

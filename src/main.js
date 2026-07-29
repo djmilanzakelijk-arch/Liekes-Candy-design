@@ -19,6 +19,9 @@ import { mountStaff } from './ui/staffScreen.js';
 import { mountDelivery } from './ui/deliveryScreen.js';
 import { mountSocial } from './ui/socialScreen.js';
 import { mountSeason } from './ui/seasonScreen.js';
+import { mountContest, showContestResult } from './ui/contestScreen.js';
+import { mountRegulars, mountRecipes } from './ui/shopLifeScreen.js';
+import { settleContest } from './game/contest.js';
 import { rolloverSeason, rewardLabel } from './game/seasonPass.js';
 import { tickSocial } from './game/social.js';
 import { showPayday } from './ui/financeUi.js';
@@ -34,6 +37,8 @@ const bootTips = () => [t('boot.1'), t('boot.2'), t('boot.3'), t('boot.4'), t('b
 
 /** Set at boot when a Candy Pass season turned over while she was away. */
 let seasonHandover = null;
+/** Set at boot when last week's contest was settled. */
+let contestResult = null;
 
 async function boot(){
   const bar = $('#boot .boot-bar i');
@@ -60,6 +65,7 @@ async function boot(){
   seedLegacyStaff();   // existing Employee upgrades become real, fireable staff
   tickSocial();        // likes kept landing while the game was closed
   seasonHandover = rolloverSeason();   // a season may have ended while away
+  contestResult = settleContest();     // …and last week's contest judged
 
   await step(48, TIPS[1]);
   registerScreens();
@@ -97,6 +103,9 @@ function registerScreens(){
   registerScreen('delivery', mountDelivery);
   registerScreen('social', mountSocial);
   registerScreen('season', mountSeason);
+  registerScreen('contest', mountContest);
+  registerScreen('regulars', mountRegulars);
+  registerScreen('recipes', mountRecipes);
 }
 
 /* ══════════════ HUD ══════════════ */
@@ -188,6 +197,11 @@ function afterBoot(){
   const ev = activeEvent();
   if (ev){
     setTimeout(() => toast(t('ev.toast', { name: tName('event', ev.id, ev.name) }), 'good', ev.emoji), 1400);
+  }
+
+  // last week's contest was judged while she was away
+  if (contestResult && S.tutorialDone && !hasIncoming()){
+    setTimeout(() => showContestResult(contestResult), 2100);
   }
 
   // a Candy Pass season ended while she was away: everything she reached

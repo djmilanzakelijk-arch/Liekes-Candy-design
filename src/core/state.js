@@ -68,6 +68,13 @@ function freshState(){
     /* Candy Pass: this season's points and what has been collected */
     season: { idx: null, points: 0, owned: false, claimed: [], passClaimed: [] },
 
+    /* the weekly candy contest */
+    contest: { idx: null, entry: null, history: [], won: 0 },
+
+    /* customers who come back, and the candies she bottled */
+    regulars: [],
+    recipes: { list: [], cased: [], lastSweep: Date.now(), earned: 0 },
+
     counters: {
       orders:0, fiveStars:0, perfect:0, coinsEarned:0, decosPlaced:0,
       wrapped:0, tips:0, photos:0, unlocked:0, totalStars:0, served:0,
@@ -129,7 +136,7 @@ function migrate(old){
   const merged = { ...base, ...old, v: SAVE_VERSION };
   // deep-merge the nested objects so new fields appear for old saves
   for (const key of ['owned','counters','missions','daily','records','settings','staff',
-                     'levelRewards','finance','delivery','social','season']){
+                     'levelRewards','finance','delivery','social','season','contest','recipes']){
     merged[key] = { ...base[key], ...(old[key] || {}) };
   }
   merged.social.posts = [...(old.social?.posts || [])];
@@ -137,6 +144,10 @@ function migrate(old){
   merged.social.wishes = [...(old.social?.wishes || [])];
   merged.season.claimed = [...(old.season?.claimed || [])];
   merged.season.passClaimed = [...(old.season?.passClaimed || [])];
+  merged.contest.history = [...(old.contest?.history || [])];
+  merged.regulars = [...(old.regulars || [])];
+  merged.recipes.list = [...(old.recipes?.list || [])];
+  merged.recipes.cased = [...(old.recipes?.cased || [])];
   merged.staff.roster = [...(old.staff?.roster || [])];
   merged.staff.applicants = [...(old.staff?.applicants || [])];
   merged.levelRewards.pending = [...(old.levelRewards?.pending || [])];
