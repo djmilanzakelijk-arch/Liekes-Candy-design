@@ -415,8 +415,16 @@ export function priciestLocation(){
 /** Level at which the delivery service opens up. */
 export const DELIVERY_LEVEL = 5;
 
-/** Counter slots come from the Employee upgrade level. */
-export const staffSlots = () => upgLevel('staff');
+/**
+ * Counter slots come from the Employee upgrade level.
+ *
+ * The later levels are worth more than one pair of hands: with wages to
+ * pay, a bigger team is a real decision rather than a free upgrade, so
+ * the ceiling can be generous. Anybody who already maxed the upgrade
+ * simply finds extra slots waiting.
+ */
+const STAFF_SLOTS = [0, 1, 2, 4, 6];
+export const staffSlots = () => STAFF_SLOTS[clamp(upgLevel('staff'), 0, 4)] ?? 0;
 
 /**
  * Couriers ride their own slots, so hiring one never costs you the

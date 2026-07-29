@@ -14,9 +14,13 @@ import {
 import {
   fameTier, nextFame, fameProgress, postQuality, viralChance, likeTarget,
   likeCurve, followersFrom, commentBand, commentCount, randomCommenter,
-  HASHTAGS, BRANDS, dealReward,
+  reachPenalty, SPAM_WINDOW_MS, HASHTAGS, BRANDS, dealReward,
+  WISH_LIKES, MAX_WISHES, WISH_LIFETIME_MS, wishReward,
 } from '../data/social.js';
+import { stagingBonus } from '../render/backdrop.js';
 import { getCandy, CANDIES } from '../data/candies.js';
+import { DECORATIONS, getDeco } from '../data/decorations.js';
+import { COLORS, COLOR_UNLOCK } from '../data/palette.js';
 import { todayKey, uid, clamp, pick, pickN, rand, randI } from '../core/utils.js';
 
 /** Posts older than this stop gathering likes — the feed moves on. */
@@ -30,9 +34,10 @@ export const social = () => {
   if (!S.social){
     S.social = {
       followers: 0, posts: [], likes: 0, viral: 0,
-      deals: [], dealDate: '', unseen: 0,
+      deals: [], dealDate: '', unseen: 0, wishes: [],
     };
   }
+  if (!S.social.wishes) S.social.wishes = [];
   return S.social;
 };
 
@@ -56,15 +61,26 @@ export function addFollowers(n){
 
 /* ══════════════ posting ══════════════ */
 
+/** How much reach the NEXT post would get right now, 0..1. */
+export const currentReach = () => reachPenalty(social().posts);
+
+/** Posts made inside the spam window. */
+export const recentPostCount = () =>
+  social().posts.filter(p => Date.now() - p.ts < SPAM_WINDOW_MS).length;
+
 /**
  * Put a saved photo on the feed.
  * @param photo  an entry from S.photos
- * @param opt    { caption, tags:[] }
+ * @param opt    { caption, tags:[], backdrop, frame }
  */
 export function createPost(photo, opt = {}){
   const s = social();
-  const quality = postQuality(photo.design, { stars: photo.stars });
-  const viral = Math.random() < viralChance(quality, s.followers);
+  const quality = clamp(
+    postQuality(photo.design, { stars: photo.stars })
+      + stagingBonus(opt.backdrop, opt.frame), .06, 1);
+  // posting five things in a row reaches almost nobody
+  const penalty = reachPenalty(s.posts);
+  const viral = Math.random() < viralChance(quality, s.followers, penalty);
 
   const post = {
     id: uid(),
@@ -72,11 +88,14 @@ export function createPost(photo, opt = {}){
     design: JSON.parse(JSON.stringify(photo.design)),
     caption: (opt.caption || '').slice(0, 60),
     tags: (opt.tags || []).slice(0, 3),
+    backdrop: opt.backdrop || 'none',
+    frame: opt.frame || 'none',
     quality: Math.round(quality * 100) / 100,
     stars: photo.stars || 0,
     viral,
+    penalty: Math.round(penalty * 100) / 100,
     likes: 0,
-    target: likeTarget(quality, s.followers, viral),
+    target: likeTarget(quality, s.followers, viral, penalty),
     comments: makeComments(quality),
     gained: 0,
   };
@@ -134,6 +153,11 @@ export function tickSocial(){
       p.viralSeen = true;
       wentViral.push(p);
     }
+    // once a post has travelled, somebody in the comments asks for something
+    if (!p.wished && p.likes >= WISH_LIKES){
+      p.wished = true;
+      addWish();
+    }
   }
 
   if (newLikes){
@@ -153,6 +177,67 @@ export function deletePost(id){
   const s = social();
   s.posts = s.posts.filter(p => p.id !== id);
   save(); emit('state');
+}
+
+/* ══════════════ follower wishes ══════════════
+   Not a sponsor with a contract — just a follower in the comments who
+   would love to see something specific. Small, frequent and personal. */
+
+export function pruneWishes(){
+  const s = social();
+  const now = Date.now();
+  const before = s.wishes.length;
+  s.wishes = s.wishes.filter(w => w.expires > now);
+  if (s.wishes.length !== before) save();
+  return s.wishes;
+}
+
+export const wishes = () => pruneWishes();
+
+/** Build one wish out of something she can actually make. */
+function addWish(){
+  const s = social();
+  if (pruneWishes().length >= MAX_WISHES) return null;
+
+  const candies = CANDIES.filter(c => S.owned.candies.includes(c.id));
+  const decos = DECORATIONS.filter(d => S.owned.decos.includes(d.id));
+  const colors = COLORS.filter(c => (COLOR_UNLOCK[c.id] ?? 99) <= S.level);
+  if (!candies.length || !colors.length) return null;
+
+  const wish = {
+    id: uid(),
+    ...randomCommenter(),
+    candy: pick(candies).id,
+    color: pick(colors).id,
+    deco: decos.length && Math.random() < .7 ? pick(decos).id : null,
+    reward: wishReward(s.followers),
+    expires: Date.now() + WISH_LIFETIME_MS,
+  };
+  s.wishes.push(wish);
+  save();
+  return wish;
+}
+
+export const wishById = id => wishes().find(w => w.id === id) || null;
+
+export function dropWish(id){
+  const s = social();
+  s.wishes = s.wishes.filter(w => w.id !== id);
+  save(); emit('state');
+}
+
+/** Pay out a fulfilled wish. */
+export function finishWish(wish, stars){
+  dropWish(wish.id);
+  const scale = clamp(.4 + stars * .16, .4, 1.2);
+  const coins = Math.round(wish.reward.coins * scale);
+  const gained = Math.round(wish.reward.followers * scale);
+  addCoins(coins);
+  addXp(Math.round(30 * scale));
+  addFollowers(gained);
+  bump('wishes');
+  save(); emit('state');
+  return { coins, followers: gained };
 }
 
 /* ══════════════ brand deals ══════════════ */

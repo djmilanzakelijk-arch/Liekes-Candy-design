@@ -15,6 +15,7 @@ import { getDeco, getPack } from '../data/decorations.js';
 import { getColor } from '../data/palette.js';
 import { pruneTools } from '../data/tools.js';
 import { applyTools, drawPipedStroke } from './tools.js';
+import { drawBackdrop, drawFrame, frameInset } from './backdrop.js';
 import { TAU, rngFrom } from '../core/utils.js';
 
 /* ══════════════ packaging ══════════════ */
@@ -339,6 +340,26 @@ export function drawDesign(ctx, size, design, t = 0,
   drawText(ctx, design.text, design.color);
   packFront(ctx, pack.art, design.color, t);
 
+  ctx.restore();
+}
+
+/**
+ * A finished photo: the set it was shot on, the candy, and the frame
+ * around it. Used by the photo studio and by every post on the feed.
+ */
+export function drawPhoto(ctx, size, design, t = 0, { backdrop = 'none', frame = 'none' } = {}){
+  ctx.save();
+  drawBackdrop(ctx, size, backdrop, t);
+
+  const inset = frameInset(frame);
+  const inner = size * (1 - inset * 2);
+  ctx.save();
+  // a polaroid's fat bottom lip would swallow the candy — sit it higher
+  ctx.translate(size * inset, size * inset - (frame === 'polaroid' ? size * .045 : 0));
+  drawDesign(ctx, inner, design, t, { clear: false });
+  ctx.restore();
+
+  drawFrame(ctx, size, frame, t);
   ctx.restore();
 }
 

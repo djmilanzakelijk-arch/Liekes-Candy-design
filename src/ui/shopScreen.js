@@ -271,10 +271,11 @@ export function startOrder(customer, opt = {}){
   cancelAnimationFrame(shopRaf);
   const job = opt.delivery || null;
   const deal = opt.deal || null;
+  const wish = opt.wish || null;
   openStudio({
     customer,
-    onServe: res => finishOrder(res, customer, job, deal),
-    onQuit: () => { go(job ? 'delivery' : deal ? 'social' : 'shop'); },
+    onServe: res => finishOrder(res, customer, job, deal, wish),
+    onQuit: () => { go(job ? 'delivery' : (deal || wish) ? 'social' : 'shop'); },
   });
 }
 
@@ -294,6 +295,26 @@ export function startBrandDeal(deal){
   c.patience *= 1.6;
   c.maxPatience = c.patience;
   startOrder(c, { deal });
+}
+
+/** A follower asked for something in the comments — make it for them. */
+export function startFollowerWish(wish){
+  const c = makeCustomer({ difficulty: .4, forceCandy: wish.candy });
+  c.order = makeOrder({
+    difficulty: .4, forceCandy: wish.candy,
+    forceColor: wish.color, forceDecos: wish.deco ? [wish.deco] : null,
+    plain: true,
+  });
+  c.order.line = describeOrder(c.order);
+  c.order.checklist = orderChecklist(c.order);
+  c.face = wish.face;
+  c.name = wish.name;
+  c.followerWish = true;
+  c.fromSocial = true;
+  c.influencer = false;
+  c.patience *= 1.5;
+  c.maxPatience = c.patience;
+  startOrder(c, { wish });
 }
 
 /* Order text is generated, not translated at render time — so when the
@@ -360,7 +381,7 @@ function nextModeCustomer(){
 }
 
 /* ══════════════ result ══════════════ */
-function finishOrder(res, customer, job = null, deal = null){
+function finishOrder(res, customer, job = null, deal = null, wish = null){
   closeStudio();
   const order = customer.order;
   const result = grade(res.design, order, { timeLeft: res.timeLeft, timeTotal: res.timeTotal });
@@ -370,6 +391,16 @@ function finishOrder(res, customer, job = null, deal = null){
   const perfect = result.perfect && result.stars === 5;
   pushStreak(perfect);
   const pay = payout(res.design, order, result, customer);
+
+  // A follower's wish is a thank-you, not a sale.
+  if (wish){
+    duck(900);
+    import('./socialScreen.js').then(({ finishFollowerWish }) => {
+      finishFollowerWish(wish, result.stars, res.design, () => go('social'));
+    });
+    save();
+    return;
+  }
 
   // A brand deal is paid by the sponsor, not out of the till.
   if (deal){

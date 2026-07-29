@@ -10,12 +10,16 @@ import { S, save } from '../core/state.js';
 import { sfx, haptic } from '../core/audio.js';
 import { toast, confetti, candyRain, bumpPill } from '../core/fx.js';
 import { openModal, confirmModal } from './modal.js';
-import { drawDesign } from '../render/candy.js';
+import { drawDesign, drawPhoto } from '../render/candy.js';
+import { BACKDROPS, FRAMES } from '../render/backdrop.js';
 import {
   social, followers, tier, nextTier, progress, unlocked, SOCIAL_LEVEL,
   createPost, tickSocial, feed, deletePost, ensureDeals, finishDeal, HASHTAGS,
+  currentReach, recentPostCount, wishes, dropWish, finishWish,
 } from '../game/social.js';
 import { getCandy } from '../data/candies.js';
+import { getDeco } from '../data/decorations.js';
+import { getColor } from '../data/palette.js';
 import { go, subHeader } from './nav.js';
 import { t, tName } from '../core/i18n.js';
 
@@ -66,8 +70,26 @@ export function mountSocial(host){
   }
 
   /* ── post something ── */
-  wrap.append(el('button.btn.grape.block.lg', { style:{ marginBottom:'12px' },
+  wrap.append(el('button.btn.grape.block.lg', { style:{ marginBottom:'6px' },
     onclick: openComposer }, t('soc.newPost')));
+  const reach = currentReach();
+  wrap.append(el('p.tiny' + (reach < .9 ? '' : '.muted'), { style:{
+    textAlign:'center', marginBottom:'12px',
+    fontWeight: reach < .9 ? '800' : '700',
+    color: reach < .5 ? '#c0392b' : reach < .9 ? '#c98f14' : 'var(--ink-faint)',
+  }}, reach < .9
+    ? t('soc.reachLow', { n: Math.round(reach * 100) })
+    : t('soc.reachFull')));
+
+  /* ── what followers asked for ── */
+  const wishList = wishes();
+  if (wishList.length){
+    const card = el('div.card',
+      el('div.card-title', el('span.ico', '💬'), t('soc.wishes'), el('span.spacer'),
+        el('span.sub', t('soc.wishesSub'))));
+    for (const w of wishList) card.append(wishRow(w));
+    wrap.append(card);
+  }
 
   /* ── brand deals ── */
   const deals = social().deals || [];
@@ -116,11 +138,68 @@ export function mountSocial(host){
   return () => clearInterval(tickTimer);
 }
 
+/* ══════════════ follower wishes ══════════════ */
+
+function wishRow(w){
+  const candy = getCandy(w.candy);
+  const deco = w.deco ? getDeco(w.deco) : null;
+  const bits = [
+    tName('colorAdj', w.color, getColor(w.color).name.toLowerCase()),
+    tName('candy', w.candy, candy.name).toLowerCase(),
+  ];
+  const ask = deco
+    ? t('soc.wishWith', { what: bits.join(' '), deco: tName('deco', w.deco, deco.name).toLowerCase() })
+    : t('soc.wishPlain', { what: bits.join(' ') });
+
+  return el('div.deal',
+    el('div.deal-ico', w.face),
+    el('div.grow',
+      el('b', { style:{ fontSize:'13px', fontWeight:'800' } }, w.name),
+      el('div.tiny', { style:{ marginTop:'2px', fontStyle:'italic' } }, '“' + ask + '”'),
+      el('div.tiny', { style:{ marginTop:'3px', fontWeight:'800', color:'#c98f14' } },
+        `🪙 ${fmt(w.reward.coins)} · 👥 +${fmt(w.reward.followers)}`),
+    ),
+    el('div', { style:{ display:'flex', flexDirection:'column', gap:'5px' } },
+      el('button.upg-buy', { onclick: () => startWish(w) }, t('soc.wishMake')),
+      el('button.upg-sell', { onclick: () => {
+        dropWish(w.id); sfx('remove'); toast(t('soc.wishSkipped'), '', '💬'); go('social');
+      }}, '🚫'),
+    ),
+  );
+}
+
+function startWish(wish){
+  import('./shopScreen.js').then(({ startFollowerWish }) => startFollowerWish(wish));
+}
+
+/** Called by the shop screen once a wish has been made. */
+export function finishFollowerWish(wish, stars, design, onDone){
+  const got = finishWish(wish, stars);
+  sfx('sparkle'); confetti(34);
+
+  const cv = el('canvas', { width:300, height:300, style:{
+    width:'128px', height:'128px', margin:'0 auto', display:'block',
+  }});
+  drawDesign(cv.getContext('2d'), 300, design, 0);
+
+  openModal({
+    icon: wish.face,
+    title: t('soc.wishDoneTitle', { name: wish.name }),
+    sub: t('soc.wishDoneSub'),
+    body:[cv, el('div.reward-row', { style:{ marginTop:'8px' } },
+      el('div.reward', '🪙 +' + fmt(got.coins)),
+      el('div.reward.xp', '👥 +' + fmt(got.followers)),
+    )],
+    dismissable:false,
+    actions:[{ label:t('soc.dealDoneOk'), cls:'grape', onClick: () => onDone?.() }],
+  });
+}
+
 /* ══════════════ the feed ══════════════ */
 
 function postCard(p){
   const cv = el('canvas', { width:320, height:320, class:'post-art' });
-  drawDesign(cv.getContext('2d'), 320, p.design, 0);
+  drawPhoto(cv.getContext('2d'), 320, p.design, 0, { backdrop: p.backdrop, frame: p.frame });
 
   const comments = el('div.post-comments');
   for (const c of p.comments.slice(0, 4)){
@@ -166,7 +245,7 @@ function celebrateViral(p){
   const cv = el('canvas', { width:300, height:300, style:{
     width:'132px', height:'132px', margin:'0 auto', display:'block',
   }});
-  drawDesign(cv.getContext('2d'), 300, p.design, 0);
+  drawPhoto(cv.getContext('2d'), 300, p.design, 0, { backdrop: p.backdrop, frame: p.frame });
   openModal({
     icon:'🔥', title:t('soc.viralTitle'), sub:t('soc.viralSub'),
     body:[cv, el('p.center', { style:{
@@ -192,6 +271,14 @@ function openComposer(){
 
   let chosen = photos[0];
   let tags = [];
+  let backdrop = 'none';
+  let frame = 'none';
+
+  /* the shot as it will appear on the feed */
+  const preview = el('canvas', { width:420, height:420, class:'compose-preview' });
+  const pctx = preview.getContext('2d');
+  const paint = () => drawPhoto(pctx, 420, chosen.design, 0, { backdrop, frame });
+  paint();
 
   const grid = el('div.photo-picker');
   const cards = [];
@@ -201,11 +288,36 @@ function openComposer(){
     const b = el('button.pick' + (ph === chosen ? '.on' : ''), { onclick: () => {
       chosen = ph;
       cards.forEach(c => c.node.classList.toggle('on', c.photo === ph));
-      sfx('tap');
+      paint(); sfx('tap');
     }}, cv, ph.stars ? el('span.pick-stars', '⭐' + ph.stars) : null);
     cards.push({ node: b, photo: ph });
     grid.append(b);
   });
+
+  /* backdrops + frames — the photo studio */
+  const bdBar = el('div.chipbar');
+  const bdChips = [];
+  for (const b of BACKDROPS){
+    const chip = el('button.chip' + (b.id === backdrop ? '.on' : ''), { onclick: () => {
+      backdrop = b.id;
+      bdChips.forEach(c => c.node.classList.toggle('on', c.id === backdrop));
+      paint(); sfx('tap');
+    }}, `${b.emoji} ${t('bd.' + b.id)}`);
+    bdChips.push({ node: chip, id: b.id });
+    bdBar.append(chip);
+  }
+
+  const frBar = el('div.chipbar');
+  const frChips = [];
+  for (const f of FRAMES){
+    const chip = el('button.chip' + (f.id === frame ? '.on' : ''), { onclick: () => {
+      frame = f.id;
+      frChips.forEach(c => c.node.classList.toggle('on', c.id === frame));
+      paint(); sfx('tap');
+    }}, `${f.emoji} ${t('fr.' + f.id)}`);
+    frChips.push({ node: chip, id: f.id });
+    frBar.append(chip);
+  }
 
   const caption = el('input.text-field', {
     type:'text', maxlength:60, placeholder:t('soc.captionPlaceholder'),
@@ -230,19 +342,30 @@ function openComposer(){
     tagbar.append(chip);
   }
 
+  const reach = currentReach();
+
   openModal({
     icon:'📸', title:t('soc.composeTitle'), sub:t('soc.composeSub'),
     body:[
+      preview,
       grid,
+      el('p.tiny.muted', { style:{ margin:'8px 0 4px' } }, t('soc.pickBackdrop')),
+      bdBar,
+      el('p.tiny.muted', { style:{ margin:'8px 0 4px' } }, t('soc.pickFrame')),
+      frBar,
       el('div', { style:{ padding:'8px 2px 6px' } }, caption),
       quick,
       el('p.tiny.muted', { style:{ margin:'8px 0 4px' } }, t('soc.pickTags')),
       tagbar,
+      reach < .9
+        ? el('p.tiny.center', { style:{ marginTop:'10px', fontWeight:'900', color:'#c0392b' } },
+            t('soc.reachWarn', { n: recentPostCount(), p: Math.round(reach * 100) }))
+        : null,
     ],
     actions:[
       { label:t('buy.notNow'), cls:'ghost' },
       { label:t('soc.publish'), cls:'grape', onClick: () => {
-        const post = createPost(chosen, { caption: caption.value.trim(), tags });
+        const post = createPost(chosen, { caption: caption.value.trim(), tags, backdrop, frame });
         sfx('sparkle'); haptic([10, 25, 10]); confetti(30);
         toast(t('soc.published'), 'good', '📱');
         setTimeout(() => go('social'), 120);

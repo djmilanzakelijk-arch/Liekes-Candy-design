@@ -821,3 +821,9 @@
 }
 .cust-tag.influencer{background:var(--grape-100);color:#5b34a8;border-color:#cbb4ff}
 .cust-card.influencer{border-color:var(--grape-300);box-shadow:0 0 0 2px var(--grape-100),var(--sh-1)}
+
+/* photo studio: the shot as it will appear on the feed */
+.compose-preview{
+  display:block;width:100%;max-width:186px;height:auto;aspect-ratio:1;
+  margin:0 auto 10px;border-radius:var(--r-md);box-shadow:var(--sh-2);
+}

@@ -69,15 +69,30 @@ export function postQuality(design, meta = {}){
 
 /* ══════════════ likes and going viral ══════════════ */
 
+/* ── the algorithm does not like spam ──
+   Without this you could post twenty saved photos in a row and collect
+   twenty posts' worth of followers inside an hour, which flattens the
+   whole climb. Each extra post inside the window reaches far fewer
+   people, and the composer says so before you publish. */
+
+/** Posts inside this window count against the next one. */
+export const SPAM_WINDOW_MS = 6 * 3600 * 1000;
+
+/** Reach multiplier for the next post: 1 → .55 → .30 → .17 → … */
+export function reachPenalty(posts = [], now = Date.now()){
+  const recent = posts.filter(p => now - p.ts < SPAM_WINDOW_MS).length;
+  return Math.pow(.55, recent);
+}
+
 /** Chance this post takes off. Good photos travel; so does a big following. */
-export const viralChance = (quality, followers = 0) =>
-  clamp(.03 + quality * .22 + Math.min(.08, followers / 200000), 0, .38);
+export const viralChance = (quality, followers = 0, penalty = 1) =>
+  clamp((.03 + quality * .22 + Math.min(.08, followers / 200000)) * penalty, 0, .38);
 
 /** Where the like count ends up. */
-export function likeTarget(quality, followers = 0, viral = false){
+export function likeTarget(quality, followers = 0, viral = false, penalty = 1){
   const base = 25 + quality * 340;
   const reach = 1 + Math.pow(Math.max(0, followers), .62) / 26;
-  return Math.round(base * reach * (viral ? rand(7, 12) : 1));
+  return Math.max(5, Math.round(base * reach * penalty * (viral ? rand(7, 12) : 1)));
 }
 
 /**
@@ -131,6 +146,25 @@ export const BRANDS = [
   { id:'gift',     emoji:'🎀', tags:['gift','handmade'] },
   { id:'market',   emoji:'🧺', tags:['smallshop','foodie'] },
 ];
+
+/* ══════════════ follower wishes ══════════════
+   A post that travels far enough gets a comment asking for something
+   specific. Making it is worth coins and a nice bump of followers. */
+
+/** Likes a post needs before somebody asks for something. */
+export const WISH_LIKES = 220;
+/** Never let more than this many pile up unanswered. */
+export const MAX_WISHES = 3;
+/** A wish is withdrawn if it is ignored this long. */
+export const WISH_LIFETIME_MS = 8 * 3600 * 1000;
+
+export function wishReward(followers = 0){
+  const reach = 1 + Math.pow(Math.max(0, followers), .55) / 70;
+  return {
+    coins: Math.round(220 * reach / 10) * 10,
+    followers: Math.round(70 * reach),
+  };
+}
 
 export function dealReward(followers = 0, difficulty = .5){
   const reach = 1 + Math.pow(Math.max(0, followers), .55) / 52;

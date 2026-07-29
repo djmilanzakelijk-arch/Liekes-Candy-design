@@ -48,7 +48,7 @@ export function makeOrder(opt = {}){
   else candy = pick(candies);
 
   // ── occasion flavours the request ──
-  const occasion = Math.random() < .55 ? pick(OCCASIONS) : null;
+  const occasion = !opt.plain && Math.random() < .55 ? pick(OCCASIONS) : null;
 
   // ── colour ──
   let colorPool = colors;
@@ -59,7 +59,8 @@ export function makeOrder(opt = {}){
     const liked = colors.filter(c => ev.favColors.includes(c.id));
     if (liked.length && Math.random() < .5) colorPool = liked;
   }
-  const color = pick(colorPool);
+  // a follower asking for something specific gets exactly that
+  const color = colors.find(c => c.id === opt.forceColor) || pick(colorPool);
 
   // ── decorations ──
   const wantCount = vip
@@ -74,11 +75,19 @@ export function makeOrder(opt = {}){
   }
   const chosen = [];
   const seen = new Set();
+  // a forced piece goes in first and is never dropped
+  for (const id of opt.forceDecos || []){
+    const d = decos.find(x => x.id === id);
+    if (d && !seen.has(d.id)){ seen.add(d.id); chosen.push(d); }
+  }
+  // "plain" orders are one person's wish, not a full shopping list —
+  // they ask for exactly what they asked for and nothing else
+  const target = opt.plain ? chosen.length : wantCount;
   for (const d of shuffle(pool)){
+    if (chosen.length >= target) break;
     if (seen.has(d.id)) continue;
     seen.add(d.id);
     chosen.push(d);
-    if (chosen.length >= wantCount) break;
   }
 
   const wants = chosen.map(d => {
@@ -92,22 +101,23 @@ export function makeOrder(opt = {}){
   });
 
   // ── packaging ──
-  const wantsPack = packs.length > 0 && (vip || Math.random() < .25 + diff * .5);
+  const wantsPack = !opt.plain && packs.length > 0 && (vip || Math.random() < .25 + diff * .5);
   const pack = wantsPack ? pick(packs) : null;
 
   // ── personalised text ──
-  const wantsText = S.level >= 8 && (vip ? Math.random() < .7 : Math.random() < .12 + diff * .22);
+  const wantsText = !opt.plain && S.level >= 8
+    && (vip ? Math.random() < .7 : Math.random() < .12 + diff * .22);
   const text = wantsText
     ? (Math.random() < .5 ? pick(GIFT_NAMES) : pick(GIFT_WORDS))
     : null;
 
   // ── quantity (cosmetic — affects payout) ──
-  const quantity = Math.random() < .18 ? randI(2, 3) : 1;
+  const quantity = !opt.plain && Math.random() < .18 ? randI(2, 3) : 1;
 
   // ── tools: fillings, dips, torching… ──
   const tools = {};
   const toolable = toolsForCandy(candy.id);
-  if (toolable.length && S.level >= 4){
+  if (!opt.plain && toolable.length && S.level >= 4){
     const chance = vip ? .85 : .2 + diff * .45;
     if (Math.random() < chance){
       const howMany = vip && Math.random() < .5 ? 2 : 1;

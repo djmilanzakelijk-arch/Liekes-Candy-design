@@ -44,9 +44,12 @@ export const UPGRADES = [
     desc:'A calm playlist keeps everybody relaxed.',
     effect:l => ({ patienceMult: 1 + l * .05, satisfaction: l * 4 }), label:l => `+${l*5}% calm` },
 
+  // the slot count itself lives in state.js (STAFF_SLOTS) — the later
+  // levels are worth more than one pair of hands
   { id:'staff',     name:'Employee',       emoji:'🧑‍🍳', cost:[0,1200,2800,6000,12000],
-    desc:'An assistant pre-preps candy, earning passive coins.',
-    effect:l => ({ idleCoins: l * 14 }), label:l => `${l*14}/hr idle` },
+    desc:'Room for more staff behind the counter, and more couriers on the road.',
+    effect:l => ({ idleCoins: l * 14 }),
+    label:l => `${[0,1,2,4,6][l] ?? 0} places · ${l*14}/hr idle` },
 ];
 
 export const UPG_BY_ID = Object.fromEntries(UPGRADES.map(u => [u.id, u]));
