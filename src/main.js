@@ -17,6 +17,8 @@ import {
 } from './ui/moreScreen.js';
 import { mountStaff } from './ui/staffScreen.js';
 import { mountDelivery } from './ui/deliveryScreen.js';
+import { mountSocial } from './ui/socialScreen.js';
+import { tickSocial } from './game/social.js';
 import { showPayday } from './ui/financeUi.js';
 import { openLevelReward, hasPendingLevelReward } from './ui/levelReward.js';
 import { captureIncoming, hasIncoming } from './core/transfer.js';
@@ -51,6 +53,7 @@ async function boot(){
   ensureDailyMissions();
   syncUnlocks();
   seedLegacyStaff();   // existing Employee upgrades become real, fireable staff
+  tickSocial();        // likes kept landing while the game was closed
 
   await step(48, TIPS[1]);
   registerScreens();
@@ -86,6 +89,7 @@ function registerScreens(){
   registerScreen('settings', mountSettings);
   registerScreen('staff', mountStaff);
   registerScreen('delivery', mountDelivery);
+  registerScreen('social', mountSocial);
 }
 
 /* ══════════════ HUD ══════════════ */

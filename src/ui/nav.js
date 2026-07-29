@@ -26,7 +26,7 @@ export function go(name, params = {}){
 
   // tab highlighting — sub-screens keep their parent tab lit
   const tabFor = { missions:'more', daily:'more', photos:'more', settings:'more',
-                   leaderboard:'more', events:'more', staff:'more', delivery:'more',
+                   leaderboard:'more', events:'more', staff:'more', delivery:'more', social:'more',
                    locations:'store', upgrades:'store' }[name] || name;
   $$('#tabbar .tab').forEach(t => t.classList.toggle('active', t.dataset.screen === tabFor));
 

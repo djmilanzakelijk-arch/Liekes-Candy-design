@@ -14,6 +14,7 @@ import {
 import { t, tName, tLines, getLang, phrases, candyPluralNl } from '../core/i18n.js';
 import { activeEvent } from '../data/events.js';
 import { getLocation } from '../data/upgrades.js';
+import { fameTier, socialPullChance } from '../data/social.js';
 import { FILLINGS, DUSTS, toolsForCandy, toolLabel, TOOL_BY_ID } from '../data/tools.js';
 import { pick, pickN, randI, rand, uid, clamp, listJoin, shuffle } from '../core/utils.js';
 
@@ -309,16 +310,26 @@ export function makeCustomer(opt = {}){
   const loc = getLocation(S.location);
   const seconds = basePatience(order) * pers.patience * b.patienceMult * (opt.timeScale ?? 1);
 
+  // The more people follow the shop, the more of the queue turns up
+  // because they saw it online — and some of those are influencers.
+  const fans = S.social?.followers || 0;
+  const fame = fameTier(fans);
+  const fromSocial = !vipRoll && Math.random() < socialPullChance(fans);
+  const influencer = fromSocial && Math.random() < fame.influencer;
+  const reach = influencer ? 1.7 : fromSocial ? 1.15 : 1;
+
   return {
     id: uid(),
     name: pick(CUSTOMER_NAMES),
-    face: opt.vip ? '👑' : pick(CUSTOMER_FACES),
+    face: opt.vip ? '👑' : influencer ? '🤳' : pick(CUSTOMER_FACES),
     pers,
     vip: vipRoll,
+    fromSocial,
+    influencer,
     order,
     favColor: order.color,
     favCandy: order.candy,
-    budget: Math.round(getCandy(order.candy).base * (1.4 + Math.random() * 1.6) * loc.payMult),
+    budget: Math.round(getCandy(order.candy).base * (1.4 + Math.random() * 1.6) * loc.payMult * reach),
     greeting: pick(tLines(pers.id, 'greet', pers.greet)),
     patience: seconds,
     maxPatience: seconds,

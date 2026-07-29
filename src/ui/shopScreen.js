@@ -14,7 +14,8 @@ import { openModal } from './modal.js';
 import { openStudio, closeStudio } from './studio.js';
 import { drawShop } from '../render/shop.js';
 import { drawDesign } from '../render/candy.js';
-import { makeCustomer, makeDailySpecial, describeOrder, orderChecklist } from '../game/orders.js';
+import { makeCustomer, makeOrder, makeDailySpecial, describeOrder, orderChecklist } from '../game/orders.js';
+import { followersFromCustomer } from '../game/social.js';
 import { grade, payout, reactionLine, satisfactionDelta } from '../game/scoring.js';
 import { getLocation } from '../data/upgrades.js';
 import { activeEvent } from '../data/events.js';
@@ -225,11 +226,15 @@ function renderQueue(){
   row.innerHTML = '';
   for (const c of queue){
     const frac = clamp(c.patience / c.maxPatience, 0, 1);
-    const card = el('div.cust-card' + (c.vip ? '.vip' : '') + (c.entering ? '.entering' : ''), {
+    const card = el('div.cust-card' + (c.vip ? '.vip' : '') + (c.influencer ? '.influencer' : '')
+                    + (c.entering ? '.entering' : ''), {
       onclick: () => { if ((c.walk ?? 1) >= 1) startOrder(c); },
     },
       el('div.cust-face', c.face),
       el('div.cust-name', c.name),
+      // people who found the shop online say so — that is what fame looks like
+      c.influencer ? el('div.cust-tag.influencer', '🤳 ' + t('soc.influencer'))
+        : c.fromSocial ? el('div.cust-tag', '📱 ' + t('soc.viaSocial')) : null,
       el('div.cust-pers', `${c.pers.emoji} ${tName('pers', c.pers.id, c.pers.name)}`),
       el('div.cust-want', c.order.line),
       el('div.bar.cust-patience' + (frac < .3 ? '.low' : frac < .6 ? '.mid' : ''),
@@ -256,17 +261,39 @@ function updatePatienceBars(){
 }
 
 /* ══════════════ starting an order ══════════════ */
-/** @param opt.delivery  the delivery job this order belongs to, if any */
+/**
+ * @param opt.delivery  the delivery job this order belongs to, if any
+ * @param opt.deal      the brand deal this order belongs to, if any
+ */
 export function startOrder(customer, opt = {}){
   sfx('door'); haptic(12);
   mounted = false;
   cancelAnimationFrame(shopRaf);
   const job = opt.delivery || null;
+  const deal = opt.deal || null;
   openStudio({
     customer,
-    onServe: res => finishOrder(res, customer, job),
-    onQuit: () => { go(job ? 'delivery' : 'shop'); },
+    onServe: res => finishOrder(res, customer, job, deal),
+    onQuit: () => { go(job ? 'delivery' : deal ? 'social' : 'shop'); },
   });
+}
+
+/** A sponsor's order: same studio, paid by the brand instead of a customer. */
+export function startBrandDeal(deal){
+  const c = makeCustomer({ difficulty: deal.difficulty, forceCandy: deal.candy });
+  c.order = makeOrder({ difficulty: deal.difficulty, forceCandy: deal.candy });
+  c.order.line = describeOrder(c.order);
+  c.order.checklist = orderChecklist(c.order);
+  c.face = deal.emoji;
+  c.name = t('brand.' + deal.brand);
+  c.brandDeal = true;
+  // the sponsor is not a passer-by who saw the shop online
+  c.fromSocial = false;
+  c.influencer = false;
+  // a sponsor shoot is not a queue — take the time it needs
+  c.patience *= 1.6;
+  c.maxPatience = c.patience;
+  startOrder(c, { deal });
 }
 
 /* Order text is generated, not translated at render time — so when the
@@ -333,7 +360,7 @@ function nextModeCustomer(){
 }
 
 /* ══════════════ result ══════════════ */
-function finishOrder(res, customer, job = null){
+function finishOrder(res, customer, job = null, deal = null){
   closeStudio();
   const order = customer.order;
   const result = grade(res.design, order, { timeLeft: res.timeLeft, timeTotal: res.timeTotal });
@@ -343,6 +370,16 @@ function finishOrder(res, customer, job = null){
   const perfect = result.perfect && result.stars === 5;
   pushStreak(perfect);
   const pay = payout(res.design, order, result, customer);
+
+  // A brand deal is paid by the sponsor, not out of the till.
+  if (deal){
+    duck(900);
+    import('./socialScreen.js').then(({ finishBrandDeal }) => {
+      finishBrandDeal(deal, result.stars, res.design, () => go('social'));
+    });
+    save();
+    return;
+  }
 
   // A delivery is not paid at the counter — the courier carries the money
   // home with them, so the parcel banks it when it arrives.
@@ -371,6 +408,9 @@ function finishOrder(res, customer, job = null){
   bump('candy_' + res.design.candy);
   nudgeSatisfaction(satisfactionDelta(result.stars));
 
+  // somebody who found the shop online tells the rest of their feed
+  const newFans = followersFromCustomer(customer, result.stars);
+
   if (customer.isDailySpecial) dailySpecialDone = todayKey();
   if (mode){
     mode.served++; mode.stars += result.stars; mode.coins += pay.total;
@@ -386,11 +426,11 @@ function finishOrder(res, customer, job = null){
   else if (result.stars >= 3) { sfx('coin'); haptic(12); }
   else sfx('fail');
 
-  showResult({ res, result, pay, customer, order });
+  showResult({ res, result, pay, customer, order, newFans });
   save();
 }
 
-function showResult({ res, result, pay, customer, order }){
+function showResult({ res, result, pay, customer, order, newFans = 0 }){
   const body = [];
 
   /* preview of what the player made */
@@ -431,8 +471,15 @@ function showResult({ res, result, pay, customer, order }){
   if (pay.tips > 0) add('', '💰', '+' + fmt(pay.tips) + ' ' + t('res.tip'), .2);
   if (pay.combo > 0) add('', '🔥', '+' + fmt(pay.combo), .3);
   if (pay.gems > 0) add('gem', '💎', '+' + pay.gems, .4);
+  if (newFans > 0) add('gem', '👥', '+' + fmt(newFans), .45);
   add('xp', '⭐', '+' + pay.xp + ' XP', .5);
   body.push(rewards);
+
+  if (newFans > 0){
+    body.push(el('p.tiny.center', { style:{ marginTop:'6px', fontWeight:'800', color:'var(--grape-500)' } },
+      customer.influencer ? t('soc.postedAbout', { name: customer.name })
+                          : t('soc.toldFriends')));
+  }
 
   if (pay.comboMult > 1){
     body.push(el('div.combo-banner', t('res.combo', { n:S.streak, p:Math.round((pay.comboMult - 1) * 100) })));

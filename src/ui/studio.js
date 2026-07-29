@@ -130,8 +130,13 @@ function buildDom(){
   if (session.customer){
     const c = session.customer;
     strip.append(
-      el('div.o-who', `${c.face} ${c.name}`, c.vip ? el('span', { style:{ color:'#c98f14' } }, ' • VIP') : null),
-      el('div.o-more', t('studio.tapDetails')),
+      el('div.o-who', `${c.face} ${c.name}`,
+        c.vip ? el('span', { style:{ color:'#c98f14' } }, ' • VIP') : null,
+        c.influencer ? el('span', { style:{ color:'var(--grape-500)' } }, ' • 🤳') : null,
+        c.brandDeal ? el('span', { style:{ color:'var(--grape-500)' } }, ' • 🤝') : null),
+      el('div.o-more', c.influencer ? '🤳 ' + t('soc.influencer')
+                     : c.fromSocial ? '📱 ' + t('soc.viaSocial')
+                     : t('studio.tapDetails')),
     );
   } else {
     strip.append(el('div.o-who', '🎨 ' + t('studio.free')));

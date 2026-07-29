@@ -9,6 +9,7 @@ import { STARTER_DECOS, STARTER_PACKS, DECORATIONS, PACKAGING } from '../data/de
 import { COLOR_UNLOCK, FLAVORS } from '../data/palette.js';
 import { computeBonuses, UPGRADES, UPG_BY_ID, LOC_BY_ID } from '../data/upgrades.js';
 import { staffBonuses, makeEmployee, roleOf, wageOf, payrollOf } from '../data/staff.js';
+import { fameTier } from '../data/social.js';
 import { CONTENT_REV } from './version.js';
 
 export const SAVE_KEY = 'liekes-candy-design/save/v1';
@@ -59,7 +60,10 @@ function freshState(){
     finance: { lastPayday: '', redDays: 0, interest: 0, paidTotal: 0, log: [] },
 
     /* delivery service: the board of jobs and the parcels on the road */
-    delivery: { board: [], boardDate: '', active: [], done: 0, earned: 0 },
+    delivery: { board: [], boardDate: '', active: [], done: 0, earned: 0, nextJobAt: 0 },
+
+    /* Sweetgram: the feed, the followers, the brand deals */
+    social: { followers: 0, posts: [], likes: 0, viral: 0, deals: [], dealDate: '', unseen: 0 },
 
     counters: {
       orders:0, fiveStars:0, perfect:0, coinsEarned:0, decosPlaced:0,
@@ -122,9 +126,11 @@ function migrate(old){
   const merged = { ...base, ...old, v: SAVE_VERSION };
   // deep-merge the nested objects so new fields appear for old saves
   for (const key of ['owned','counters','missions','daily','records','settings','staff',
-                     'levelRewards','finance','delivery']){
+                     'levelRewards','finance','delivery','social']){
     merged[key] = { ...base[key], ...(old[key] || {}) };
   }
+  merged.social.posts = [...(old.social?.posts || [])];
+  merged.social.deals = [...(old.social?.deals || [])];
   merged.staff.roster = [...(old.staff?.roster || [])];
   merged.staff.applicants = [...(old.staff?.applicants || [])];
   merged.levelRewards.pending = [...(old.levelRewards?.pending || [])];
@@ -334,11 +340,14 @@ export function setUpgLevel(id, lv){ S.upgrades[id] = lv; emit('state'); save();
 export const bonuses = () => {
   const base = computeBonuses(S.upgrades);
   const st = staffBonuses(S.staff?.roster || []);
+  // fame is worth something at the till: people tip a shop they follow
+  const fame = fameTier(S.social?.followers || 0);
   return {
     ...base,
     idleCoins:    base.idleCoins + st.idleCoins,
-    tipMult:      base.tipMult * st.tipMult,
+    tipMult:      base.tipMult * st.tipMult * fame.tipMult,
     patienceMult: base.patienceMult * st.patienceMult,
+    queue:        base.queue + fame.queue,
   };
 };
 

@@ -15,8 +15,9 @@ import { toast, confetti, coinFly, bumpPill } from '../core/fx.js';
 import { openModal } from './modal.js';
 import { drawDesign } from '../render/candy.js';
 import {
-  ensureBoard, store, jobById, claimJob, dispatch, activeParcels, parcelSlots,
-  roadIsFull, arrivedParcels, collect, collectAll, minutesLeft, parcelArrived,
+  ensureBoard, store, jobById, claimJob, declineJob, nextJobIn, dispatch,
+  activeParcels, parcelSlots, roadIsFull, arrivedParcels, collect, collectAll,
+  minutesLeft, parcelArrived,
 } from '../game/delivery.js';
 import { courierStats } from '../data/staff.js';
 import { getCandy } from '../data/candies.js';
@@ -100,6 +101,12 @@ export function mountDelivery(host){
   } else {
     for (const job of d.board) board.append(jobRow(job));
   }
+  // the board is meant to run empty — say when the next one is due
+  const soon = nextJobIn();
+  if (soon != null){
+    board.append(el('p.tiny.muted.center', { style:{ marginTop:'4px' } },
+      soon <= 1 ? t('deliv.nextSoon') : t('deliv.nextIn', { n: soon })));
+  }
   wrap.append(board);
 
   /* ── lifetime ── */
@@ -182,6 +189,13 @@ function jobRow(job){
     el('div', { style:{ display:'flex', gap:'8px', alignItems:'center', marginTop:'8px' } },
       el('span.tiny', { style:{ fontWeight:'900', color:'#c98f14', flex:'1' } },
         `🪙 +${fmt(job.fee)} ${t('deliv.fee')}`),
+      // turning one down clears it for good — the board is yours to empty
+      el('button.btn.ghost.sm', { onclick: () => {
+        declineJob(job.id);
+        sfx('remove'); haptic(10);
+        toast(t('deliv.declined'), '', '🚫');
+        go('delivery');
+      }}, '🚫'),
       el('button.btn' + (full ? '.ghost' : '.mint') + '.sm', {
         onclick: () => startJob(job, full),
       }, full ? t('deliv.roadFullShort') : t('deliv.make')),

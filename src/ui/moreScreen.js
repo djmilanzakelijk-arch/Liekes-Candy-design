@@ -9,6 +9,8 @@ import {
   canDeliver, DELIVERY_LEVEL,
 } from '../core/state.js';
 import { deliveryBadge } from './deliveryScreen.js';
+import { socialBadge } from './socialScreen.js';
+import { followers, tier, unlocked as socialOpen, SOCIAL_LEVEL } from '../game/social.js';
 import { sfx, haptic, setVolume, setMusicEnabled } from '../core/audio.js';
 import { toast, confetti, coinFly, candyRain, bumpPill } from '../core/fx.js';
 import { openModal, confirmModal } from './modal.js';
@@ -41,6 +43,7 @@ export function mountMore(host){
     tile('🧑‍🍳', t('more.staff'), t('more.staffSub', { a: (S.staff?.roster || []).length, b: staffSlots() }),
          () => go('staff'), staffBadge()),
     tile('🚚', t('more.delivery'), deliverySub(), () => go('delivery'), deliveryBadge()),
+    tile('📱', t('more.social'), socialSub(), () => go('social'), socialBadge()),
     tile('📸', t('more.photos'), t('more.photosSub', { n: S.photos.length }), () => go('photos')),
     tile('🏅', t('more.leaderboard'), t('more.leaderboardSub'), () => go('leaderboard')),
     tile('🎉', t('more.events'),
@@ -76,6 +79,12 @@ function legendWaiting(){
 /** Badge count for the staff tile: pending incident + legendary applicant. */
 function staffBadge(){
   return (S.staff?.pending ? 1 : 0) + (legendWaiting() ? 1 : 0);
+}
+
+/** Social tile: the follower count, or why it is still closed. */
+function socialSub(){
+  if (!socialOpen()) return t('more.socialLocked', { n: SOCIAL_LEVEL });
+  return t('more.socialSub', { n: fmt(followers()), tier: t('fame.' + tier().id) });
 }
 
 /** Delivery tile: how many jobs are waiting, or why it is still closed. */

@@ -23,13 +23,15 @@ import { todayKey, uid, clamp, randI, pick } from '../core/utils.js';
 const BASE_MINUTES = [12, 22, 35];
 /** A delivery job waits this long on the board before it is withdrawn. */
 const JOB_LIFETIME_MS = 3 * 3600 * 1000;
-/** Deliveries pay this much more than the same order at the counter. */
-export const DELIVERY_BONUS = .45;
+/** Minutes between one order coming in and the next. */
+const JOB_GAP_MIN = [14, 38];
 
 export const store = () => {
-  if (!S.delivery) S.delivery = { board:[], boardDate:'', active:[], done:0, earned:0 };
+  if (!S.delivery) S.delivery = { board:[], boardDate:'', active:[], done:0, earned:0, nextJobAt:0 };
   return S.delivery;
 };
+
+const gapMs = () => randI(JOB_GAP_MIN[0], JOB_GAP_MIN[1]) * 60000;
 
 /* ══════════════ the board ══════════════ */
 
@@ -46,20 +48,63 @@ function pruneBoard(){
 const boardSize = () => clamp(1 + couriers(roster()).length, 2, 5);
 
 /**
- * Top the board up. Jobs refresh as they are taken or expire rather than
- * all at once, so there is always something waiting.
+ * Let orders trickle in.
+ *
+ * The board deliberately does NOT top itself back up the moment you take
+ * a job: you are meant to be able to work it empty and be done for a
+ * while. A new order arrives every quarter of an hour or so, up to the
+ * cap your couriers can carry.
  */
 export function ensureBoard(){
   const d = store();
-  if (!canDeliver()){ return d; }
+  if (!canDeliver()) return d;
   pruneBoard();
 
-  const want = boardSize();
-  while (d.board.length < want){
-    d.board.push(makeJob());
+  const now = Date.now();
+  const cap = boardSize();
+
+  // first visit: put one up straight away so there is something to do
+  if (!d.nextJobAt){
+    if (!d.board.length) d.board.push(makeJob());
+    d.nextJobAt = now + gapMs();
+    d.boardDate = todayKey();
+    save();
+    return d;
   }
+
+  let added = 0;
+  let guard = 0;
+  while (d.nextJobAt <= now && guard++ < 8){
+    if (d.board.length >= cap){
+      // full board: stop stacking up a backlog while you were away
+      d.nextJobAt = now + gapMs();
+      break;
+    }
+    d.board.push(makeJob());
+    added++;
+    d.nextJobAt += gapMs();
+  }
+  if (d.nextJobAt <= now) d.nextJobAt = now + gapMs();
+
   d.boardDate = todayKey();
-  save();
+  if (added || guard) save();
+  return d;
+}
+
+/** Minutes until the next order comes in, or null when the board is full. */
+export function nextJobIn(){
+  const d = store();
+  if (!d.nextJobAt || d.board.length >= boardSize()) return null;
+  return Math.max(0, Math.ceil((d.nextJobAt - Date.now()) / 60000));
+}
+
+/** Turn a job down — it leaves the board and does not come back. */
+export function declineJob(id){
+  const d = store();
+  const before = d.board.length;
+  d.board = d.board.filter(j => j.id !== id);
+  // taking one off does not summon a replacement any sooner
+  if (d.board.length !== before) save();
   return d;
 }
 
