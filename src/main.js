@@ -18,6 +18,8 @@ import {
 import { mountStaff } from './ui/staffScreen.js';
 import { mountDelivery } from './ui/deliveryScreen.js';
 import { mountSocial } from './ui/socialScreen.js';
+import { mountSeason } from './ui/seasonScreen.js';
+import { rolloverSeason, rewardLabel } from './game/seasonPass.js';
 import { tickSocial } from './game/social.js';
 import { showPayday } from './ui/financeUi.js';
 import { openLevelReward, hasPendingLevelReward } from './ui/levelReward.js';
@@ -29,6 +31,9 @@ import { t, tName, initLang, setLang, getLang, hasChosenLang, LANGS } from './co
 
 /* ══════════════ boot ══════════════ */
 const bootTips = () => [t('boot.1'), t('boot.2'), t('boot.3'), t('boot.4'), t('boot.5')];
+
+/** Set at boot when a Candy Pass season turned over while she was away. */
+let seasonHandover = null;
 
 async function boot(){
   const bar = $('#boot .boot-bar i');
@@ -54,6 +59,7 @@ async function boot(){
   syncUnlocks();
   seedLegacyStaff();   // existing Employee upgrades become real, fireable staff
   tickSocial();        // likes kept landing while the game was closed
+  seasonHandover = rolloverSeason();   // a season may have ended while away
 
   await step(48, TIPS[1]);
   registerScreens();
@@ -90,6 +96,7 @@ function registerScreens(){
   registerScreen('staff', mountStaff);
   registerScreen('delivery', mountDelivery);
   registerScreen('social', mountSocial);
+  registerScreen('season', mountSeason);
 }
 
 /* ══════════════ HUD ══════════════ */
@@ -183,6 +190,12 @@ function afterBoot(){
     setTimeout(() => toast(t('ev.toast', { name: tName('event', ev.id, ev.name) }), 'good', ev.emoji), 1400);
   }
 
+  // a Candy Pass season ended while she was away: everything she reached
+  // but never collected was already handed over — show what arrived
+  if (seasonHandover && S.tutorialDone && !hasIncoming()){
+    setTimeout(() => showSeasonHandover(seasonHandover), 1500);
+  }
+
   // an update added candy this player already qualifies for — say so,
   // otherwise it just quietly appears at the end of a long tray
   const fresh = getBootUnlocks();
@@ -202,6 +215,32 @@ function afterBoot(){
   // save on the way out
   window.addEventListener('pagehide', () => save(true));
   document.addEventListener('visibilitychange', () => { if (document.hidden) save(true); });
+}
+
+/**
+ * A season turned over. Anything she reached but never collected has
+ * already been added to her shop — this is the receipt, not an offer.
+ */
+function showSeasonHandover({ rewards }){
+  sfx('unlock');
+  const body = [];
+  if (rewards.length){
+    confetti(50);
+    const row = el('div.chipbar', { style:{ justifyContent:'center', flexWrap:'wrap' } });
+    for (const r of rewards){
+      const l = rewardLabel(r, t, tName);
+      row.append(el('div.chip.on', `${l.icon} ${l.text}`));
+    }
+    body.push(el('p.center.tiny.muted', { style:{ marginBottom:'8px' } }, t('pass.handoverBody')));
+    body.push(row);
+  } else {
+    body.push(el('p.center.tiny.muted', t('pass.handoverEmpty')));
+  }
+  openModal({
+    icon:'🗓️', title:t('pass.handoverTitle'), sub:t('pass.handoverSub'),
+    body,
+    actions:[{ label:t('pass.handoverGo'), cls:'grape', onClick: () => go('season') }],
+  });
 }
 
 /** "The update brought you these" — shown once per content revision. */

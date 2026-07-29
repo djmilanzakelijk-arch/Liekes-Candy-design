@@ -86,7 +86,7 @@ function renderDecos(host){
   // pieces and level rewards that are never for sale.
   let list = decoFilter === 'owned'
     ? DECORATIONS.filter(d => ownsDeco(d.id))
-    : DECORATIONS.filter(d => !d.reward && (!d.event || eventRunning(d.event)));
+    : DECORATIONS.filter(d => !d.reward && !d.season && (!d.event || eventRunning(d.event)));
   if (decoFilter !== 'owned' && decoFilter !== 'all'){
     list = list.filter(d => d.cat === decoFilter);
   }

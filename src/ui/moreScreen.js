@@ -10,6 +10,9 @@ import {
 } from '../core/state.js';
 import { deliveryBadge } from './deliveryScreen.js';
 import { socialBadge } from './socialScreen.js';
+import { seasonBadge } from './seasonScreen.js';
+import { theme as seasonTheme, tier as seasonTier, hasPass } from '../game/seasonPass.js';
+import { TIERS as SEASON_TIERS } from '../data/season.js';
 import { followers, tier, unlocked as socialOpen, SOCIAL_LEVEL } from '../game/social.js';
 import { sfx, haptic, setVolume, setMusicEnabled } from '../core/audio.js';
 import { toast, confetti, coinFly, candyRain, bumpPill } from '../core/fx.js';
@@ -44,6 +47,7 @@ export function mountMore(host){
          () => go('staff'), staffBadge()),
     tile('🚚', t('more.delivery'), deliverySub(), () => go('delivery'), deliveryBadge()),
     tile('📱', t('more.social'), socialSub(), () => go('social'), socialBadge()),
+    tile(seasonTheme().emoji, t('more.season'), seasonSub(), () => go('season'), seasonBadge()),
     tile('📸', t('more.photos'), t('more.photosSub', { n: S.photos.length }), () => go('photos')),
     tile('🏅', t('more.leaderboard'), t('more.leaderboardSub'), () => go('leaderboard')),
     tile('🎉', t('more.events'),
@@ -79,6 +83,14 @@ function legendWaiting(){
 /** Badge count for the staff tile: pending incident + legendary applicant. */
 function staffBadge(){
   return (S.staff?.pending ? 1 : 0) + (legendWaiting() ? 1 : 0);
+}
+
+/** Candy Pass tile: which tier she is on and whether the pass is bought. */
+function seasonSub(){
+  return t('more.seasonSub', {
+    a: seasonTier(), b: SEASON_TIERS,
+    tag: hasPass() ? t('pass.owned') : t('pass.free'),
+  });
 }
 
 /** Social tile: the follower count, or why it is still closed. */
@@ -410,6 +422,16 @@ export function mountSettings(host){
       }, `${l.flag} ${l.name}`))),
   ));
 
+  /* how the studio works: free-form, or one step at a time */
+  const guided = !!S.settings.guided;
+  wrap.append(el('div.card',
+    el('div.card-title', el('span.ico', '🎨'), t('set.designMode')),
+    el('div.row', { style:{ gap:'8px' } },
+      modeChoice('🖐️', t('set.modeFree'), t('set.modeFreeSub'), !guided, false),
+      modeChoice('👣', t('set.modeGuided'), t('set.modeGuidedSub'), guided, true),
+    ),
+  ));
+
   const card = el('div.card');
   card.append(
     toggleRow('🎵', t('set.music'), 'music', v => setMusicEnabled(v)),
@@ -449,6 +471,20 @@ export function mountSettings(host){
   ));
 
   host.append(wrap);
+}
+
+/** One of the two ways of making a candy. */
+function modeChoice(ico, label, sub, on, value){
+  return el('button.mode-choice' + (on ? '.on' : ''), {
+    onclick: () => {
+      if (!!S.settings.guided === value) return;
+      S.settings.guided = value;
+      save();
+      sfx('unlock'); haptic(12);
+      toast(value ? t('set.modeGuidedOn') : t('set.modeFreeOn'), 'good', ico);
+      go('settings');
+    },
+  }, el('span.mc-ico', ico), el('b', label), el('small', sub));
 }
 
 function toggleRow(ico, label, key, onChange){

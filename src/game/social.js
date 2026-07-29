@@ -18,6 +18,8 @@ import {
   WISH_LIKES, MAX_WISHES, WISH_LIFETIME_MS, wishReward,
 } from '../data/social.js';
 import { stagingBonus } from '../render/backdrop.js';
+import { addPoints as seasonPoints } from './seasonPass.js';
+import { POINTS as SEASON_POINTS } from '../data/season.js';
 import { getCandy, CANDIES } from '../data/candies.js';
 import { DECORATIONS, getDeco } from '../data/decorations.js';
 import { COLORS, COLOR_UNLOCK } from '../data/palette.js';
@@ -103,6 +105,7 @@ export function createPost(photo, opt = {}){
   if (s.posts.length > MAX_POSTS) s.posts.length = MAX_POSTS;
   if (viral) s.viral = (s.viral || 0) + 1;
   bump('posts');
+  seasonPoints(SEASON_POINTS.post);
 
   // a post lands with a first flurry rather than starting at zero
   tickSocial();

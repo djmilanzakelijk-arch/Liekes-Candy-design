@@ -7,6 +7,8 @@ import { S, statValue, addCoins, addGems, save, rolloverDaily } from '../core/st
 import { sfx, haptic } from '../core/audio.js';
 import { toast, confetti, coinFly, bumpPill } from '../core/fx.js';
 import { DAILY_POOL, CAREER, MISSION_BY_ID } from '../data/missions.js';
+import { addPoints as seasonPoints } from '../game/seasonPass.js';
+import { POINTS as SEASON_POINTS } from '../data/season.js';
 import { go, subHeader } from './nav.js';
 import { t, tName } from '../core/i18n.js';
 
@@ -84,6 +86,7 @@ function claim(m, career){
   list.push(m.id);
   addCoins(m.coins);
   if (m.gems) addGems(m.gems);
+  seasonPoints(SEASON_POINTS.mission);
   save();
   sfx('coin'); haptic([10, 25, 10]);
   confetti(24);

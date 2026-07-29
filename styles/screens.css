@@ -827,3 +827,93 @@
   display:block;width:100%;max-width:186px;height:auto;aspect-ratio:1;
   margin:0 auto 10px;border-radius:var(--r-md);box-shadow:var(--sh-2);
 }
+
+/* ═══════════════ CANDY PASS ═══════════════ */
+.season-banner{
+  position:relative;padding:14px;border-radius:var(--r-lg);margin-bottom:12px;
+  box-shadow:var(--sh-2);border:2px solid #fff;overflow:hidden;
+}
+.season-banner h3{font-size:17px;font-weight:900}
+.season-banner p{font-size:11.5px;font-weight:800;color:var(--ink-soft)}
+.season-tier{
+  display:inline-block;margin-top:6px;padding:3px 11px;border-radius:var(--r-pill);
+  background:rgba(255,255,255,.85);font-size:12px;font-weight:900;box-shadow:var(--sh-1);
+}
+
+.pass-lane{
+  display:flex;gap:9px;overflow-x:auto;padding:2px 2px 10px;scrollbar-width:none;
+  -webkit-overflow-scrolling:touch;
+}
+.pass-lane::-webkit-scrollbar{display:none}
+.pass-tier{
+  flex:0 0 auto;width:82px;display:flex;flex-direction:column;gap:6px;align-items:stretch;
+}
+.pt-no{
+  text-align:center;font-size:11px;font-weight:900;color:var(--ink-faint);
+  background:var(--surface-2);border:1.5px solid var(--line);border-radius:var(--r-pill);
+  padding:2px 0;
+}
+.pass-tier.reached .pt-no{background:var(--mint-100);color:#0d5943;border-color:var(--mint-300)}
+.pass-tier.ready .pt-no{background:linear-gradient(180deg,var(--gold-1),var(--gold-2));color:#6a4708;border-color:transparent}
+.pass-tier.next .pt-no{box-shadow:0 0 0 2px var(--pink-400)}
+
+.pt-cell{
+  position:relative;border-radius:var(--r-md);padding:6px 4px 5px;text-align:center;
+  background:linear-gradient(180deg,#fff,var(--surface-2));
+  border:1.5px solid var(--line);box-shadow:var(--sh-1);min-height:74px;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;
+}
+.pt-cell.premium{background:linear-gradient(180deg,#fff,var(--grape-100));border-color:#d9c9ff}
+.pt-cell canvas{width:40px;height:40px;display:block;pointer-events:none}
+.pt-ico{font-size:24px;line-height:1.1}
+.pt-cell b{
+  font-size:9px;font-weight:800;line-height:1.15;color:var(--ink-soft);
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.pt-cell.grab{cursor:pointer;box-shadow:0 0 0 2.5px var(--gold-2),var(--sh-1);animation:ptPulse 1.6s ease-in-out infinite}
+@keyframes ptPulse{50%{transform:translateY(-2px)}}
+.pt-cell.grab:active{transform:scale(.94)}
+.pt-cell.claimed{filter:grayscale(.5) opacity(.55)}
+.pt-cell.locked{filter:grayscale(.6) opacity(.6)}
+.pt-tick,.pt-lock{
+  position:absolute;top:3px;right:4px;font-size:11px;font-weight:900;
+}
+.pt-tick{color:var(--mint-500)}
+
+/* how you design: free, or one step at a time */
+.mode-choice{
+  flex:1;border-radius:var(--r-md);padding:11px 9px;text-align:center;
+  background:var(--surface-2);border:2px solid var(--line);box-shadow:var(--sh-1);
+  transition:transform .12s;
+}
+.mode-choice:active{transform:scale(.96)}
+.mode-choice.on{
+  border-color:var(--grape-500);background:linear-gradient(180deg,#fff,var(--grape-100));
+  box-shadow:0 0 0 2px var(--grape-100),var(--sh-1);
+}
+.mode-choice .mc-ico{font-size:24px;display:block;margin-bottom:3px}
+.mode-choice b{display:block;font-size:13px;font-weight:800}
+.mode-choice small{display:block;font-size:10.5px;font-weight:700;color:var(--ink-faint);line-height:1.3;margin-top:2px}
+
+/* the step-by-step bar that replaces the tab strip */
+.tray-tabs.guided{display:block;overflow:visible;padding:4px 10px 2px}
+.step-bar{display:flex;align-items:center;gap:9px}
+.step-nav{
+  width:40px;height:36px;flex:0 0 auto;border-radius:var(--r-md);display:grid;place-items:center;
+  font-size:17px;font-weight:900;
+  background:var(--surface);border:1.5px solid var(--line);box-shadow:var(--sh-1);
+}
+.step-nav:active{transform:scale(.92)}
+.step-nav.off{opacity:.35;pointer-events:none}
+.step-nav.next{background:linear-gradient(180deg,var(--grape-300),var(--grape-500));color:#fff;border-color:transparent}
+.step-nav.done{background:var(--mint-100);color:#0d5943;border-color:var(--mint-300)}
+.step-mid{flex:1;min-width:0;text-align:center}
+.step-no{font-size:10px;font-weight:800;color:var(--ink-faint);letter-spacing:.3px}
+.step-name{font-size:14px;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.step-dots{display:flex;gap:5px;justify-content:center;margin-top:5px}
+.step-dot{
+  width:8px;height:8px;border-radius:50%;flex:0 0 auto;
+  background:var(--line);border:none;padding:0;
+}
+.step-dot.done{background:var(--mint-300)}
+.step-dot.on{background:var(--grape-500);transform:scale(1.35)}

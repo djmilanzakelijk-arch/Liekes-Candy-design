@@ -66,10 +66,10 @@ export function openModal(opt = {}){
   return close;
 }
 
-/** Simple yes/no. */
-export function confirmModal({ icon = '❓', title, sub, yes = 'Yes', no = 'Cancel', onYes }){
+/** Simple yes/no, optionally with something to look at in between. */
+export function confirmModal({ icon = '❓', title, sub, body, yes = 'Yes', no = 'Cancel', onYes }){
   return openModal({
-    icon, title, sub,
+    icon, title, sub, body,
     actions: [
       { label: no, cls: 'ghost' },
       { label: yes, onClick: onYes },

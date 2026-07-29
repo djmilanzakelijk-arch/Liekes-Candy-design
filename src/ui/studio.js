@@ -52,6 +52,11 @@ const DIP_SURFACE = .80;    // where the chocolate surface sits
 let gest = null;            // physical tool gesture in progress
 let dipOffset = 0;          // px the candy is pushed down; springs back
 
+/* step-by-step mode (Settings → how you design) */
+let guided = false;
+let stepIx = 0;
+let guidedCat = 'icing';
+
 const DPR = () => Math.min(window.devicePixelRatio || 1, 2.5);
 
 /* ══════════════════════════════════════════════════════
@@ -73,6 +78,9 @@ export function openStudio(opts){
   history = [];
   selected = null;
   activeTool = null;
+  guided = !!S.settings.guided;
+  stepIx = 0;
+  guidedCat = DECO_CATS[0].id;
   tabId = 'candy';
 
   design = opts.design || {
@@ -218,9 +226,67 @@ function tabs(){
   return list;
 }
 
+/* ── step-by-step mode ────────────────────────────────
+   Some people want the whole table in front of them; some would
+   rather be walked through it. Settings picks which, and the studio
+   is the same underneath — guided mode just decides which tray is
+   showing and adds a Back / Next bar instead of the tab strip.
+   The six decoration categories collapse into one step, otherwise
+   the walk-through would be eleven steps long. */
+
+function steps(){
+  return [
+    { id:'candy',  emoji:'🍬', name:t('studio.tab.candy'),  hint:t('step.candy') },
+    { id:'color',  emoji:'🎨', name:t('studio.tab.color'),  hint:t('step.color') },
+    { id:'flavor', emoji:'🍓', name:t('studio.tab.flavor'), hint:t('step.flavor') },
+    ...(toolsForCandy(design.candy).length
+        ? [{ id:'tools', emoji:'🔧', name:t('studio.tab.tools'), hint:t('step.tools') }] : []),
+    { id:'decos',  emoji:'✨', name:t('step.decosName'), hint:t('step.decos') },
+    { id:'pack',   emoji:'🎁', name:t('studio.tab.pack'),  hint:t('step.pack') },
+    { id:'text',   emoji:'✍️', name:t('studio.tab.text'),  hint:t('step.text') },
+  ];
+}
+
+function gotoStep(i){
+  const list = steps();
+  stepIx = clamp(i, 0, list.length - 1);
+  tabId = list[stepIx].id;
+  renderTabs(); renderTray();
+}
+
+function renderStepBar(host){
+  const list = steps();
+  // the candy can gain or lose its tools step — keep the index sane
+  if (stepIx >= list.length) stepIx = list.length - 1;
+  const s = list[stepIx];
+
+  host.append(el('div.step-bar',
+    el('button.step-nav' + (stepIx === 0 ? '.off' : ''), {
+      onclick: () => { if (stepIx > 0){ sfx('swipe'); gotoStep(stepIx - 1); } },
+    }, '←'),
+    el('div.step-mid',
+      el('div.step-no', t('step.of', { a: stepIx + 1, b: list.length })),
+      el('div.step-name', `${s.emoji} ${s.name}`),
+    ),
+    stepIx === list.length - 1
+      ? el('div.step-nav.done', '✓')
+      : el('button.step-nav.next', {
+          onclick: () => { sfx('swipe'); gotoStep(stepIx + 1); },
+        }, '→'),
+  ));
+  host.append(el('div.step-dots',
+    ...list.map((_, i) => el('button.step-dot' + (i === stepIx ? '.on' : '') + (i < stepIx ? '.done' : ''), {
+      onclick: () => { sfx('tap'); gotoStep(i); },
+    }))));
+}
+
 function renderTabs(){
   const host = $('#trayTabs', root); if (!host) return;
   host.innerHTML = '';
+  host.classList.toggle('guided', guided);
+
+  if (guided){ renderStepBar(host); return; }
+
   for (const tab of tabs()){
     host.append(el('button.tray-tab' + (tab.id === tabId ? '.on' : ''), {
       onclick: () => { sfx('swipe'); tabId = tab.id; renderTabs(); renderTray(); },
@@ -246,7 +312,26 @@ function renderTray(){
   if (tabId === 'pack')       return renderPackTray(host);
   if (tabId === 'text')       return renderTextTray(host);
   if (tabId === 'tools')      return renderToolsTray(host);
+  if (tabId === 'decos')      return renderAllDecosTray(host);
   if (tabId.startsWith('cat:')) return renderDecoTray(host, tabId.slice(4));
+}
+
+/** Guided mode folds all six decoration categories into one step. */
+function renderAllDecosTray(host){
+  host.style.flexDirection = 'column';
+  host.style.alignItems = 'stretch';
+
+  const cats = el('div.chipbar', { style:{ marginBottom:'2px' } });
+  for (const c of DECO_CATS){
+    cats.append(el('button.chip' + (guidedCat === c.id ? '.on' : ''), {
+      onclick: () => { guidedCat = c.id; sfx('swipe'); renderTray(); },
+    }, `${c.emoji} ${tName('cat', c.id, c.name)}`));
+  }
+  host.append(cats);
+
+  const inner = el('div', { style:{ display:'flex', flexDirection:'column', alignItems:'stretch' } });
+  host.append(inner);
+  renderDecoTray(inner, guidedCat);
 }
 
 /** What the current customer asked for, or an empty order. */
@@ -272,7 +357,8 @@ function renderCandyTray(host){
         design.candy = c.id;
         // drop any tool the new candy cannot use, and refresh the tab strip
         design.tools = pruneTools(design.tools, c.id);
-        sfx('place'); haptic(10); renderTabs(); renderTray();
+        sfx('place'); haptic(10);
+        if (guided) gotoStep(stepIx); else { renderTabs(); renderTray(); }
       },
     });
     const cv = el('canvas', { width:88, height:88 });
@@ -358,7 +444,7 @@ function renderDecoTray(host, cat){
     // Anything owned is always usable. Event pieces are only *offered*
     // during their season, but once bought they stay in the tray forever —
     // otherwise a Christmas snowflake would vanish every January.
-    (ownsDeco(d.id) || (!d.event || eventRunning(d.event)) && !d.reward));
+    (ownsDeco(d.id) || (!d.event || eventRunning(d.event)) && !d.reward && !d.season));
 
   const asks = new Set((wanted().wants || []).map(w => w.id));
   // requested decorations to the front of the row, same reason as the candy

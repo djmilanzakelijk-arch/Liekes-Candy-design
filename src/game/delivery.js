@@ -17,6 +17,8 @@ import {
 } from '../core/state.js';
 import { courierStats, bestCourier, deliverySlots, couriers } from '../data/staff.js';
 import { makeCustomer } from './orders.js';
+import { addPoints as seasonPoints } from './seasonPass.js';
+import { POINTS as SEASON_POINTS } from '../data/season.js';
 import { todayKey, uid, clamp, randI, pick } from '../core/utils.js';
 
 /** How long a parcel is on the road before any courier bonus, in minutes. */
@@ -204,6 +206,7 @@ export function collect(id){
   if (p.gems) addGems(p.gems);
   bump('delivered');
   bump('orders');
+  seasonPoints(SEASON_POINTS.delivery);
   nudgeSatisfaction(p.stars >= 4 ? 2 : p.stars >= 3 ? 0 : -2);
   save();
   emit('state');

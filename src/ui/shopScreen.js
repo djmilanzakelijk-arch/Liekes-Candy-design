@@ -16,6 +16,8 @@ import { drawShop } from '../render/shop.js';
 import { drawDesign } from '../render/candy.js';
 import { makeCustomer, makeOrder, makeDailySpecial, describeOrder, orderChecklist } from '../game/orders.js';
 import { followersFromCustomer } from '../game/social.js';
+import { addPoints as seasonPoints, scoreOrder } from '../game/seasonPass.js';
+import { POINTS as SEASON_POINTS } from '../data/season.js';
 import { grade, payout, reactionLine, satisfactionDelta } from '../game/scoring.js';
 import { getLocation } from '../data/upgrades.js';
 import { activeEvent } from '../data/events.js';
@@ -394,6 +396,7 @@ function finishOrder(res, customer, job = null, deal = null, wish = null){
 
   // A follower's wish is a thank-you, not a sale.
   if (wish){
+    seasonPoints(SEASON_POINTS.wish);
     duck(900);
     import('./socialScreen.js').then(({ finishFollowerWish }) => {
       finishFollowerWish(wish, result.stars, res.design, () => go('social'));
@@ -404,6 +407,7 @@ function finishOrder(res, customer, job = null, deal = null, wish = null){
 
   // A brand deal is paid by the sponsor, not out of the till.
   if (deal){
+    seasonPoints(SEASON_POINTS.brandDeal);
     duck(900);
     import('./socialScreen.js').then(({ finishBrandDeal }) => {
       finishBrandDeal(deal, result.stars, res.design, () => go('social'));
@@ -441,6 +445,7 @@ function finishOrder(res, customer, job = null, deal = null, wish = null){
 
   // somebody who found the shop online tells the rest of their feed
   const newFans = followersFromCustomer(customer, result.stars);
+  seasonPoints(scoreOrder(result.stars, perfect));
 
   if (customer.isDailySpecial) dailySpecialDone = todayKey();
   if (mode){

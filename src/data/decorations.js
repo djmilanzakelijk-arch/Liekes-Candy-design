@@ -91,6 +91,28 @@ export const DECORATIONS = [
   { id:'rw_star_crown',  name:'Starlight Crown', cat:'charm',    art:'crown',    rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'silver',  layer:4, size:1.15, reward:true, desc:'Level reward — cool silver, warm prestige.' },
   { id:'rw_cocoa_pearls',name:'Cocoa Pearls',    cat:'charm',    art:'pearls',   rarity:'epic',      price:0, unlock:1, colorable:false, fixed:'brown',   layer:4, size:1,    reward:true, desc:'Level reward — dark, glossy and impossibly round.' },
   { id:'rw_velvet_rose', name:'Velvet Rose',     cat:'flower',   art:'rose',     rarity:'legendary', price:0, unlock:1, colorable:true,  layer:4, size:1.2, reward:true, desc:'Level reward — deep petals with a matte bloom.' },
+
+  /* ── CANDY PASS ────────────────────────────────────────
+     `season` marks a piece that only ever comes out of a Candy Pass
+     track. Three per season, and the seasons rotate — so one you
+     missed can come round again. Anything already earned stays
+     yours for good, exactly like a level reward. */
+  /* 🌸 Blossom */
+  { id:'sp_petal_fall',  name:'Petal Fall',      cat:'flower',   art:'blossom',  rarity:'epic',      price:0, unlock:1, colorable:true,  layer:4, size:1.3,  season:true, desc:'Candy Pass — a whole drift of spring petals.' },
+  { id:'sp_dew_pearls',  name:'Dewdrop Pearls',  cat:'charm',    art:'pearls',   rarity:'legendary', price:0, unlock:1, colorable:false, fixed:'white',  layer:4, size:1.1,  season:true, desc:'Candy Pass — morning dew, caught and candied.' },
+  { id:'sp_blossom_bow', name:'Blossom Bow',     cat:'ribbon',   art:'bow',      rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'pink',   layer:4, size:1.3,  season:true, desc:'Candy Pass — silk the colour of cherry blossom.' },
+  /* ☀️ Sunshine */
+  { id:'sp_sun_glaze',   name:'Sunbeam Glaze',   cat:'icing',    art:'glaze',    rarity:'epic',      price:0, unlock:1, colorable:false, fixed:'yellow', layer:1, size:1.35, season:true, desc:'Candy Pass — poured light, still warm.' },
+  { id:'sp_citrus_spr',  name:'Citrus Sprinkles',cat:'sprinkle', art:'sprinkles',rarity:'legendary', price:0, unlock:1, colorable:false, fixed:'orange', layer:2, size:1.15, season:true, desc:'Candy Pass — zest that snaps between your teeth.' },
+  { id:'sp_sun_crown',   name:'Sun Crown',       cat:'charm',    art:'crown',    rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'gold',   layer:4, size:1.2,  season:true, desc:'Candy Pass — worn only on the longest day.' },
+  /* 🍂 Harvest */
+  { id:'sp_caramel_lace',name:'Caramel Lace',    cat:'ribbon',   art:'lace',     rarity:'epic',      price:0, unlock:1, colorable:false, fixed:'orange', layer:3, size:1.1,  season:true, desc:'Candy Pass — spun sugar in burnt-orange thread.' },
+  { id:'sp_spice_dust',  name:'Spice Dust',      cat:'sprinkle', art:'glitter',  rarity:'legendary', price:0, unlock:1, colorable:false, fixed:'brown',  layer:5, size:1.15, season:true, desc:'Candy Pass — cinnamon shimmer, warm on the tongue.' },
+  { id:'sp_amber_gem',   name:'Amber Gem',       cat:'charm',    art:'gem',      rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'orange', layer:4, size:1.2,  season:true, desc:'Candy Pass — autumn light set in sugar.' },
+  /* ❄️ Frost */
+  { id:'sp_frost_lace',  name:'Frost Lace',      cat:'ribbon',   art:'lace',     rarity:'epic',      price:0, unlock:1, colorable:false, fixed:'silver', layer:3, size:1.1,  season:true, desc:'Candy Pass — the pattern frost leaves on glass.' },
+  { id:'sp_icicle_drip', name:'Icicle Drizzle',  cat:'icing',    art:'drizzle',  rarity:'legendary', price:0, unlock:1, colorable:false, fixed:'white',  layer:1, size:1.25, season:true, desc:'Candy Pass — clear sugar frozen mid-drip.' },
+  { id:'sp_polar_dust',  name:'Polar Dust',      cat:'sprinkle', art:'starDust', rarity:'mythic',    price:0, unlock:1, colorable:false, fixed:'blue',   layer:5, size:1.25, season:true, desc:'Candy Pass — snow that never quite lands.' },
 ];
 
 export const DECO_BY_ID = Object.fromEntries(DECORATIONS.map(d => [d.id, d]));
