@@ -30,6 +30,7 @@ import { showPayday } from './ui/financeUi.js';
 import { openLevelReward, hasPendingLevelReward } from './ui/levelReward.js';
 import { captureIncoming, hasIncoming } from './core/transfer.js';
 import { handleIncomingTransfer } from './ui/transferUi.js';
+import { milestonesForLevels } from './game/milestones.js';
 import { getCandy } from './data/candies.js';
 import { activeEvent } from './data/events.js';
 import { t, tName, initLang, setLang, getLang, hasChosenLang, LANGS } from './core/i18n.js';
@@ -136,7 +137,7 @@ function wireHud(){
   });
   $('#hudAvatar').addEventListener('click', () => go('more'));
 
-  on('levelup', ({ level, unlocked }) => {
+  on('levelup', ({ level, unlocked, levels }) => {
     duck(1600);
     sfx('levelup');
     confetti(70);
@@ -148,14 +149,35 @@ function wireHud(){
       for (const u of unlocked) row.append(el('div.chip.on', `${u.emoji} ${tName('candy', u.id, u.name)}`));
       body.push(row);
     }
+    // Features are gated in a dozen modules and used to open silently, so
+    // a tab just stopped being grey and nobody noticed. Say it out loud.
+    const opened = milestonesForLevels(levels || [level]);
+    let jumpTo = null;
+    if (opened.length){
+      body.push(el('p.center.tiny.muted', { style:{ margin:'12px 0 8px' } }, t('lvl.opened')));
+      for (const m of opened){
+        if (!jumpTo && m.go) jumpTo = m.go;
+        body.push(el('div.unlock-row',
+          el('span.u-ico', m.emoji),
+          el('span.u-txt',
+            el('b', m.kind === 'location' ? tName('location', m.id, m.name) : t('ms.' + m.id)),
+            el('small', m.kind === 'location' ? t('ms.location.sub') : t('ms.' + m.id + '.sub'))),
+        ));
+      }
+    }
+    // the reward grid always comes first; the jump happens once it is done
+    const actions = [{ label:t('lvl.reward'), cls:'mint', onClick: () => {
+      setTimeout(() => openLevelReward(), 240);
+    }}];
+    if (jumpTo) actions.push({ label:t('lvl.take'), cls:'gold', onClick: () => {
+      setTimeout(() => openLevelReward(() => go(jumpTo)), 240);
+    }});
     openModal({
       icon:'🎊', title:t('lvl.title', { n:level }),
       sub:t('lvl.sub'),
       body,
       dismissable:false,
-      actions:[{ label:t('lvl.reward'), cls:'mint', onClick: () => {
-        setTimeout(() => openLevelReward(), 240);
-      }}],
+      actions,
     });
   });
 }

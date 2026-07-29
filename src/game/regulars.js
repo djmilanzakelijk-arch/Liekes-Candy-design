@@ -12,16 +12,29 @@
 
 import { S, save, emit, addCoins, addGems, grantDeco, bump } from '../core/state.js';
 import { DECORATIONS } from '../data/decorations.js';
-import { clamp, pick, uid } from '../core/utils.js';
+import { clamp, pick, uid, todayKey } from '../core/utils.js';
 
 /** How many can be on the books at once. */
 export const MAX_REGULARS = 8;
+
+/* ── birthdays ──
+   A regular's first birthday lands a week or three after you meet them,
+   and then comes round every BDAY_CYCLE days. That is not how calendars
+   work, but a once-a-year party you would only ever see once is not a
+   feature — this way everyone on the books gets their moment. */
+const DAY = 86400000;
+const BDAY_FIRST = [8, 26];       // days after adopting them
+const BDAY_CYCLE = 90;
 /** Loyalty needed for each level: 1 visit, then 3, 6, 10, 15. */
 const LEVEL_STEPS = [0, 1, 3, 6, 10, 15];
 export const MAX_LOYALTY = LEVEL_STEPS.length - 1;
 
 export const regulars = () => {
   if (!S.regulars) S.regulars = [];
+  // regulars from before birthdays existed get one on the books too
+  for (const r of S.regulars){
+    if (!r.bday) r.bday = Date.now() + (2 + Math.random() * 20) * DAY;
+  }
   return S.regulars;
 };
 
@@ -75,6 +88,7 @@ export function maybeAdopt(customer, stars){
     since: Date.now(),
     lastSeen: Date.now(),
     claimed: [],
+    bday: Date.now() + (BDAY_FIRST[0] + Math.random() * (BDAY_FIRST[1] - BDAY_FIRST[0])) * DAY,
   };
   regulars().push(reg);
   bump('regulars');
@@ -145,3 +159,45 @@ export function forget(id){
   S.regulars = regulars().filter(r => r.id !== id);
   save(); emit('state');
 }
+
+/* ══════════════ birthdays ══════════════ */
+
+/** Days until their next one — 0 means it is today. */
+export function daysToBirthday(r){
+  if (!r?.bday) return null;
+  return Math.max(0, Math.ceil((r.bday - Date.now()) / DAY));
+}
+
+/** Is today the day, and have they not already been sung to? */
+export function isBirthday(r){
+  if (!r?.bday) return false;
+  return Date.now() >= r.bday && r.bdayDone !== todayKey();
+}
+
+/** Anybody on the books with a birthday today. */
+export const birthdayRegulars = () => regulars().filter(isBirthday);
+
+/**
+ * They got their cake. Books the next one, hands over the present and
+ * counts as a visit worth extra loyalty.
+ * @returns { coins, gems } the present
+ */
+export function celebrateBirthday(id){
+  const r = findRegular(id);
+  if (!r) return null;
+  r.bdayDone = todayKey();
+  r.bday = Date.now() + BDAY_CYCLE * DAY;
+  r.parties = (r.parties || 0) + 1;
+  const gift = {
+    coins: Math.round(500 * (1 + loyaltyLevel(r) * .4) * (1 + S.level * .1) / 10) * 10,
+    gems: 1 + Math.floor(loyaltyLevel(r) / 2),
+  };
+  addCoins(gift.coins);
+  addGems(gift.gems);
+  bump('birthdays');
+  save(); emit('state');
+  return gift;
+}
+
+/** How much more they pay on the day itself. */
+export const BIRTHDAY_TIP = 1.9;

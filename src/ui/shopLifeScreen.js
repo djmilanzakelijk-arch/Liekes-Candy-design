@@ -12,7 +12,7 @@ import { openModal, confirmModal } from './modal.js';
 import { drawDesign } from '../render/candy.js';
 import {
   regulars, loyaltyLevel, loyaltyProgress, visitsToNext, MAX_LOYALTY,
-  MAX_REGULARS, forget,
+  MAX_REGULARS, forget, daysToBirthday, isBirthday,
 } from '../game/regulars.js';
 import {
   list as recipeList, cased, isCased, caseFull, toggleCase, hourlyOf,
@@ -71,6 +71,7 @@ function regularCard(r){
         el('i', { style:{ width:(loyaltyProgress(r) * 100) + '%' } })),
       el('div.tiny', { style:{ fontWeight:'800', color:'var(--pink-600)' } },
         lv >= MAX_LOYALTY ? t('reg.maxed') : t('reg.toNext', { n: visitsToNext(r) })),
+      bdayLine(r),
       el('div.staff-stats',
         el('span.staff-stat', `${candy?.emoji ?? '🍬'} ${tName('candy', r.loves.candy, candy?.name ?? '')}`),
         el('span.staff-stat', `🎨 ${tName('color', r.loves.color, getColor(r.loves.color).name)}`),
@@ -83,6 +84,20 @@ function regularCard(r){
       onYes: () => { forget(r.id); sfx('remove'); go('regulars'); },
     })}, '👋'),
   );
+}
+
+/** "Their birthday is today" or a countdown, whichever applies. */
+function bdayLine(r){
+  const days = daysToBirthday(r);
+  if (days === null) return null;
+  const today = isBirthday(r);
+  return el('div.tiny' + (today ? '' : '.muted'), {
+    style:{ marginTop:'3px', fontWeight: today ? '900' : '700',
+            color: today ? 'var(--pink-600)' : undefined },
+  }, today ? '🎂 ' + t('reg.bdayToday')
+           : days === 0 ? '🎉 ' + t('reg.bdayDone')          // already had their cake today
+           : days === 1 ? '🎂 ' + t('reg.bdayTomorrow')
+           : '🎂 ' + t('reg.bdayIn', { n: days }));
 }
 
 /** Shown after an order when somebody decides to become a regular. */

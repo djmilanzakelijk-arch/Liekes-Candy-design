@@ -8,6 +8,7 @@ import { getLocation } from '../data/upgrades.js';
 import { TAU, rngFrom, clamp, easeOutCubic } from '../core/utils.js';
 import { ANCHORS } from '../data/shopDecor.js';
 import { drawDecorPiece } from './shopDecor.js';
+import { daylight, mixHex } from './daylight.js';
 
 const WALLPAPERS = [
   { base:'#f6e7dd', stripe:'#efd8c9', motif:'none' },
@@ -30,8 +31,9 @@ const FLOORS = [
  * @param w,h    logical size
  * @param opt    { location, upgrades, t, satisfaction }
  */
-export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0, satisfaction = 60, customers = [], decor = {} } = {}){
+export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0, satisfaction = 60, customers = [], decor = {}, hour } = {}){
   const loc = getLocation(location);
+  const sun = daylight(hour);
   const lv = k => upgrades[k] || 0;
   const wall = WALLPAPERS[Math.min(lv('walls'), WALLPAPERS.length - 1)];
   const floor = FLOORS[Math.min(lv('floor'), FLOORS.length - 1)];
@@ -89,7 +91,8 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
   const wx = w * .19, wy = h * .10, ww = w * .26, wh = h * .32;
   roundRect(ctx, wx, wy, ww, wh, 14);
   const sky = ctx.createLinearGradient(0, wy, 0, wy + wh);
-  sky.addColorStop(0, loc.sky[0]); sky.addColorStop(1, loc.sky[1]);
+  sky.addColorStop(0, mixHex(loc.sky[0], sun.sky[0], sun.skyMix));
+  sky.addColorStop(1, mixHex(loc.sky[1], sun.sky[1], sun.skyMix));
   ctx.fillStyle = sky; ctx.fill();
   ctx.save();
   roundRect(ctx, wx, wy, ww, wh, 14); ctx.clip();
@@ -101,8 +104,25 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
     const bh = wh * (.2 + rng() * .5);
     ctx.fillRect(wx + i * ww * .15, wy + wh - bh, bw, bh);
   }
-  ctx.fillStyle = alpha('#ffffff', .5);
-  ctx.beginPath(); ctx.arc(wx + ww * .78, wy + wh * .24, ww * .09, 0, TAU); ctx.fill();
+  // sun by day, moon by night — and stars once it is properly dark
+  if (sun.stars){
+    const srng = rngFrom('stars' + location);
+    ctx.fillStyle = alpha('#ffffff', .85);
+    for (let i = 0; i < 14; i++){
+      const sxp = wx + srng() * ww, syp = wy + srng() * wh * .7;
+      const r = 1 + srng() * 1.4;
+      ctx.beginPath(); ctx.arc(sxp, syp, r, 0, TAU); ctx.fill();
+    }
+  }
+  const orbX = wx + ww * .78, orbY = wy + wh * .24, orbR = ww * .09;
+  ctx.fillStyle = alpha(sun.moon > .5 ? '#fdf6d8' : '#ffffff', .55 + sun.moon * .35);
+  ctx.beginPath(); ctx.arc(orbX, orbY, orbR, 0, TAU); ctx.fill();
+  if (sun.moon > .55){
+    // bite a crescent out of it with the sky colour behind
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath(); ctx.arc(orbX + orbR * .55, orbY - orbR * .25, orbR * .92, 0, TAU); ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  }
   ctx.restore();
   ctx.strokeStyle = '#fffdfa'; ctx.lineWidth = 8;
   roundRect(ctx, wx, wy, ww, wh, 14); ctx.stroke();
@@ -150,7 +170,7 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
     ctx.strokeStyle = alpha('#c98f14', .5); ctx.lineWidth = 2; ctx.stroke();
     // warm pool of light
     const glow = ctx.createRadialGradient(lx, h * .1, 4, lx, h * .1, h * .34);
-    const intensity = .10 + lv('lighting') * .045;
+    const intensity = (.10 + lv('lighting') * .045) * (1 + sun.lamp * 1.5);
     glow.addColorStop(0, `rgba(255,225,150,${intensity})`);
     glow.addColorStop(1, 'rgba(255,225,150,0)');
     ctx.fillStyle = glow;
@@ -243,6 +263,33 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
 
   /* ── the pieces that sit on the counter, in front of it ── */
   drawDecor(ctx, w, h, t, decor, false);
+
+  /* ── the light of the hour, washed over the room ──
+     Deliberately before the customers: the room can go properly dark
+     at night while faces and patience bars stay readable on top. */
+  if (sun.tintAlpha > .002){
+    ctx.save();
+    ctx.globalCompositeOperation = sun.dark > .5 ? 'multiply' : 'overlay';
+    ctx.globalAlpha = sun.tintAlpha;
+    ctx.fillStyle = sun.tint;
+    ctx.fillRect(0, 0, w, h);
+    ctx.restore();
+    // the lamps punch back through the wash
+    if (sun.lamp > .05){
+      const lampCount2 = 2 + Math.min(lv('lighting'), 3);
+      ctx.save();
+      ctx.globalCompositeOperation = 'lighter';
+      for (let i = 0; i < lampCount2; i++){
+        const lx = w * (i + 1) / (lampCount2 + 1);
+        const g2 = ctx.createRadialGradient(lx, h * .1, 4, lx, h * .1, h * .40);
+        g2.addColorStop(0, `rgba(255,214,140,${.16 * sun.lamp})`);
+        g2.addColorStop(1, 'rgba(255,214,140,0)');
+        ctx.fillStyle = g2;
+        ctx.beginPath(); ctx.arc(lx, h * .1, h * .40, 0, TAU); ctx.fill();
+      }
+      ctx.restore();
+    }
+  }
 
   /* ── the customers themselves, standing at the counter ── */
   const hitBoxes = drawCustomers(ctx, w, h, customers, t);

@@ -17,7 +17,8 @@ import { drawDesign } from '../render/candy.js';
 import { makeCustomer, makeOrder, makeDailySpecial, describeOrder, orderChecklist } from '../game/orders.js';
 import { followersFromCustomer } from '../game/social.js';
 import { maybeAdopt, recordVisit, regularChance, nextRegular, findRegular,
-         loyaltyTipMult } from '../game/regulars.js';
+         loyaltyTipMult, birthdayRegulars, isBirthday, celebrateBirthday,
+         BIRTHDAY_TIP } from '../game/regulars.js';
 import { addPoints as seasonPoints, scoreOrder } from '../game/seasonPass.js';
 import { POINTS as SEASON_POINTS } from '../data/season.js';
 import { grade, payout, reactionLine, satisfactionDelta } from '../game/scoring.js';
@@ -46,8 +47,12 @@ function fillQueue(){
   const want = queueSize();
   while (queue.length < want){
     const c = makeCustomer();
-    // one of your regulars may be the one who walks in
-    if (!c.vip && Math.random() < regularChance()){
+    // one of your regulars may be the one who walks in — and somebody
+    // whose birthday is today jumps the queue, because they came for cake
+    const bdays = birthdayRegulars().filter(r => !queue.some(q => q.regularId === r.id));
+    if (!c.vip && bdays.length && Math.random() < .5){
+      dressAsRegular(c, bdays[0]);
+    } else if (!c.vip && Math.random() < regularChance()){
       const reg = nextRegular();
       if (reg && !queue.some(q => q.regularId === reg.id)) dressAsRegular(c, reg);
     }
@@ -292,6 +297,7 @@ function dressAsRegular(c, reg){
   c.face = reg.face;
   c.fromSocial = false;
   c.influencer = false;
+  c.birthday = isBirthday(reg);
   c.order = makeOrder({
     difficulty: Math.min(1, (S.level - 1) / 16),
     forceCandy: S.owned.candies.includes(reg.loves.candy) ? reg.loves.candy : undefined,
@@ -303,9 +309,9 @@ function dressAsRegular(c, reg){
   c.favColor = c.order.color;
   c.favCandy = c.order.candy;
   // they know you, so they wait a little longer and tip better
-  c.patience *= 1.2;
+  c.patience *= c.birthday ? 1.5 : 1.2;
   c.maxPatience = c.patience;
-  c.budget = Math.round(c.budget * loyaltyTipMult(reg));
+  c.budget = Math.round(c.budget * loyaltyTipMult(reg) * (c.birthday ? BIRTHDAY_TIP : 1));
 }
 
 function modeTile(id, ico, name, desc, minLevel){
@@ -335,7 +341,8 @@ function renderQueue(){
       el('div.cust-face', c.face),
       el('div.cust-name', c.name),
       // people who found the shop online say so — that is what fame looks like
-      c.regularId ? el('div.cust-tag.regular', '💛 ' + t('reg.tag'))
+      c.birthday ? el('div.cust-tag.birthday', '🎂 ' + t('reg.bdayTag'))
+        : c.regularId ? el('div.cust-tag.regular', '💛 ' + t('reg.tag'))
         : c.influencer ? el('div.cust-tag.influencer', '🤳 ' + t('soc.influencer'))
         : c.fromSocial ? el('div.cust-tag', '📱 ' + t('soc.viaSocial')) : null,
       el('div.cust-pers', `${c.pers.emoji} ${tName('pers', c.pers.id, c.pers.name)}`),
@@ -550,8 +557,13 @@ function finishOrder(res, customer, job = null, deal = null, wish = null){
 
   // regulars: a visit recorded, or a stranger deciding to come back
   let regularNews = null;
+  let birthdayGift = null;
   if (customer.regularId){
     const res = recordVisit(customer.regularId, result.stars);
+    // the party only counts if the cake was actually any good
+    if (customer.birthday && result.stars >= 3){
+      birthdayGift = celebrateBirthday(customer.regularId);
+    }
     if (res?.gift) regularNews = { kind:'gift', reg: findRegular(customer.regularId), res };
   } else {
     const adopted = maybeAdopt(customer, result.stars);
@@ -573,11 +585,11 @@ function finishOrder(res, customer, job = null, deal = null, wish = null){
   else if (result.stars >= 3) { sfx('coin'); haptic(12); }
   else sfx('fail');
 
-  showResult({ res, result, pay, customer, order, newFans, regularNews });
+  showResult({ res, result, pay, customer, order, newFans, regularNews, birthdayGift });
   save();
 }
 
-function showResult({ res, result, pay, customer, order, newFans = 0, regularNews = null }){
+function showResult({ res, result, pay, customer, order, newFans = 0, regularNews = null, birthdayGift = null }){
   const body = [];
 
   /* preview of what the player made */
@@ -647,6 +659,14 @@ function showResult({ res, result, pay, customer, order, newFans = 0, regularNew
       return false;
     }, close:false },
   ];
+
+  if (birthdayGift){
+    body.push(el('div.reward-row', { style:{ marginTop:'8px' } },
+      el('div.reward', '🎂 ' + t('reg.bdayReward')),
+      el('div.reward', '🪙 +' + fmt(birthdayGift.coins)),
+      birthdayGift.gems ? el('div.reward.gem', '💎 +' + birthdayGift.gems) : null,
+    ));
+  }
 
   // an employee may have got up to something while you were serving
   const incident = maybeStaffEvent();
