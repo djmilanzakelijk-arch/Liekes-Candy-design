@@ -183,10 +183,13 @@ function buildDom(){
   studio.append(actions);
 
   /* tray */
-  const tray = el('div.tray');
-  tray.append(el('div.tray-tabs', { id:'trayTabs' }));
-  tray.append(el('div.tray-body', { id:'trayBody' }));
-  studio.append(tray);
+  const trayEl = el('div.tray');
+  trayEl.append(el('div.tray-tabs', { id:'trayTabs' }));
+  const trayBody = el('div.tray-body', { id:'trayBody' });
+  // one delegated listener: the tray owns scrolling AND lifting (see onTrayDown)
+  trayBody.addEventListener('pointerdown', onTrayDown);
+  trayEl.append(trayBody);
+  studio.append(trayEl);
 
   wrap.append(studio);
   setTimeout(() => { renderTabs(); renderTray(); }, 0);
@@ -387,7 +390,7 @@ function renderDecoTray(host, cat){
         tool.onclick = () => buyInline(d);
       }
     } else {
-      tool.addEventListener('pointerdown', e => startToolDrag(e, d));
+      // dragging is handled by the tray-wide gesture; this is the tap path
       tool.addEventListener('click', () => {
         // a finished drag also fires a click on some browsers; that must not
         // arm tap-to-place and drop a second decoration on the next touch
@@ -842,7 +845,8 @@ function toDesign(clientX, clientY){
    ══════════════════════════════════════════════════════ */
 let dragging = null;   // { mode:'new'|'move', deco, item, ghost, pointerId }
 let suppressClick = false;   // a real drag must not also fire the tool's click
-let pendingDrag = null;      // touch is down on a tray item, direction unknown
+let tray = null;             // a finger is down in the tray, intent unknown
+let flingRaf = 0;
 
 /** Fingers wobble; below this many pixels it is still a tap. */
 const DRAG_SLOP = 7;
@@ -857,7 +861,8 @@ function resetGestures(){
   dragging = null;
   piping = null;
   gest = null;
-  endPending();
+  stopFling();
+  endTray();
   stageEl?.classList.remove('dropping');
   document.removeEventListener('pointermove', onDragMove);
   document.removeEventListener('pointerup', onDragEnd);
@@ -870,47 +875,113 @@ function resetGestures(){
   document.removeEventListener('pointercancel', onGestEnd);
 }
 
-/**
- * Pointer went down on a tray item. We do NOT start dragging yet: the row
- * scrolls sideways, so a horizontal swipe has to reach the browser. Only a
- * clearly vertical move becomes a drag.
- */
-function startToolDrag(e, deco){
-  if (e.pointerType === 'mouse' && e.button !== 0) return;
-  if (dragging || piping) resetGestures();
+/* ══════════════════════════════════════════════════════
+   The tray gesture.
 
-  pendingDrag = {
-    deco, pointerId: e.pointerId,
-    x0: e.clientX, y0: e.clientY,
-    touch: e.pointerType === 'touch',
-  };
-  document.addEventListener('pointermove', onPendingMove, { passive:false });
-  document.addEventListener('pointerup', endPending);
-  document.addEventListener('pointercancel', endPending);
+   A row of decorations has to do two things with the same finger:
+   scroll sideways, and let you lift a piece out and drop it on the
+   candy. Leaving that decision to the browser meant one of the two
+   always lost — `touch-action:none` killed scrolling, `pan-x` killed
+   dragging, because once the browser claims a touch it stops telling
+   us about it.
+
+   So the tray takes the whole gesture (touch-action:none in the CSS)
+   and decides for itself: sideways scrolls the row, up or down lifts
+   the piece, and neither is a tap.
+   ══════════════════════════════════════════════════════ */
+
+/** The nearest thing under the finger that can actually scroll sideways. */
+function scrollerFor(node){
+  let n = node;
+  while (n && n !== document.body){
+    if (n.scrollWidth > n.clientWidth + 4) return n;
+    n = n.parentElement;
+  }
+  return null;
 }
 
-function onPendingMove(e){
-  if (!pendingDrag || e.pointerId !== pendingDrag.pointerId) return;
-  const dx = e.clientX - pendingDrag.x0;
-  const dy = e.clientY - pendingDrag.y0;
-  if (Math.hypot(dx, dy) < DRAG_SLOP) return;
+function onTrayDown(e){
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
+  if (dragging || piping || gest) resetGestures();
+  endTray();
+  stopFling();
 
-  // sideways on a touch screen means "scroll the row" — step aside
-  if (pendingDrag.touch && Math.abs(dx) > Math.abs(dy) * 1.1){
-    endPending();
-    return;
+  const target = e.target;
+  const id = target.closest?.('[data-deco]')?.dataset.deco;
+  const scroller = scrollerFor(target);
+
+  tray = {
+    pointerId: e.pointerId,
+    deco: id && ownsDeco(id) ? getDeco(id) : null,
+    x0: e.clientX, y0: e.clientY,
+    lastX: e.clientX, lastT: performance.now(), vx: 0,
+    scroller, sl0: scroller ? scroller.scrollLeft : 0,
+    mode: null,                   // null → undecided | 'scroll' | 'lift'
+  };
+  document.addEventListener('pointermove', onTrayMove, { passive:false });
+  document.addEventListener('pointerup', endTray);
+  document.addEventListener('pointercancel', endTray);
+}
+
+function onTrayMove(e){
+  if (!tray || e.pointerId !== tray.pointerId) return;
+  const dx = e.clientX - tray.x0;
+  const dy = e.clientY - tray.y0;
+
+  if (!tray.mode){
+    if (Math.hypot(dx, dy) < DRAG_SLOP) return;
+    // ties go to lifting: dragging a decoration onto the candy is the
+    // thing people mean, and the row can always be nudged sideways again
+    tray.mode = Math.abs(dy) >= Math.abs(dx) ? 'lift' : 'scroll';
+
+    if (tray.mode === 'lift'){
+      const deco = tray.deco;
+      endTray();
+      if (!deco) return;           // candies and flavours are tap-only
+      e.preventDefault();
+      beginToolDrag(deco, e);
+      return;
+    }
   }
 
-  const deco = pendingDrag.deco;
-  endPending();
-  beginToolDrag(deco, e);
+  if (tray.mode === 'scroll' && tray.scroller){
+    e.preventDefault();
+    const now = performance.now();
+    const dt = Math.max(1, now - tray.lastT);
+    tray.vx = (e.clientX - tray.lastX) / dt;      // px per ms, for the fling
+    tray.lastX = e.clientX; tray.lastT = now;
+    tray.scroller.scrollLeft = tray.sl0 - dx;
+    // a scrolled row must not also fire the button underneath
+    suppressClick = true;
+  }
 }
 
-function endPending(){
-  pendingDrag = null;
-  document.removeEventListener('pointermove', onPendingMove);
-  document.removeEventListener('pointerup', endPending);
-  document.removeEventListener('pointercancel', endPending);
+function endTray(){
+  const g = tray;
+  tray = null;
+  document.removeEventListener('pointermove', onTrayMove);
+  document.removeEventListener('pointerup', endTray);
+  document.removeEventListener('pointercancel', endTray);
+
+  if (g?.mode === 'scroll'){
+    fling(g.scroller, g.vx);
+    suppressClick = true;
+    setTimeout(() => { suppressClick = false; }, 320);
+  }
+}
+
+/* ── momentum, so a flick keeps rolling like a native row ── */
+function stopFling(){ cancelAnimationFrame(flingRaf); flingRaf = 0; }
+
+function fling(scroller, vx){
+  if (!scroller || Math.abs(vx) < .15) return;
+  let v = clamp(vx * 16, -70, 70);            // px per frame
+  const step = () => {
+    scroller.scrollLeft -= v;
+    v *= .93;
+    flingRaf = Math.abs(v) > .4 ? requestAnimationFrame(step) : 0;
+  };
+  flingRaf = requestAnimationFrame(step);
 }
 
 /** The finger committed to a drag: show the ghost and take over. */
