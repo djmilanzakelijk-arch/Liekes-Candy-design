@@ -12,7 +12,7 @@ import {
   theme, timeLeft, entry, hasEntered, standings, myPlace,
   enter, withdraw, history, store,
 } from '../game/contest.js';
-import { judge, prizeFor } from '../data/contests.js';
+import { judge, prizeFor, CONTEST_LEVEL } from '../data/contests.js';
 import { openStudio } from './studio.js';
 import { go, subHeader } from './nav.js';
 import { t, tName } from '../core/i18n.js';
@@ -21,6 +21,15 @@ export function mountContest(host){
   const wrap = el('div.screen.enter');
   const th = theme();
   wrap.append(subHeader(t('ct.title'), '🏆'));
+
+  if (S.level < CONTEST_LEVEL){
+    wrap.append(el('div.card',
+      el('div.card-title', el('span.ico', '🔒'), t('ct.title')),
+      el('p.tiny.muted.center', { style:{ padding:'10px 4px', lineHeight:'1.5' } },
+        t('ct.lockedLevel', { n: CONTEST_LEVEL }))));
+    host.append(wrap);
+    return;
+  }
 
   /* the brief */
   wrap.append(el('div.card.contest-brief',
@@ -197,4 +206,4 @@ export function showContestResult(res){
 }
 
 /** Badge for the More hub: a contest you have not entered yet. */
-export const contestBadge = () => (hasEntered() ? 0 : 1);
+export const contestBadge = () => (S.level < CONTEST_LEVEL || hasEntered() ? 0 : 1);

@@ -515,6 +515,8 @@ const DICT = {
     /* ── contest ── */
     'more.contest':'Contest',
     'ct.title':'Candy contest',
+    'ct.lockedLevel':'The weekly contest opens at level {n}.',
+    'more.contestLocked':'Opens at level {n}',
     'ct.judged':'Half the score is how well you follow the brief, half is plain craftsmanship.',
     'ct.yourEntry':'Your entry',
     'ct.noEntry':'Nothing entered yet. Make a candy for this week\'s brief — there is no clock and no customer, just you and the theme.',
@@ -1371,6 +1373,8 @@ const DICT = {
     /* ── wedstrijd ── */
     'more.contest':'Wedstrijd',
     'ct.title':'Snoepwedstrijd',
+    'ct.lockedLevel':'De wekelijkse wedstrijd gaat open vanaf level {n}.',
+    'more.contestLocked':'Vanaf level {n}',
     'ct.judged':'De helft van je punten is hoe goed je de opdracht volgt, de andere helft gewoon vakmanschap.',
     'ct.yourEntry':'Jouw inzending',
     'ct.noEntry':'Nog niks ingestuurd. Maak een snoepje voor de opdracht van deze week — geen klok, geen klant, alleen jij en het thema.',

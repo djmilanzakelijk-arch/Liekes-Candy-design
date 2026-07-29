@@ -63,16 +63,53 @@ export const PERSONALITIES = [
 
 export const PERS_BY_ID = Object.fromEntries(PERSONALITIES.map(p => [p.id, p]));
 
-export const CUSTOMER_NAMES = [
-  'Mila','Noah','Sanne','Luuk','Emma','Daan','Fleur','Bram','Sofie','Finn',
-  'Julia','Sem','Nora','Jesse','Lotte','Milan','Anna','Tijn','Roos','Liam',
-  'Yara','Gijs','Isa','Cas','Elin','Ruben','Maud','Thijs','Nina','Joep',
-  'Amira','Kai','Zoë','Rens','Livia','Otto','Suus','Boaz','Merel','Aron',
+/**
+ * Customers, with the name and who they are — so a Bram never turns up
+ * as a girl and a Fleur never as a man. `g` is 'f', 'm' or 'n' for the
+ * names that go either way.
+ */
+export const CUSTOMERS = [
+  { name:'Mila',  g:'f' }, { name:'Noah',  g:'m' }, { name:'Sanne', g:'f' },
+  { name:'Luuk',  g:'m' }, { name:'Emma',  g:'f' }, { name:'Daan',  g:'m' },
+  { name:'Fleur', g:'f' }, { name:'Bram',  g:'m' }, { name:'Sofie', g:'f' },
+  { name:'Finn',  g:'m' }, { name:'Julia', g:'f' }, { name:'Sem',   g:'m' },
+  { name:'Nora',  g:'f' }, { name:'Jesse', g:'m' }, { name:'Lotte', g:'f' },
+  { name:'Milan', g:'m' }, { name:'Anna',  g:'f' }, { name:'Tijn',  g:'m' },
+  { name:'Roos',  g:'f' }, { name:'Liam',  g:'m' }, { name:'Yara',  g:'f' },
+  { name:'Gijs',  g:'m' }, { name:'Isa',   g:'f' }, { name:'Cas',   g:'m' },
+  { name:'Elin',  g:'f' }, { name:'Ruben', g:'m' }, { name:'Maud',  g:'f' },
+  { name:'Thijs', g:'m' }, { name:'Nina',  g:'f' }, { name:'Joep',  g:'m' },
+  { name:'Amira', g:'f' }, { name:'Kai',   g:'n' }, { name:'Zoë',   g:'f' },
+  { name:'Rens',  g:'m' }, { name:'Livia', g:'f' }, { name:'Otto',  g:'m' },
+  { name:'Suus',  g:'f' }, { name:'Boaz',  g:'m' }, { name:'Merel', g:'f' },
+  { name:'Aron',  g:'m' }, { name:'Robin', g:'n' }, { name:'Sam',   g:'n' },
 ];
 
+/** Kept for anything that just wants a name. */
+export const CUSTOMER_NAMES = CUSTOMERS.map(c => c.name);
+
+/**
+ * Faces, split by who they belong to.
+ *
+ * Only single-codepoint emoji here on purpose: the joined ones
+ * (👩‍🦰, 🧑‍🎤, 🕵️…) come out blank in a canvas on some phones, which
+ * is exactly how customers ended up invisible in the shop.
+ */
+export const FACES_BY_GENDER = {
+  f: ['👧', '👩', '👵'],
+  m: ['👦', '👨', '👴'],
+  n: ['🧒', '🧑'],
+};
+
+/** A face that matches the name. */
+export function faceFor(gender){
+  const list = FACES_BY_GENDER[gender] || FACES_BY_GENDER.n;
+  return list[Math.floor(Math.random() * list.length)];
+}
+
+/** Every face that can turn up, for anything that needs the whole set. */
 export const CUSTOMER_FACES = [
-  '👩','🧑','👨','👵','👴','👧','👦','🧕','👩‍🦰','👨‍🦱',
-  '👩‍🦳','🧑‍🎤','👩‍🍳','🧑‍🚀','👸','🤴','🧚','🧑‍🎨','👩‍🎓','🕵️',
+  ...FACES_BY_GENDER.f, ...FACES_BY_GENDER.m, ...FACES_BY_GENDER.n,
 ];
 
 /** Flavour text glued onto orders to keep them feeling handwritten. */

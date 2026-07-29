@@ -17,6 +17,7 @@ import { petBadge } from './petScreen.js';
 import { SLOTS as DECOR_SLOTS } from '../data/shopDecor.js';
 import { hasPet, pet as thePet, unlocked as petOpen, PET_LEVEL } from '../game/pet.js';
 import { theme as contestTheme } from '../game/contest.js';
+import { CONTEST_LEVEL } from '../data/contests.js';
 import { regulars } from '../game/regulars.js';
 import { cased as recipeCased, CASE_SLOTS } from '../game/recipes.js';
 import { theme as seasonTheme, tier as seasonTier, hasPass } from '../game/seasonPass.js';
@@ -56,7 +57,10 @@ export function mountMore(host){
     tile('🚚', t('more.delivery'), deliverySub(), () => go('delivery'), deliveryBadge()),
     tile('📱', t('more.social'), socialSub(), () => go('social'), socialBadge()),
     tile(seasonTheme().emoji, t('more.season'), seasonSub(), () => go('season'), seasonBadge()),
-    tile('🏆', t('more.contest'), t('ct.theme.' + contestTheme().id + '.name'), () => go('contest'), contestBadge()),
+    tile('🏆', t('more.contest'),
+         S.level < CONTEST_LEVEL ? t('more.contestLocked', { n: CONTEST_LEVEL })
+                                  : t('ct.theme.' + contestTheme().id + '.name'),
+         () => go('contest'), contestBadge()),
     tile('💛', t('more.regulars'), t('more.regularsSub', { n: regulars().length }), () => go('regulars')),
     tile('📗', t('more.recipes'), t('more.recipesSub', { a: recipeCased().length, b: CASE_SLOTS }), () => go('recipes'), recipeBadge()),
     tile('🐾', t('more.pet'), petSub(), () => go('pet'), petBadge()),

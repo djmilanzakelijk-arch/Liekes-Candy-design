@@ -285,6 +285,14 @@ function drawDecor(ctx, w, h, t, decor, behind){
    Customers walk in through the door and queue at the counter.
    Returns tap targets so the shop screen can route clicks.
    ============================================================ */
+/** Shirt colours, so the queue is not four of the same person. */
+const SHIRTS = ['#ff8ec0', '#5aabff', '#9a6bff', '#48cfa6', '#ffcf47', '#ff9a4d', '#f04f5f'];
+const hashId = id => {
+  let n = 0;
+  for (let i = 0; i < String(id).length; i++) n = (n * 31 + String(id).charCodeAt(i)) | 0;
+  return n;
+};
+
 function drawCustomers(ctx, w, h, customers, t){
   const boxes = [];
   if (!customers.length) return boxes;
@@ -330,24 +338,58 @@ function drawCustomers(ctx, w, h, customers, t){
       ctx.beginPath(); ctx.ellipse(x, footY, size * .5, size * .16, 0, 0, TAU); ctx.fill();
     }
 
-    /* the customer */
+    /* the customer: a drawn body with the face on top of it.
+       The body matters — an emoji-only customer vanishes entirely on a
+       phone whose font cannot draw that particular glyph, which is how
+       the shop ended up looking empty. */
     ctx.save();
     ctx.translate(x, y);
     ctx.rotate(lean);
-    ctx.font = `${size}px system-ui, "Apple Color Emoji", "Segoe UI Emoji"`;
+    // whatever the rest of the diorama left behind must not leak in here
+    ctx.globalAlpha = 1;
+    ctx.globalCompositeOperation = 'source-over';
+
+    const shirt = SHIRTS[Math.abs(hashId(c.id)) % SHIRTS.length];
+    const bw = size * .40, bh = size * .46;
+
+    // arms
+    ctx.strokeStyle = mix(shirt, '#000000', .12);
+    ctx.lineWidth = size * .085;
+    ctx.lineCap = 'round';
+    for (const sx of [-1, 1]){
+      ctx.beginPath();
+      ctx.moveTo(sx * bw * .40, -bh * .78);
+      ctx.lineTo(sx * bw * .62, -bh * .26);
+      ctx.stroke();
+    }
+    // torso
+    ctx.beginPath();
+    ctx.moveTo(-bw / 2, 0);
+    ctx.quadraticCurveTo(-bw * .58, -bh * .82, 0, -bh * .92);
+    ctx.quadraticCurveTo(bw * .58, -bh * .82, bw / 2, 0);
+    ctx.closePath();
+    const bg = ctx.createLinearGradient(-bw / 2, -bh, bw / 2, 0);
+    bg.addColorStop(0, mix(shirt, '#ffffff', .30));
+    bg.addColorStop(1, mix(shirt, '#000000', .14));
+    ctx.fillStyle = bg;
+    ctx.fill();
+
+    // and the face sitting on the shoulders
+    ctx.fillStyle = '#3a2f38';
+    ctx.font = `${size * .58}px system-ui, "Apple Color Emoji", "Segoe UI Emoji"`;
     ctx.textAlign = 'center';
     ctx.textBaseline = 'bottom';
-    ctx.fillText(c.face, 0, 0);
+    ctx.fillText(c.face, 0, -bh * .74);
     if (c.vip){
-      ctx.font = `${size * .34}px system-ui, "Apple Color Emoji", "Segoe UI Emoji"`;
-      ctx.fillText('👑', 0, -size * .88);
+      ctx.font = `${size * .28}px system-ui, "Apple Color Emoji", "Segoe UI Emoji"`;
+      ctx.fillText('👑', 0, -bh * .74 - size * .52);
     }
     ctx.restore();
 
     /* speech bubble with what they want + how patient they still are */
     if (arrived){
       const bw = size * .80, bh = size * .50;
-      const bx = x, by = y - size * 1.24;
+      const bx = x, by = y - size * 1.06;
       ctx.save();
       ctx.fillStyle = 'rgba(255,255,255,.96)';
       ctx.strokeStyle = 'rgba(180,130,165,.35)';

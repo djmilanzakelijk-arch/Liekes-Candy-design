@@ -9,7 +9,7 @@ import { CANDIES, getCandy } from '../data/candies.js';
 import { DECORATIONS, getDeco, PACKAGING, getPack } from '../data/decorations.js';
 import { COLORS, getColor, COLOR_UNLOCK, RARITY } from '../data/palette.js';
 import {
-  PERSONALITIES, PERS_BY_ID, CUSTOMER_NAMES, CUSTOMER_FACES, OCCASIONS,
+  PERSONALITIES, PERS_BY_ID, CUSTOMERS, CUSTOMER_NAMES, faceFor, OCCASIONS,
 } from '../data/customers.js';
 import { t, tName, tLines, getLang, phrases, candyPluralNl } from '../core/i18n.js';
 import { activeEvent } from '../data/events.js';
@@ -330,10 +330,14 @@ export function makeCustomer(opt = {}){
   const influencer = fromSocial && Math.random() < fame.influencer;
   const reach = influencer ? 1.7 : fromSocial ? 1.15 : 1;
 
+  // the face always matches the name
+  const who = pick(CUSTOMERS);
+
   return {
     id: uid(),
-    name: pick(CUSTOMER_NAMES),
-    face: opt.vip ? '👑' : influencer ? '🤳' : pick(CUSTOMER_FACES),
+    name: who.name,
+    gender: who.g,
+    face: opt.vip ? '👑' : influencer ? '🤳' : faceFor(who.g),
     pers,
     vip: vipRoll,
     fromSocial,

@@ -30,7 +30,7 @@ const POST_LIFE_MIN = 60 * 20;
 /** Nobody keeps an infinite feed on a phone. */
 const MAX_POSTS = 40;
 /** Level at which the social page opens up. */
-export const SOCIAL_LEVEL = 3;
+export const SOCIAL_LEVEL = 5;
 
 export const social = () => {
   if (!S.social){

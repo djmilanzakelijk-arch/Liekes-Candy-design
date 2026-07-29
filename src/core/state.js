@@ -446,7 +446,7 @@ export function priciestLocation(){
 /* ── staff roster ────────────────────────────────────── */
 
 /** Level at which the delivery service opens up. */
-export const DELIVERY_LEVEL = 5;
+export const DELIVERY_LEVEL = 3;
 
 /**
  * Counter slots come from the Employee upgrade level.

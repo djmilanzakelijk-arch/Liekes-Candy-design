@@ -10,6 +10,9 @@ import { clamp, rngFrom } from '../core/utils.js';
 import { getDeco } from './decorations.js';
 import { RARITY_ORDER } from './palette.js';
 
+/** Level at which the weekly contest opens. */
+export const CONTEST_LEVEL = 5;
+
 const WEEK = 7 * 86400000;
 const EPOCH = Date.UTC(2026, 0, 5);      // the same Monday as the seasons
 
