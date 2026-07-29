@@ -14,6 +14,7 @@ import { seasonBadge } from './seasonScreen.js';
 import { contestBadge } from './contestScreen.js';
 import { recipeBadge } from './shopLifeScreen.js';
 import { petBadge } from './petScreen.js';
+import { SLOTS as DECOR_SLOTS } from '../data/shopDecor.js';
 import { hasPet, pet as thePet, unlocked as petOpen, PET_LEVEL } from '../game/pet.js';
 import { theme as contestTheme } from '../game/contest.js';
 import { regulars } from '../game/regulars.js';
@@ -59,6 +60,7 @@ export function mountMore(host){
     tile('💛', t('more.regulars'), t('more.regularsSub', { n: regulars().length }), () => go('regulars')),
     tile('📗', t('more.recipes'), t('more.recipesSub', { a: recipeCased().length, b: CASE_SLOTS }), () => go('recipes'), recipeBadge()),
     tile('🐾', t('more.pet'), petSub(), () => go('pet'), petBadge()),
+    tile('🏠', t('more.decor'), t('more.decorSub', { a: Object.keys(S.decor?.placed || {}).length, b: DECOR_SLOTS.length }), () => go('decor')),
     tile('📸', t('more.photos'), t('more.photosSub', { n: S.photos.length }), () => go('photos')),
     tile('🏅', t('more.leaderboard'), t('more.leaderboardSub'), () => go('leaderboard')),
     tile('🎉', t('more.events'),

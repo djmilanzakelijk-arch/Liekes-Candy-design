@@ -11,6 +11,7 @@ import { computeBonuses, UPGRADES, UPG_BY_ID, LOC_BY_ID } from '../data/upgrades
 import { staffBonuses, makeEmployee, roleOf, wageOf, payrollOf } from '../data/staff.js';
 import { fameTier } from '../data/social.js';
 import { moodOf as petMood, bonusFor as petBonus } from '../data/pet.js';
+import { decorMood } from '../data/shopDecor.js';
 import { CONTENT_REV } from './version.js';
 
 export const SAVE_KEY = 'liekes-candy-design/save/v1';
@@ -74,6 +75,9 @@ function freshState(){
 
     /* the shop pet */
     pet: null,
+
+    /* what she has hung, stood and placed around the shop */
+    decor: { owned: [], placed: {} },
 
     /* today's three-candy menu */
     menu: { date: '', picks: [] },
@@ -143,7 +147,7 @@ function migrate(old){
   const merged = { ...base, ...old, v: SAVE_VERSION };
   // deep-merge the nested objects so new fields appear for old saves
   for (const key of ['owned','counters','missions','daily','records','settings','staff',
-                     'levelRewards','finance','delivery','social','season','contest','recipes','menu']){
+                     'levelRewards','finance','delivery','social','season','contest','recipes','menu','decor']){
     merged[key] = { ...base[key], ...(old[key] || {}) };
   }
   merged.social.posts = [...(old.social?.posts || [])];
@@ -153,6 +157,8 @@ function migrate(old){
   merged.season.passClaimed = [...(old.season?.passClaimed || [])];
   merged.contest.history = [...(old.contest?.history || [])];
   merged.regulars = [...(old.regulars || [])];
+  merged.decor.owned = [...(old.decor?.owned || [])];
+  merged.decor.placed = { ...(old.decor?.placed || {}) };
   merged.recipes.list = [...(old.recipes?.list || [])];
   merged.recipes.cased = [...(old.recipes?.cased || [])];
   merged.staff.roster = [...(old.staff?.roster || [])];
@@ -374,7 +380,7 @@ export const bonuses = () => {
     tipMult:      base.tipMult * st.tipMult * fame.tipMult * petB.tipMult,
     patienceMult: base.patienceMult * st.patienceMult,
     queue:        base.queue + fame.queue,
-    satisfaction: base.satisfaction + petB.satisfaction,
+    satisfaction: base.satisfaction + petB.satisfaction + decorMood(S.decor?.placed),
   };
 };
 

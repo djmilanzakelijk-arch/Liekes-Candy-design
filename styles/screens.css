@@ -984,3 +984,26 @@
 }
 .pet-card canvas{width:100%;height:auto;aspect-ratio:1;display:block}
 .pet-card b{display:block;font-size:13px;font-weight:800;margin-top:4px}
+
+/* ═══════════════ DECORATING THE SHOP ═══════════════ */
+.decor-row{display:flex;gap:8px;overflow-x:auto;padding:2px 0;scrollbar-width:none}
+.decor-row::-webkit-scrollbar{display:none}
+.decor-pick{
+  flex:0 0 auto;width:78px;position:relative;padding:5px 4px 4px;border-radius:var(--r-md);
+  background:linear-gradient(180deg,#fff,var(--surface-2));
+  border:1.5px solid var(--line);box-shadow:var(--sh-1);text-align:center;
+  transition:transform .12s;
+}
+.decor-pick:active{transform:scale(.93)}
+.decor-pick.on{border-color:var(--mint-500);box-shadow:0 0 0 2px var(--mint-100),var(--sh-1)}
+.decor-pick.locked{filter:grayscale(.6) opacity(.6)}
+.decor-pick canvas{width:56px;height:56px;display:block;margin:0 auto;pointer-events:none}
+.decor-pick .dp-none{font-size:34px;line-height:56px;display:block}
+.decor-pick b{display:block;font-size:9px;font-weight:800;line-height:1.15;margin-top:2px;
+  color:var(--ink-soft);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.dp-cost{
+  position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);
+  font-size:9px;font-weight:900;padding:1px 6px;border-radius:var(--r-pill);
+  background:linear-gradient(180deg,var(--gold-1),var(--gold-2));color:#6a4708;
+  box-shadow:var(--sh-1);white-space:nowrap;
+}

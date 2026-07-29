@@ -199,6 +199,7 @@ export function mountShop(host){
     const r = stage.getBoundingClientRect();
     hitBoxes = drawShop(c2, r.width, r.height, {
       location: S.location, upgrades: S.upgrades, t: shopT,
+      decor: S.decor?.placed || {},
       satisfaction: shopSatisfaction(),
       customers: queue.map(c => ({
         id: c.id, face: c.face, vip: c.vip,

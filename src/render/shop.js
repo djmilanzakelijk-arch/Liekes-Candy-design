@@ -6,6 +6,8 @@
 import { roundRect, alpha, mix, specular, gloss } from './shade.js';
 import { getLocation } from '../data/upgrades.js';
 import { TAU, rngFrom, clamp, easeOutCubic } from '../core/utils.js';
+import { ANCHORS } from '../data/shopDecor.js';
+import { drawDecorPiece } from './shopDecor.js';
 
 const WALLPAPERS = [
   { base:'#f6e7dd', stripe:'#efd8c9', motif:'none' },
@@ -28,7 +30,7 @@ const FLOORS = [
  * @param w,h    logical size
  * @param opt    { location, upgrades, t, satisfaction }
  */
-export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0, satisfaction = 60, customers = [] } = {}){
+export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0, satisfaction = 60, customers = [], decor = {} } = {}){
   const loc = getLocation(location);
   const lv = k => upgrades[k] || 0;
   const wall = WALLPAPERS[Math.min(lv('walls'), WALLPAPERS.length - 1)];
@@ -186,6 +188,9 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
     }
   }
 
+  /* ── her own decorations, the ones that sit behind the counter ── */
+  drawDecor(ctx, w, h, t, decor, true);
+
   /* ── counter ── */
   const cx = w * .10, cy = h * .70, cw = w * .80, chh = h * .28;
   ctx.fillStyle = alpha('#000000', .12);
@@ -236,6 +241,9 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
     ctx.fillText('🧑‍🍳', cx + cw * .22, cy + bob + h * .02);
   }
 
+  /* ── the pieces that sit on the counter, in front of it ── */
+  drawDecor(ctx, w, h, t, decor, false);
+
   /* ── the customers themselves, standing at the counter ── */
   const hitBoxes = drawCustomers(ctx, w, h, customers, t);
 
@@ -259,6 +267,18 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
   ctx.fillStyle = vg; ctx.fillRect(0, 0, w, h);
 
   return hitBoxes;
+}
+
+/**
+ * Draw whatever she has put around the shop.
+ * @param behind  the pass that goes under the counter, or the one over it
+ */
+function drawDecor(ctx, w, h, t, decor, behind){
+  for (const [slot, id] of Object.entries(decor || {})){
+    const a = ANCHORS[slot];
+    if (!a || !id || !!a.behind !== behind) continue;
+    drawDecorPiece(ctx, id, w * a.x, h * a.y, w * a.size, t, w, h);
+  }
 }
 
 /* ============================================================
