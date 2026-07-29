@@ -1,12 +1,12 @@
 /* ============================================================
    Today's menu.
 
-   Pick three candies each morning. Most customers will order from
-   them, and anything on the menu sells for more — so the day gets a
-   shape instead of being an endless shuffle of everything you own.
+   Pick three candies each morning. Anything on the board sells for
+   noticeably more when somebody happens to order it.
 
-   Skipping it costs nothing: with no menu set, the shop behaves
-   exactly as it always did.
+   The menu deliberately does NOT steer what customers ask for — they
+   still walk in wanting anything she owns. It is a bet on the day, not
+   a filter on it, and skipping it costs nothing.
    ============================================================ */
 
 import { S, save, emit } from '../core/state.js';
@@ -14,10 +14,8 @@ import { CANDIES } from '../data/candies.js';
 import { todayKey, pickN } from '../core/utils.js';
 
 export const MENU_SIZE = 3;
-/** What a candy on today's menu is worth. */
-export const MENU_BONUS = 1.25;
-/** How often a customer orders from the menu rather than anything. */
-export const MENU_PULL = .68;
+/** What a candy on today's menu is worth when one is ordered. */
+export const MENU_BONUS = 1.4;
 
 export const menu = () => {
   if (!S.menu) S.menu = { date: '', picks: [] };
@@ -49,11 +47,4 @@ export function setMenu(ids){
 export function suggestMenu(){
   const list = available();
   return pickN(list, Math.min(MENU_SIZE, list.length)).map(c => c.id);
-}
-
-/** Which candy this customer walks in wanting, given the menu. */
-export function pullFromMenu(){
-  const p = picks();
-  if (!p.length || Math.random() > MENU_PULL) return null;
-  return p[Math.floor(Math.random() * p.length)];
 }

@@ -15,7 +15,6 @@ import { t, tName, tLines, getLang, phrases, candyPluralNl } from '../core/i18n.
 import { activeEvent } from '../data/events.js';
 import { getLocation } from '../data/upgrades.js';
 import { fameTier, socialPullChance } from '../data/social.js';
-import { pullFromMenu } from './menu.js';
 import { FILLINGS, DUSTS, toolsForCandy, toolLabel, TOOL_BY_ID } from '../data/tools.js';
 import { pick, pickN, randI, rand, uid, clamp, listJoin, shuffle } from '../core/utils.js';
 
@@ -43,10 +42,10 @@ export function makeOrder(opt = {}){
   const packs = ownedPacks().filter(p => p.id !== 'none');
 
   // ── candy ──
+  // Note: today's menu deliberately does not steer this. Customers ask
+  // for whatever she owns; the menu only changes what it pays.
   let candy;
-  const fromMenu = opt.plain ? null : pullFromMenu();
   if (opt.forceCandy && S.owned.candies.includes(opt.forceCandy)) candy = getCandy(opt.forceCandy);
-  else if (fromMenu) candy = getCandy(fromMenu);
   else if (ev && Math.random() < .35 && S.owned.candies.includes(ev.favCandy)) candy = getCandy(ev.favCandy);
   else candy = pick(candies);
 

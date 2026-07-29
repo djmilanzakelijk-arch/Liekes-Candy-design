@@ -1,6 +1,6 @@
 /* Service worker — makes the shop playable offline. */
 
-const CACHE = 'liekes-candy-2026-07-29.4';
+const CACHE = 'liekes-candy-2026-07-29.5';
 
 const ASSETS = [
   './',
