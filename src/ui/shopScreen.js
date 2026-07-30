@@ -29,6 +29,7 @@ import { picks as menuPicks, setMenu, suggestMenu, available as menuAvailable, M
 import { drawCandyThumb } from '../render/candy.js';
 import { checkMissions } from './missions.js';
 import { maybeStaffEvent } from '../game/staffEvents.js';
+import { pet as shopPet, mood as petMood, tickPet } from '../game/pet.js';
 import { showPendingStaffEvent } from './staffEventUi.js';
 import { go } from './nav.js';
 import { t, tName, tDesc, tLines, onLangChange } from '../core/i18n.js';
@@ -42,6 +43,21 @@ let hitBoxes = [];
 
 /* ══════════════ queue upkeep ══════════════ */
 function queueSize(){ return bonuses().queue + (S.level >= 8 ? 1 : 0); }
+
+/**
+ * The pet as the diorama wants it. The mood is only recomputed once a
+ * second — it is a slow meter and the draw loop runs at 60fps.
+ */
+let petCache = { at:0, val:null };
+function petForShop(){
+  const p = shopPet();
+  if (!p) return null;
+  const now = Date.now();
+  if (now - petCache.at > 1000){
+    petCache = { at: now, val: { kind: p.kind, name: p.name, mood: petMood() } };
+  }
+  return petCache.val;
+}
 
 function fillQueue(){
   const want = queueSize();
@@ -188,6 +204,7 @@ export function mountShop(host){
     for (let i = hitBoxes.length - 1; i >= 0; i--){
       const b = hitBoxes[i];
       if (px >= b.x && px <= b.x + b.w && py >= b.y && py <= b.y + b.h){
+        if (b.id === '__pet'){ sfx('sparkle'); haptic(10); go('pet'); return; }
         const cust = queue.find(c => c.id === b.id);
         if (cust && (cust.walk ?? 1) >= 1) startOrder(cust);
         return;
@@ -206,6 +223,7 @@ export function mountShop(host){
       location: S.location, upgrades: S.upgrades, t: shopT,
       decor: S.decor?.placed || {},
       satisfaction: shopSatisfaction(),
+      pet: petForShop(),
       customers: queue.map(c => ({
         id: c.id, face: c.face, vip: c.vip,
         walk: c.walk ?? 1,

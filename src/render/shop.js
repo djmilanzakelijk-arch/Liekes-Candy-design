@@ -9,6 +9,7 @@ import { TAU, rngFrom, clamp, easeOutCubic } from '../core/utils.js';
 import { ANCHORS } from '../data/shopDecor.js';
 import { drawDecorPiece } from './shopDecor.js';
 import { daylight, mixHex } from './daylight.js';
+import { drawPet } from './pet.js';
 
 const WALLPAPERS = [
   { base:'#f6e7dd', stripe:'#efd8c9', motif:'none' },
@@ -31,7 +32,7 @@ const FLOORS = [
  * @param w,h    logical size
  * @param opt    { location, upgrades, t, satisfaction }
  */
-export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0, satisfaction = 60, customers = [], decor = {}, hour } = {}){
+export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0, satisfaction = 60, customers = [], decor = {}, hour, pet = null } = {}){
   const loc = getLocation(location);
   const sun = daylight(hour);
   const lv = k => upgrades[k] || 0;
@@ -264,6 +265,34 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
   /* ── the pieces that sit on the counter, in front of it ── */
   drawDecor(ctx, w, h, t, decor, false);
 
+  /* ── the shop pet, on the floor at the end of the counter ──
+     In front of the counter and to the left of where anybody queues, so
+     it is never hidden behind a speech bubble. Drawn before the light
+     wash, unlike the customers, so the animal is lit by the room rather
+     than pasted on top of a dark corner. */
+  let petBox = null;
+  if (pet){
+    const sz = h * .38;
+    const gx = w * .105;
+    // drawPet fills its box down to about .90, so this stands the animal
+    // on the bottom edge of the diorama instead of cropping its paws
+    const topY = h - sz * .90;
+    ctx.save();
+    ctx.translate(gx - sz / 2, topY);
+    drawPet(ctx, sz, pet.kind, t, pet.mood ?? 1);
+    ctx.restore();
+    // asleep once the shop has gone dark
+    if (sun.dark > .8){
+      ctx.save();
+      ctx.globalAlpha = .5 + Math.sin(t * 1.1) * .22;
+      ctx.font = `${sz * .2}px system-ui, "Apple Color Emoji", "Segoe UI Emoji"`;
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('💤', gx + sz * .22, topY + sz * .02);
+      ctx.restore();
+    }
+    petBox = { id:'__pet', x: gx - sz * .30, y: topY, w: sz * .60, h: sz * .86 };
+  }
+
   /* ── the light of the hour, washed over the room ──
      Deliberately before the customers: the room can go properly dark
      at night while faces and patience bars stay readable on top. */
@@ -313,7 +342,9 @@ export function drawShop(ctx, w, h, { location = 'village', upgrades = {}, t = 0
   vg.addColorStop(1, 'rgba(80,40,70,.22)');
   ctx.fillStyle = vg; ctx.fillRect(0, 0, w, h);
 
-  return hitBoxes;
+  // the pet goes first in the list, so a customer standing in front of it
+  // still wins the tap
+  return petBox ? [petBox, ...hitBoxes] : hitBoxes;
 }
 
 /**

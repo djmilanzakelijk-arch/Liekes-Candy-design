@@ -63,6 +63,7 @@ export function mountDecor(host){
     drawShop(c2, r.width, r.height, {
       location: S.location, upgrades: S.upgrades, t: now / 1000,
       satisfaction: 60, customers: [], decor: store().placed,
+      pet: S.pet ? { kind: S.pet.kind, name: S.pet.name, mood: 1 } : null,
     });
     raf = requestAnimationFrame(loop);
   };
