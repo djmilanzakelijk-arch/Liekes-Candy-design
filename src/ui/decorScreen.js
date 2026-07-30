@@ -56,8 +56,11 @@ export function mountDecor(host){
     if (!document.body.contains(cv)) return;
     const r = stage.getBoundingClientRect();
     const d = Math.min(window.devicePixelRatio || 1, 2);
-    if (cv.width !== Math.round(r.width * d)){
-      cv.width = r.width * d; cv.height = r.height * d;
+    // both dimensions: a stage that only grows taller was leaving the
+    // bottom of the room off the bitmap
+    const bw = Math.round(r.width * d), bh = Math.round(r.height * d);
+    if (bw && bh && (cv.width !== bw || cv.height !== bh)){
+      cv.width = bw; cv.height = bh;
       c2.setTransform(d, 0, 0, d, 0, 0);
     }
     drawShop(c2, r.width, r.height, {

@@ -30,6 +30,7 @@ import { drawCandyThumb } from '../render/candy.js';
 import { checkMissions } from './missions.js';
 import { maybeStaffEvent } from '../game/staffEvents.js';
 import { pet as shopPet, mood as petMood, tickPet } from '../game/pet.js';
+import { perHour as incomePerHour } from '../game/income.js';
 import { showPendingStaffEvent } from './staffEventUi.js';
 import { go } from './nav.js';
 import { t, tName, tDesc, tLines, onLangChange } from '../core/i18n.js';
@@ -179,6 +180,10 @@ export function mountShop(host){
       stat(fmt(S.counters.perfect), t('stat.perfect')),
       stat(fmt(S.counters.coinsEarned), t('stat.earned')),
       stat(String(shopSatisfaction()) + '%', t('stat.satisfaction')),
+      // what the shop makes on its own, so a slow trickle is still legible
+      stat('🪙 ' + fmt(incomePerHour()), t('stat.perHour')),
+      stat(fmt(S.counters.idleEarned || 0), t('stat.idleEarned')),
+      stat(fmt(S.counters.served || 0), t('stat.served')),
     ),
   ));
 
@@ -187,11 +192,25 @@ export function mountShop(host){
 
   // diorama animation
   const c2 = cv.getContext('2d');
+  /**
+   * Keep the bitmap the same size as the element.
+   *
+   * This used to run once at mount and again on window resize, which is
+   * not enough: the stage settles a little after the screen is appended
+   * (fonts, the badge row, the phone's own chrome), and on a phone it can
+   * settle a lot. The draw loop asks the element how big it is every
+   * frame, so once the element outgrew the bitmap everything low in the
+   * scene — the customers' bodies and the pet — was being drawn past the
+   * bottom edge of the bitmap and simply vanished, leaving the room and
+   * the speech bubbles behind. Cheap enough to check every frame.
+   */
   const resize = () => {
     const r = stage.getBoundingClientRect();
     const d = Math.min(window.devicePixelRatio || 1, 2);
-    cv.width = r.width * d; cv.height = r.height * d;
-    c2.setTransform(d, 0, 0, d, 0, 0);
+    const bw = Math.round(r.width * d), bh = Math.round(r.height * d);
+    if (!bw || !bh || (cv.width === bw && cv.height === bh)) return;
+    cv.width = bw; cv.height = bh;
+    c2.setTransform(d, 0, 0, d, 0, 0);   // resizing a canvas clears its state
   };
   resize();
   window.addEventListener('resize', resize);
@@ -218,6 +237,7 @@ export function mountShop(host){
     const dt = Math.min(.08, (now - lastNow) / 1000);
     lastNow = now; shopT += dt;
     if (tickQueue(dt)) renderQueue(); else updatePatienceBars();
+    resize();
     const r = stage.getBoundingClientRect();
     hitBoxes = drawShop(c2, r.width, r.height, {
       location: S.location, upgrades: S.upgrades, t: shopT,

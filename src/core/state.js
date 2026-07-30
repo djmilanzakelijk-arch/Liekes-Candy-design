@@ -59,7 +59,8 @@ function freshState(){
     staff: { roster: [], applicants: [], applicantsDate: '', seededFromUpgrade: 0, seedDone: false },
 
     /* wages, overdraft and everything the bank did about it */
-    finance: { lastPayday: '', redDays: 0, interest: 0, paidTotal: 0, log: [] },
+    finance: { lastPayday: '', redDays: 0, interest: 0, paidTotal: 0, log: [],
+               incomeAt: 0, incomeFrac: 0 },
 
     /* delivery service: the board of jobs and the parcels on the road */
     delivery: { board: [], boardDate: '', active: [], done: 0, earned: 0, nextJobAt: 0 },
@@ -88,7 +89,7 @@ function freshState(){
 
     counters: {
       orders:0, fiveStars:0, perfect:0, coinsEarned:0, decosPlaced:0,
-      wrapped:0, tips:0, photos:0, unlocked:0, totalStars:0, served:0,
+      wrapped:0, tips:0, photos:0, unlocked:0, totalStars:0, served:0, idleEarned:0,
     },
     /** counters that reset every day (daily missions read these) */
     dailyCounters: {},
@@ -132,6 +133,13 @@ export function load(){
     console.warn('Save was unreadable, starting fresh.', e);
     S = freshState();
   }
+  // Seed the passive-income clock from the save's own lastSeen, here and
+  // nowhere else: every save() rewrites lastSeen to now, and boot saves
+  // several times before anything gets round to asking how long the shop
+  // was shut. Read it while it still means something.
+  S.finance ||= {};
+  if (!S.finance.incomeAt) S.finance.incomeAt = S.lastSeen || Date.now();
+
   rolloverDaily();
   // Only announce new content to players who were already playing —
   // a first-time save has nothing to catch up on.
@@ -561,15 +569,8 @@ export function deletePhoto(id){
   emit('state'); save();
 }
 
-/* ── idle earnings from the Employee upgrade ─────────── */
-export function collectIdle(){
-  const rate = bonuses().idleCoins;
-  if (!rate) return 0;
-  const hours = clamp((Date.now() - (S.lastSeen || Date.now())) / 3600000, 0, 8);
-  const amount = Math.floor(rate * hours);
-  if (amount > 0) addCoins(amount);
-  return amount;
-}
+/* Passive earnings live in game/income.js now — one clock for both the
+   live ticking and the catch-up at launch, so neither can double-pay. */
 
 /* ── daily login streak ──────────────────────────────── */
 export function dailyStatus(){

@@ -16,13 +16,14 @@ import {
 } from '../game/regulars.js';
 import {
   list as recipeList, cased, isCased, caseFull, toggleCase, hourlyOf,
-  caseHourly, pendingCoins, pendingHours, collectCase, deleteRecipe,
+  caseHourly, deleteRecipe,
   renameRecipe, recipes, CASE_SLOTS, MAX_RECIPES,
 } from '../game/recipes.js';
 import { getCandy } from '../data/candies.js';
 import { getColor } from '../data/palette.js';
 import { getDeco } from '../data/decorations.js';
 import { openStudio } from './studio.js';
+import { perHour } from '../game/income.js';
 import { go, subHeader } from './nav.js';
 import { t, tName } from '../core/i18n.js';
 
@@ -142,31 +143,19 @@ export function mountRecipes(host){
   const wrap = el('div.screen.enter');
   wrap.append(subHeader(t('rec.title'), '📗'));
 
-  /* the display case */
-  const waiting = pendingCoins();
+  /* the display case — it pays straight into your coins now, there is
+     nothing to come back and collect */
   const box = el('div.card',
     el('div.card-title', el('span.ico', '🪟'), t('rec.case'), el('span.spacer'),
       el('span.sub', `${cased().length}/${CASE_SLOTS}`)),
     el('div.stat-grid',
       el('div.stat', el('b', '🪙 ' + fmt(caseHourly())), el('span', t('rec.perHour'))),
-      el('div.stat', el('b', '🪙 ' + fmt(waiting)), el('span', t('rec.waiting'))),
+      el('div.stat', el('b', '🪙 ' + fmt(perHour())), el('span', t('rec.allPerHour'))),
       el('div.stat', el('b', fmt(recipes().earned || 0)), el('span', t('rec.earnedTotal'))),
     ),
+    el('p.tiny.muted.center', { style:{ marginTop:'8px', lineHeight:'1.45' } },
+      cased().length ? t('rec.caseLive') : t('rec.caseEmpty')),
   );
-  if (waiting > 0){
-    box.append(el('button.btn.gold.block', { style:{ marginTop:'10px' }, onclick: () => {
-      const got = collectCase();
-      if (!got) return;
-      sfx('coin'); haptic([10, 25, 10]); confetti(24);
-      coinFly(window.innerWidth / 2, window.innerHeight * .45, 10);
-      bumpPill('#hudCoins');
-      toast(t('rec.collected', { n: fmt(got) }), 'good', '🪙');
-      go('recipes');
-    }}, t('rec.collect', { n: fmt(waiting) })));
-  } else {
-    box.append(el('p.tiny.muted.center', { style:{ marginTop:'8px' } },
-      cased().length ? t('rec.caseRunning') : t('rec.caseEmpty')));
-  }
   wrap.append(box);
 
   /* the recipes themselves */
@@ -244,4 +233,6 @@ function manage(r){
 }
 
 /** Badge for the More hub: coins waiting under the display case. */
-export const recipeBadge = () => (pendingCoins() > 0 ? 1 : 0);
+/** A free slot in the display case with a recipe idle on the shelf. */
+export const recipeBadge = () =>
+  (!caseFull() && recipeList().some(r => !isCased(r.id)) ? 1 : 0);

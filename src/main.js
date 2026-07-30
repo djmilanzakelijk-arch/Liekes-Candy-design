@@ -3,7 +3,7 @@
    ============================================================ */
 
 import { el, $, $$, fmt, clamp, sleep } from './core/utils.js';
-import { S, load, save, on, xpForLevel, collectIdle, syncUnlocks, seedLegacyStaff, getBootUnlocks } from './core/state.js';
+import { S, load, save, on, xpForLevel, syncUnlocks, seedLegacyStaff, getBootUnlocks } from './core/state.js';
 import { unlock as unlockAudio, sfx, startMusic, setVolume, duck } from './core/audio.js';
 import { toast, confetti, candyRain, bumpPill } from './core/fx.js';
 import { openModal } from './ui/modal.js';
@@ -31,6 +31,7 @@ import { openLevelReward, hasPendingLevelReward } from './ui/levelReward.js';
 import { captureIncoming, hasIncoming } from './core/transfer.js';
 import { handleIncomingTransfer } from './ui/transferUi.js';
 import { milestonesForLevels } from './game/milestones.js';
+import { accrue, catchUp, perHour, OFFLINE_CAP_HOURS } from './game/income.js';
 import { getCandy } from './data/candies.js';
 import { activeEvent } from './data/events.js';
 import { t, tName, initLang, setLang, getLang, hasChosenLang, LANGS } from './core/i18n.js';
@@ -127,9 +128,24 @@ function wireHud(){
   on('state', render);
   render();
 
+  // ── money coming in while you play ──
+  // The employees and the display case earn by the hour. Rather than
+  // pooling it somewhere to be collected, it lands in your coins as it
+  // is earned, and the pill says so when it does.
+  const tickIncome = () => {
+    const got = accrue();
+    if (got.coins > 0) showEarned(got.coins);
+  };
+  setInterval(tickIncome, 1000);
+  // an app that was backgrounded gets its time back the moment it returns
+  document.addEventListener('visibilitychange', () => {
+    if (!document.hidden) tickIncome();
+  });
+
   $('#hudCoins').addEventListener('click', () => {
     sfx('coin');
-    toast(t('toast.coins'), '', '🪙');
+    const rate = perHour();
+    toast(rate > 0 ? t('toast.coinsRate', { n: fmt(rate) }) : t('toast.coins'), '', '🪙');
   });
   $('#hudGems').addEventListener('click', () => {
     sfx('gem');
@@ -182,6 +198,69 @@ function wireHud(){
   });
 }
 
+/**
+ * A coin count that just went up, said out loud next to the pill.
+ * Batched: several ticks inside a couple of seconds show as one figure,
+ * so a well-staffed shop does not machine-gun little numbers.
+ */
+let earnedPending = 0, earnedTimer = 0;
+function showEarned(n){
+  earnedPending += n;
+  bumpPill('#hudCoins');
+  if (earnedTimer) return;
+  earnedTimer = setTimeout(() => {
+    const amount = earnedPending;
+    earnedPending = 0; earnedTimer = 0;
+    const pill = $('#hudCoins');
+    if (!pill || !amount) return;
+    const r = pill.getBoundingClientRect();
+    const fly = el('div.coin-tick', '+' + fmt(amount));
+    fly.style.left = (r.left + r.width / 2) + 'px';
+    fly.style.top  = (r.bottom - 4) + 'px';
+    document.body.append(fly);
+    setTimeout(() => fly.remove(), 1400);
+  }, 1600);
+}
+
+/** "While you were away" — the shop kept earning, here is from what. */
+function showIdleReport(idle, done){
+  const rows = el('div', { style:{ marginTop:'10px' } });
+  for (const src of idle.per){
+    rows.append(el('div.unlock-row',
+      el('span.u-ico', src.emoji),
+      el('span.u-txt',
+        el('b', t('idle.src.' + src.id)),
+        el('small', src.perHour > 0 ? t('idle.perHour', { n: fmt(src.perHour) }) : t('idle.leftover'))),
+      el('span', { style:{ marginLeft:'auto', fontWeight:'900', color:'#c98f14', fontSize:'13px' } },
+        '🪙 +' + fmt(src.coins)),
+    ));
+  }
+
+  openModal({
+    icon:'🧑‍🍳',
+    title: t('idle.title'),
+    sub: t('idle.away', { n: awayLabel(idle.hours) }),
+    body: [
+      el('p.center', { style:{ fontSize:'26px', fontWeight:'900', color:'#c98f14' } },
+        `🪙 +${fmt(idle.coins)}`),
+      rows,
+      idle.capped
+        ? el('p.tiny.muted.center', { style:{ marginTop:'9px', lineHeight:'1.45' } },
+            t('idle.capped', { n: OFFLINE_CAP_HOURS }))
+        : null,
+    ],
+    actions:[{ label:t('idle.collect'), cls:'gold', onClick: () => {
+      sfx('coin'); bumpPill('#hudCoins'); done();
+    }}],
+  });
+}
+
+function awayLabel(hours){
+  if (hours < 1) return t('idle.mins', { n: Math.max(1, Math.round(hours * 60)) });
+  const h = Math.floor(hours), m = Math.round((hours - h) * 60);
+  return m ? t('idle.hoursMins', { h, m }) : t('idle.hours', { h });
+}
+
 /* ══════════════ first run + returning ══════════════ */
 function afterBoot(){
   // audio needs a gesture on mobile
@@ -195,7 +274,7 @@ function afterBoot(){
 
   // idle earnings from the Employee upgrade, then the wage bill for the
   // days that passed — earnings first, so the till has a chance to cover it
-  const idle = collectIdle();
+  const idle = catchUp();
   // a first-time player has no team and no wages yet; a shop arriving from
   // a transfer link gets its payday on the next launch instead
   const payday = () => {
@@ -203,18 +282,8 @@ function afterBoot(){
     showPayday();
   };
   const afterIdle = () => setTimeout(payday, 260);
-  if (idle > 0){
-    setTimeout(() => {
-      openModal({
-        icon:'🧑‍🍳', title:t('idle.title'),
-        sub:t('idle.sub'),
-        body: el('p.center', { style:{ fontSize:'22px', fontWeight:'900', color:'#c98f14' } },
-          `🪙 +${fmt(idle)}`),
-        actions:[{ label:t('idle.collect'), cls:'gold', onClick: () => {
-          sfx('coin'); bumpPill('#hudCoins'); afterIdle();
-        }}],
-      });
-    }, 700);
+  if (idle){
+    setTimeout(() => showIdleReport(idle, afterIdle), 700);
   } else {
     setTimeout(payday, 1100);
   }

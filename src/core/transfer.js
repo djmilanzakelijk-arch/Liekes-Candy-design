@@ -147,6 +147,10 @@ export async function applyIncoming(payload = incoming){
   const lang = parsed.__lang;
   delete parsed.__lang;
   if (lang) { try { localStorage.setItem(LANG_KEY, lang); } catch {} }
+  // Start the passive-income clock here, not whenever the link was made:
+  // a shop that sat in a chat for a week should not pay out for that week.
+  if (parsed.finance) { parsed.finance.incomeAt = Date.now(); parsed.finance.incomeFrac = 0; }
+  parsed.lastSeen = Date.now();
   localStorage.setItem(SAVE_KEY, JSON.stringify(parsed));
   incoming = null;
   return parsed;

@@ -105,8 +105,8 @@ export function toggleCase(id){
     return false;
   }
   if (r.cased.length >= CASE_SLOTS) return false;
-  // bank what the case earned so far before the mix changes
-  collectCase();
+  // The caller settles the income clock first (see income.accrue), so
+  // changing the mix never pays the new rate for old hours.
   r.cased.push(id);
   save(); emit('state');
   return true;
@@ -124,7 +124,21 @@ export function pendingHours(){
 export const pendingCoins = () => Math.floor(caseHourly() * pendingHours());
 
 /**
- * Empty the till under the display case.
+ * Book what the case earned. income.js is the one that actually pays it
+ * now — this only keeps the case's own bookkeeping straight.
+ */
+export function creditCase(amount){
+  if (!(amount > 0)) return;
+  const r = recipes();
+  r.earned = (r.earned || 0) + amount;
+  r.lastSweep = Date.now();
+  for (const rec of cased()) rec.sold = (rec.sold || 0) + 1;
+  bump('caseSales');
+}
+
+/**
+ * Empty the till under the display case. Only used once, to sweep up
+ * what a pre-live-income save still had sitting in it.
  * @returns coins collected (0 if there was nothing)
  */
 export function collectCase(){
