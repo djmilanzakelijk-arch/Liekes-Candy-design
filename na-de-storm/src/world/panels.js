@@ -145,7 +145,7 @@ export class Panels {
   }
 
   drawCredits() {
-    const [c, g] = this.darkPanel(1000, 960);
+    const [c, g] = this.darkPanel(1000, 1200);
     g.fillStyle = '#c9a56a';
     g.font = `700 30px ${SANS}`;
     g.fillText('CURATOREN', 80, 120);
@@ -161,7 +161,7 @@ export class Panels {
     }
     g.fillStyle = '#9a8e78';
     g.font = `400 23px ${SANS}`;
-    wrapText(g, 'Voorgestelde taakverdeling – door de groep te controleren. Klik voor credits en bronnen.', 80, 880, 840, 30);
+    wrapText(g, 'Voorgestelde taakverdeling – door de groep te controleren. Klik voor credits en bronnen.', 80, 1110, 840, 30);
     return c;
   }
 

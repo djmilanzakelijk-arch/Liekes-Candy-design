@@ -1,6 +1,6 @@
 import * as THREE from 'three';
 
-// ‘Na de storm’ – eigen praktijkwerk van Milan, Berend en Polle.
+// ‘Na de storm’ – eigen praktijkwerk van Milan, Berend, Polle en Constantijn.
 // Onderin donkere, scherpe scherven die onrustig draaien (chaos); naar boven
 // toe lichtere, kleurige vlakken die zich rustig ordenen rond een verticale
 // lichtlijn (verwijzing naar Newmans ‘zip’), tot in het licht van de oculus.

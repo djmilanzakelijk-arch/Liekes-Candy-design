@@ -2,7 +2,7 @@
   "name": "na-de-storm",
   "private": true,
   "version": "1.0.0",
-  "description": "NA DE STORM \u2014 Kunst, chaos en een nieuwe wereld (1940\u20131950). Een interactief 3D-museum voor CKV Beeldend, 4 vwo, door Milan, Berend en Polle.",
+  "description": "NA DE STORM \u2014 Kunst, chaos en een nieuwe wereld (1940\u20131950). Een interactief 3D-museum voor CKV Beeldend, 4 vwo, door Milan, Berend, Polle en Constantijn.",
   "type": "module",
   "scripts": {
     "dev": "vite",

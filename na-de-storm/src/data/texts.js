@@ -2,16 +2,16 @@
 // reflectie, inzichten en de korte tour. Labels:
 //   FEIT        – historisch controleerbaar
 //   INTERPRETATIE – een gangbare of onze eigen lezing van een werk
-//   KEUZE       – een curatoriële keuze of mening van Milan, Berend en Polle
+//   KEUZE       – een curatoriële keuze of mening van Milan, Berend, Polle en Constantijn
 
 export const EXHIBITION = {
   title: 'NA DE STORM',
   subtitle: 'Kunst, chaos en een nieuwe wereld',
   period: '1940–1950',
-  curators: ['Milan', 'Berend', 'Polle'],
+  curators: ['Milan', 'Berend', 'Polle', 'Constantijn'],
   course: 'CKV Beeldend · 4 vwo',
   question: 'Hoe veranderden oorlog, verlies, onzekerheid en hoop de manier waarop kunstenaars de wereld afbeeldden?',
-  disclaimer: 'NA DE STORM is een fictieve wereldtentoonstelling, ontworpen door Milan, Berend en Polle voor een schoolopdracht. Deze tentoonstelling heeft nooit echt bestaan; de kunstwerken wel. Ze bevinden zich in de collecties die bij elk werk staan vermeld.'
+  disclaimer: 'NA DE STORM is een fictieve wereldtentoonstelling, ontworpen door Milan, Berend, Polle en Constantijn voor een schoolopdracht. Deze tentoonstelling heeft nooit echt bestaan; de kunstwerken wel. Ze bevinden zich in de collecties die bij elk werk staan vermeld.'
 };
 
 export const ABOUT = {
@@ -50,7 +50,7 @@ export const ABOUT = {
     {
       h: 'Wat is onze eigen mening?',
       tag: 'KEUZE',
-      p: 'Concept – nog te controleren door Milan, Berend en Polle: wij denken dat de kunst van 1940–1950 laat zien dat een realistische afbeelding soms tekortschiet. Een foto als die van Lange is onmisbaar als getuigenis, maar een werk als Newmans Onement I laat iets voelen waar geen foto bij kan: stilte, eenheid en een nieuw begin. Allebei zijn nodig.'
+      p: 'Concept – nog te controleren door Milan, Berend, Polle en Constantijn: wij denken dat de kunst van 1940–1950 laat zien dat een realistische afbeelding soms tekortschiet. Een foto als die van Lange is onmisbaar als getuigenis, maar een werk als Newmans Onement I laat iets voelen waar geen foto bij kan: stilte, eenheid en een nieuw begin. Allebei zijn nodig.'
     },
     {
       h: 'Hoe lees je dit museum?',
@@ -63,8 +63,13 @@ export const ABOUT = {
 export const CURATORS = [
   {
     name: 'Milan',
-    role: 'Historisch onderzoek, entree, zaal 1 en zaal 2',
-    task: 'Onderzoek naar de Tweede Wereldoorlog, documentaire fotografie en de tijdlijn; selectie en teksten voor ‘Een wereld in crisis’ en ‘De mens achter de geschiedenis’.'
+    role: 'Historisch onderzoek, entree en zaal 1',
+    task: 'Onderzoek naar de Tweede Wereldoorlog en de oorlogskunst; selectie en teksten voor de entree en ‘Een wereld in crisis’.'
+  },
+  {
+    name: 'Constantijn',
+    role: 'Documentaire fotografie, zaal 2 en de tijdlijn',
+    task: 'Onderzoek naar documentaire fotografie, identiteit en verplaatsing; selectie en teksten voor ‘De mens achter de geschiedenis’ en de controle van de tijdlijn 1940–1950.'
   },
   {
     name: 'Berend',
@@ -77,7 +82,7 @@ export const CURATORS = [
     task: 'Onderzoek naar wederopbouw, CoBrA, vormgeving en het Marshallplan; ontwerp van de installatie ‘Na de storm’, de reflectie en de quiz.'
   }
 ];
-export const CURATOR_NOTE = 'Dit is een voorgestelde taakverdeling. Milan, Berend en Polle controleren en passen haar aan op basis van wat ieder werkelijk heeft gedaan.';
+export const CURATOR_NOTE = 'Dit is een voorgestelde taakverdeling. Milan, Berend, Polle en Constantijn controleren en passen haar aan op basis van wat ieder werkelijk heeft gedaan.';
 
 export const ROOM_TEXTS = {
   entree: {
@@ -103,7 +108,7 @@ export const ROOM_TEXTS = {
       { h: 'Waarom deze werken samen?', tag: 'KEUZE', p: 'We zetten twee blikken op dezelfde kampen naast elkaar (Lange en Adams), en twee vervolgde joodse kunstenaars tegenover elkaar (Nussbaum en Salomon). Hopper en Munch laten zien hoe eenzaamheid en ouderdom ook deel zijn van ‘de mens achter de geschiedenis’.' },
       { h: 'Beeldaspecten', tag: 'INTERPRETATIE', p: 'Let op frontale composities en blikken recht in de camera (Parks, Adams, Kahlo in zaal 3), op tekst als beeldelement (Lange, Salomon, Nussbaum) en op de manier waarop licht een sfeer bepaalt (Hopper).' },
       { h: 'Documentair = objectief?', tag: 'INTERPRETATIE', p: 'Een foto lijkt de werkelijkheid te tonen, maar de fotograaf kiest het kader, het moment en het licht. Vergelijk Lange en Adams: wie laat het kamp ‘echter’ zien?' },
-      { h: 'Onze mening (concept)', tag: 'KEUZE', p: 'Milan: “Het zelfportret van Nussbaum vind ik het belangrijkste werk van de tentoonstelling. Hij laat zien wie hij is, op het moment dat de wereld hem wil uitwissen.” (Concept – door Milan te controleren.)' }
+      { h: 'Onze mening (concept)', tag: 'KEUZE', p: 'Constantijn: “Het zelfportret van Nussbaum vind ik het belangrijkste werk van de tentoonstelling. Hij laat zien wie hij is, op het moment dat de wereld hem wil uitwissen.” (Concept – door Constantijn te controleren.)' }
     ],
     concepts: ['documentaire fotografie', 'identiteit', 'Executive Order 9066', 'Grote Migratie', 'expressionisme', 'zelfportret']
   },
@@ -144,7 +149,7 @@ export const ROOM_TEXTS = {
   finale: {
     lead: 'Wat bouwen we opnieuw op? In deze laatste zaal staat ons eigen praktijkwerk: een installatie die de overgang van chaos naar hoop verbeeldt. Loop eromheen, kijk omhoog, en denk mee over de vraag die ons de hele route bezighield.',
     sections: [
-      { h: 'Eigen praktijkwerk', tag: 'KEUZE', p: 'Eigen praktijkwerk van Milan, Berend en Polle – ontworpen voor deze tentoonstelling. De installatie ‘Na de storm’ en de studie ‘Storm en stilte’ zijn geen historische kunstwerken.' },
+      { h: 'Eigen praktijkwerk', tag: 'KEUZE', p: 'Eigen praktijkwerk van Milan, Berend, Polle en Constantijn – ontworpen voor deze tentoonstelling. De installatie ‘Na de storm’ en de studie ‘Storm en stilte’ zijn geen historische kunstwerken.' },
       { h: 'Hoe het werk aansluit', tag: 'INTERPRETATIE', p: 'We gebruiken de beeldtaal van het abstract expressionisme: all-over (Pollock), kleurvelden (Rothko) en een verticale lichtlijn (Newman). Onderin begint het werk met de verbrokkeling van zaal 1.' },
       { h: 'De vraag', tag: 'KEUZE', p: 'Moet kunst de werkelijkheid laten zien, of mag kunst juist laten voelen wat niet in woorden uit te drukken is? Geef je antwoord bij de reflectiezuil.' }
     ],
@@ -198,7 +203,7 @@ export const REFLECTION = {
     'Toch denken wij dat dat niet genoeg is. Na de Holocaust en de atoombom vonden veel kunstenaars dat een realistisch beeld tekortschoot. Een schilderij als Onement I van Barnett Newman laat geen enkele gebeurtenis zien, maar roept wel een gevoel op van stilte en van een nieuw begin. Dat kan een foto niet.',
     'Onze conclusie is daarom dat kunst allebei mag én moet: ze moet getuigen van wat er gebeurd is, en ze mag nieuwe werelden scheppen voor wat er nog niet in woorden te zeggen is. Juist in de jaren veertig zie je die twee wegen naast elkaar ontstaan.'
   ],
-  exampleNote: 'Voorbeeldreflectie (concept) – Milan, Berend en Polle controleren deze tekst en passen haar aan aan hun eigen mening.'
+  exampleNote: 'Voorbeeldreflectie (concept) – Milan, Berend, Polle en Constantijn controleren deze tekst en passen haar aan aan hun eigen mening.'
 };
 
 export const INSIGHTS = [

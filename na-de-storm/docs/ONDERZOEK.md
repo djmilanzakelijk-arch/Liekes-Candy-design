@@ -1,7 +1,7 @@
 # Onderzoeksverslag — NA DE STORM
 
 **Kunst, chaos en een nieuwe wereld (1940–1950)**
-CKV Beeldend · 4 vwo · Milan, Berend en Polle
+CKV Beeldend · 4 vwo · Milan, Berend, Polle en Constantijn
 Bronnen geraadpleegd op 21 oktober 2026.
 
 > NA DE STORM is een **fictieve** wereldtentoonstelling, ontworpen voor een schoolopdracht. De kunstwerken bestaan echt en bevinden zich in de genoemde collecties; de tentoonstelling zelf heeft nooit bestaan.
@@ -189,6 +189,6 @@ Alle overige beelden (architectuur, kleurnotities, installatie, studie) zijn in 
 
 ## 7. Nog te doen door de groep
 
-- De **voorgestelde taakverdeling** (Milan: entree, zaal 1–2; Berend: zaal 3–4; Polle: zaal 5, finale, praktijkwerk) controleren en aanpassen aan wat ieder werkelijk deed.
+- De **voorgestelde taakverdeling** (Milan: entree en zaal 1; Constantijn: zaal 2 en de tijdlijn; Berend: zaal 3–4; Polle: zaal 5, finale, praktijkwerk) controleren en aanpassen aan wat ieder werkelijk deed.
 - De **meningen** in de zaalteksten en de **voorbeeldreflectie** zijn als *concept* gemarkeerd: herschrijf ze in je eigen woorden.
 - Controleer de werken met afwijkende bronnen (§5) zelf nog eens bij het museum als je ze in een presentatie noemt.

@@ -228,7 +228,7 @@ export const MODALS = {
           <ul class="curator-list">${CURATORS.map((c) => `<li><strong>${esc(c.name)}</strong> – ${esc(c.role)}<p>${esc(c.task)}</p></li>`).join('')}</ul>
           <p class="small">${esc(CURATOR_NOTE)}</p>
         </section>
-        <section class="text-sec"><h3>Eigen praktijkwerk</h3><p>De installatie ‘Na de storm’ en de studie ‘Storm en stilte’ zijn eigen praktijkwerk van Milan, Berend en Polle, ontworpen voor deze tentoonstelling.</p></section>
+        <section class="text-sec"><h3>Eigen praktijkwerk</h3><p>De installatie ‘Na de storm’ en de studie ‘Storm en stilte’ zijn eigen praktijkwerk van Milan, Berend, Polle en Constantijn, ontworpen voor deze tentoonstelling.</p></section>
         <section class="text-sec"><h3>Techniek</h3><ul>
           <li>3D: ${link('https://threejs.org', 'Three.js')} (MIT-licentie), gebouwd met ${link('https://vite.dev', 'Vite')}.</li>
           <li>Lettertypen: Cormorant Garamond en Inter (SIL Open Font License), meegeleverd via Fontsource.</li>

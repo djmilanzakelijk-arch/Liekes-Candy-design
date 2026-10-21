@@ -6,7 +6,7 @@ const STATUS_TEXT = {
   periode: null,
   context: 'Historische context – gemaakt vóór 1940; telt niet mee voor de zaal.',
   vergelijking: 'Latere vergelijking – gemaakt na 1950; telt niet mee voor de zaal.',
-  eigen: 'Eigen praktijkwerk van Milan, Berend en Polle – ontworpen voor deze tentoonstelling.'
+  eigen: 'Eigen praktijkwerk van Milan, Berend, Polle en Constantijn – ontworpen voor deze tentoonstelling.'
 };
 
 // Tweedelige detailweergave: links het werk, rechts de informatie.

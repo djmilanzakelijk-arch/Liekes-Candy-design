@@ -54,7 +54,7 @@ export const ROOMS = [
     panels: [
       { id: 'title-wall', kind: 'title', wall: 'N', at: 0, y: 7.6, w: 15, h: 5 },
       { id: 'intro', kind: 'intro', wall: 'E', at: 4.6, y: 2.25, w: 2.7, h: 2.9, action: 'about' },
-      { id: 'credits', kind: 'credits', wall: 'E', at: 17.8, y: 2.1, w: 2.5, h: 2.4, action: 'credits' },
+      { id: 'credits', kind: 'credits', wall: 'E', at: 17.8, y: 2.3, w: 2.5, h: 3.0, action: 'credits' },
       { id: 'timeline-wall', kind: 'timeline', wall: 'W', at: 11, y: 2.45, w: 17.2, h: 2.7, action: 'timeline' }
     ],
     stele: null
@@ -92,7 +92,7 @@ export const ROOMS = [
     nr: 2,
     label: 'Zaal 2',
     title: 'De mens achter de geschiedenis',
-    curator: 'Milan',
+    curator: 'Constantijn',
     rect: [-10, 10, -45.2, -23.2],
     height: 5.6,
     theme: {

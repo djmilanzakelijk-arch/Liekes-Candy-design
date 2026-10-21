@@ -6,7 +6,7 @@
 //   'periode'      gemaakt tussen 1940 en 1950 (telt mee voor de zes per zaal)
 //   'context'      gemaakt vóór 1940, getoond als historische context
 //   'vergelijking' gemaakt na 1950, getoond als latere vergelijking
-//   'eigen'        eigen praktijkwerk van Milan, Berend en Polle
+//   'eigen'        eigen praktijkwerk van Milan, Berend, Polle en Constantijn
 //
 // image:          een rechtenvrij of vrij gelicenseerd bestand in /public/beelden/
 // interpretation: geen afbeelding (auteursrecht) → de curatoren tonen een
@@ -1273,7 +1273,7 @@ export const ARTWORKS = [
     status: 'eigen',
     featured: true,
     title: 'Na de storm',
-    artist: 'Milan, Berend en Polle',
+    artist: 'Milan, Berend, Polle en Constantijn',
     artistLife: 'Curatoren van deze tentoonstelling',
     year: '2026',
     medium: 'Digitale ruimtelijke installatie: zwevende fragmenten, licht en beweging (Three.js)',
@@ -1283,7 +1283,7 @@ export const ARTWORKS = [
     type: 'installatie',
     texts: {
       zien: 'Boven een ronde sokkel zweven honderden fragmenten. Onderaan zijn ze donker, scherp en kriskras gedraaid – een chaos van scherven. Hoe hoger je kijkt, hoe lichter en kleuriger ze worden en hoe rustiger ze zich ordenen, tot ze bovenin samenkomen in het licht dat door de opening in het plafond valt.',
-      context: 'Eigen praktijkwerk van Milan, Berend en Polle – ontworpen voor deze tentoonstelling. Het is geen bestaand historisch kunstwerk. We lieten ons inspireren door wat we in de zalen onderzochten: de verbrokkeling bij Picasso, het all-over-netwerk van Pollock, de kleurvelden van Rothko en de verticale ‘zip’ van Newman.',
+      context: 'Eigen praktijkwerk van Milan, Berend, Polle en Constantijn – ontworpen voor deze tentoonstelling. Het is geen bestaand historisch kunstwerk. We lieten ons inspireren door wat we in de zalen onderzochten: de verbrokkeling bij Picasso, het all-over-netwerk van Pollock, de kleurvelden van Rothko en de verticale ‘zip’ van Newman.',
       beeldaspecten: 'Kleur: van grafiet en roestbruin onderin naar oker, rood, blauw en gebroken wit bovenin. Lijn en vorm: scherpe, gebroken vormen worden geleidelijk vlakken. Compositie: een verticale as, zoals Newmans zip, als lijn van chaos naar licht. Beweging: onderin draaien de scherven onrustig, bovenin langzaam en gelijkmatig.',
       betekenis: 'De installatie verbeeldt de overgang van chaos naar hoop – het verhaal van onze hele route. De oorlog verdwijnt niet: de donkere scherven blijven de basis. Maar uit dezelfde fragmenten kan iets nieuws worden opgebouwd.',
       zaal: 'Onze keuze: dit werk staat in het midden van de laatste zaal, onder het daglicht. Je kunt eromheen lopen en het van alle kanten bekijken, zoals je na de route ook op de hele periode terugkijkt.',
@@ -1296,7 +1296,7 @@ export const ARTWORKS = [
     room: 'finale',
     status: 'eigen',
     title: 'Studie: storm en stilte',
-    artist: 'Milan, Berend en Polle',
+    artist: 'Milan, Berend, Polle en Constantijn',
     artistLife: 'Curatoren van deze tentoonstelling',
     year: '2026',
     medium: 'Digitaal gegenereerd ‘druipschilderij’ (code als kwast)',
@@ -1306,7 +1306,7 @@ export const ARTWORKS = [
     type: 'schilderij',
     texts: {
       zien: 'Links een dicht, donker netwerk van slierten en spatten in zwart, grafiet en roestbruin. Naar rechts toe wordt het netwerk opener en verschijnen rustige vlakken in oker, blauw en gebroken wit, met één lichte verticale streep.',
-      context: 'Eigen praktijkwerk van Milan, Berend en Polle – ontworpen voor deze tentoonstelling. Een computerprogramma ‘gooit’ de verf volgens regels die wij bedachten: veel energie en willekeur links, rust en ordening rechts.',
+      context: 'Eigen praktijkwerk van Milan, Berend, Polle en Constantijn – ontworpen voor deze tentoonstelling. Een computerprogramma ‘gooit’ de verf volgens regels die wij bedachten: veel energie en willekeur links, rust en ordening rechts.',
       beeldaspecten: 'Een all-over-compositie die langzaam overgaat in kleurvelden. Lijn als spoor van beweging (zoals bij Pollock) en een verticale ‘zip’ (zoals bij Newman).',
       betekenis: 'Het doek is een studie bij de installatie: hetzelfde verhaal van chaos naar stilte, nu op een plat vlak.',
       zaal: 'Onze keuze: het hangt in de finale naast de installatie, zodat je ziet hoe we de beeldtaal uit zaal 4 zelf hebben uitgeprobeerd.',

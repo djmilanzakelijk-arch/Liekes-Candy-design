@@ -1,6 +1,6 @@
 # NA DE STORM — Kunst, chaos en een nieuwe wereld (1940–1950)
 
-Een interactief **3D-museum in de browser**, gemaakt voor CKV Beeldend (4 vwo) door **Milan, Berend en Polle**. Je loopt in de ik-persoon door zeven ruimtes – van een donkere, sobere entree naar lichte, open zalen – en bekijkt 39 echte kunstwerken uit 1940–1950, plus historische context, een latere vergelijking en ons eigen praktijkwerk.
+Een interactief **3D-museum in de browser**, gemaakt voor CKV Beeldend (4 vwo) door **Milan, Berend, Polle en Constantijn**. Je loopt in de ik-persoon door zeven ruimtes – van een donkere, sobere entree naar lichte, open zalen – en bekijkt 39 echte kunstwerken uit 1940–1950, plus historische context, een latere vergelijking en ons eigen praktijkwerk.
 
 > NA DE STORM is een fictieve wereldtentoonstelling voor een schoolopdracht. De kunstwerken bestaan echt; de tentoonstelling niet.
 
