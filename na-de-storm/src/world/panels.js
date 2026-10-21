@@ -69,14 +69,14 @@ export class Panels {
     else if (p.kind === 'end') canvas = this.drawEnd();
     const transparent = p.kind === 'title';
     const mesh = this.plane(canvas, p.w, p.h, { emissive: p.kind === 'title' ? 1.1 : 0.45, transparent });
-    mesh.position.copy(pos).addScaledVector(normal, 0.02);
+    mesh.position.copy(pos).addScaledVector(normal, 0.032);
     mesh.position.y = p.y;
     mesh.rotation.y = rotY;
     this.group.add(mesh);
     if (!transparent) {
       // dunne bronzen omlijsting
       const frame = new THREE.Mesh(new THREE.BoxGeometry(p.w + 0.06, p.h + 0.06, 0.03), new THREE.MeshStandardMaterial({ color: '#6c5434', roughness: 0.4, metalness: 0.8 }));
-      frame.position.copy(pos).addScaledVector(normal, 0.012);
+      frame.position.copy(pos).addScaledVector(normal, 0.01); // voorkant op 0,025 m: achter de tekst
       frame.position.y = p.y;
       frame.rotation.y = rotY;
       frame.receiveShadow = true;
@@ -166,7 +166,7 @@ export class Panels {
   }
 
   drawTimeline() {
-    const W = 4400, H = 700;
+    const W = 4096, H = 650;
     const [c, g] = makeCanvas(W, H);
     g.fillStyle = '#1b1a18'; g.fillRect(0, 0, W, H);
     g.fillStyle = '#c9a56a';
@@ -180,8 +180,8 @@ export class Panels {
       g.fillStyle = '#c9a56a';
       g.beginPath(); g.arc(x + 20, 200, 12, 0, Math.PI * 2); g.fill();
       g.fillStyle = '#f0e6d2';
-      g.font = `600 110px ${SERIF}`;
-      g.fillText(String(yr), x, 170);
+      g.font = `600 100px ${SERIF}`;
+      g.fillText(String(yr), x, 165);
       g.fillStyle = '#e3d6bd';
       g.font = `600 34px ${SANS}`;
       let y = 270;

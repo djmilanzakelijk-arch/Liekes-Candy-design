@@ -6,11 +6,7 @@
 [build.environment]
   NODE_VERSION = "22"
 
-# Eén pagina: onbekende paden sturen we terug naar de museumingang.
-[[redirects]]
-  from = "/*"
-  to = "/index.html"
-  status = 200
+# Onbekende paden tonen public/404.html, die terugverwijst naar de ingang.
 
 [[headers]]
   for = "/assets/*"

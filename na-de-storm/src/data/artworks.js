@@ -1218,7 +1218,6 @@ export const ARTWORKS = [
     size: { w: 113, h: 152, d: 76 },
     collection: 'Afgietsels o.a. in The Barclay School (Stevenage), Tate (Londen) en MoMA (New York)',
     type: 'beeld',
-    interpretation: { palette: ['#3d3226', '#6b5a43', '#8c7a5c'], scheme: 'figuratief' },
     texts: {
       zien: 'Een zittende man en vrouw houden samen een klein kind vast, dat tussen hen in op hun armen rust. De vormen zijn vereenvoudigd en rond; de figuren vormen samen één blok.',
       context: 'Moore werkte al sinds de oorlog aan het thema ‘familie’. Een eerste afgietsel kwam in 1950 bij The Barclay School in Stevenage, een van de eerste Britse ‘new towns’ die na de oorlog werden gebouwd. Het was zijn eerste grote brons met meerdere afgietsels.',

@@ -152,12 +152,18 @@ Netlify bouwt en publiceert dan **automatisch** de nieuwe versie (zie het tabbla
 
 ## Getest
 
-De tests zijn uitgevoerd met Playwright in headless Chromium (software-rendering, geen echte grafische kaart). Zie het overzicht in de opleveringsnotities. Belangrijk:
+Automatisch getest met Playwright in headless Chromium (`tests/browser-test.mjs`), op de productiebuild. Resultaat van de laatste run: **49 van 49 controles geslaagd, geen fouten of waarschuwingen in de console.** Getest is onder meer:
 
-- `npm install` en `npm run build` slagen zonder fouten.
-- Het volledige acceptatiescenario (lopen → werk aanklikken → camera vliegt erheen → info rechts → volgend werk → terug naar exact dezelfde positie → direct verder lopen) is automatisch getest.
-- Alle werken zijn één voor één geopend en gecontroleerd op juiste titel, acht tekstsecties en een geladen afbeelding.
-- **Niet getest:** echte prestaties op een laptop met GPU (de testomgeving heeft geen grafische kaart), Safari, en echte touchscreens.
+- **Installatie en build:** `npm ci` en `npm run build` slagen vanaf een schone kopie (0 kwetsbaarheden); alle 18 afbeeldingen komen in `dist/`.
+- **Gameplay:** startknop, W/A/S/D-lopen, camera op ooghoogte, botsing met muren en pilaren, door deuropeningen lopen, Esc → pauzemenu, ‘Terug naar de entree’, tour starten/stoppen, eindscherm, route opnieuw beginnen, terug naar het startscherm.
+- **Acceptatiescenario:** naar *Totes Meer* lopen → hint “Klik om dit werk van dichtbij te bekijken” → klikken → camera beweegt vloeiend dichterbij → juiste titel en informatie rechts, afbeelding links geladen → vergroten → *Volgend kunstwerk* wisselt beeld én tekst → *Terug naar het museum* zet de camera terug op exact dezelfde positie (afwijking 0,000 m) → direct verder lopen. Ook de **E-toets**, **Esc** en ‘klik op een muur opent niets’.
+- **Alle 43 werken** (39 uit 1940–1950 plus context, vergelijking en twee eigen werken) één voor één geopend: juiste titel, acht gevulde tekstsecties en een geladen afbeelding.
+- **Vensters:** plattegrond, tijdlijn (jaar 1944), instellingen vanuit het pauzemenu, quiz-feedback, lijstweergave zonder 3D (openen, volgend, sluiten, tijdlijn → werk).
+
+**Niet getest – eerlijk vermeld:**
+
+- De testomgeving heeft **geen grafische kaart** (software-rendering). Echte beeldsnelheid op een laptop is daarom niet gemeten; de scène is wel geoptimaliseerd (samengevoegde geometrie, ~330 draw calls, 5 lichtbronnen, statische schaduwkaart, verkleinde texturen) en heeft een kwaliteitsinstelling *laag*.
+- Echte **Pointer Lock**-ervaring met een muis, **geluid** (wel zonder fouten gestart), **Safari/Firefox** en **touchscreens** zijn niet handmatig getest. Probeer het museum daarom vóór de presentatie zelf even op de laptop die jullie gebruiken.
 
 ## Bekende beperkingen
 

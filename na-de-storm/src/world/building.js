@@ -10,7 +10,7 @@ import {
 // Bouwt de architectuur: vloeren, muren met doorgangen, plafonds, wanden,
 // banken, pilaren, ramen en het uitzicht. Registreert ook alle botsvlakken.
 
-const WALL_TILE = 2.2;
+const WALL_TILE = 3.6;
 
 function scaleUV(geo, su, sv) {
   const uv = geo.attributes.uv;

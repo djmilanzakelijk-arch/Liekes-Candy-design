@@ -231,7 +231,7 @@ export class ArtworkPresenter {
     x.fillStyle = '#f5f2ea'; x.fillRect(0, 0, 600, 400);
     x.fillStyle = '#1c1b19';
     let y = 62;
-    const tag = STATUS_TAG[art.status] || (art.interpretation ? 'KLEURNOTITIE · geen reproductie' : '');
+    const tag = STATUS_TAG[art.status] || (art.type === 'beeld' ? 'RUIMTELIJKE IMPRESSIE · geen replica' : art.interpretation ? 'KLEURNOTITIE · geen reproductie' : '');
     if (tag) {
       x.font = '700 22px "Inter Variable", Arial, sans-serif';
       x.fillStyle = art.status === 'eigen' ? '#8a5a1a' : '#7a3b2e';
@@ -274,20 +274,26 @@ export class ArtworkPresenter {
     // Ruimtelijke impressie: drie afgeronde volumes, uitdrukkelijk geen replica.
     const bronze = this.frameMats.bronze;
     const form = new THREE.Group();
-    const cap = (r, len, x, y, z, rx = 0, rz = 0) => {
-      const m = new THREE.Mesh(new THREE.CapsuleGeometry(r, len, 8, 20), bronze);
-      m.position.set(x, y, z); m.rotation.set(rx, 0, rz);
+    const part = (geo, x, y, z, rx = 0, ry = 0, rz = 0, sx = 1, sy = 1, sz = 1) => {
+      const m = new THREE.Mesh(geo, bronze);
+      m.position.set(x, y, z); m.rotation.set(rx, ry, rz); m.scale.set(sx, sy, sz);
       m.castShadow = true; m.receiveShadow = true;
       form.add(m);
     };
-    cap(0.17, 0.62, -0.3, 0.62, 0, 0, 0.08);
-    cap(0.16, 0.55, 0.3, 0.58, 0, 0, -0.08);
-    cap(0.1, 0.18, 0, 0.62, 0.08, 0, Math.PI / 2);
-    cap(0.08, 0.5, 0, 0.36, 0.05, 0, Math.PI / 2);
-    const base = new THREE.Mesh(new THREE.BoxGeometry(1.0, 0.08, 0.7), bronze);
-    base.position.y = 0.04;
-    base.castShadow = true;
-    form.add(base);
+    const sphere = new THREE.SphereGeometry(1, 32, 20);
+    // zitblok
+    part(new THREE.BoxGeometry(1.0, 0.3, 0.46), 0, 0.15, -0.05);
+    for (const side of [-1, 1]) {
+      // romp (licht naar elkaar toe gebogen), hoofd en benen
+      part(sphere, side * 0.27, 0.74, -0.04, 0, 0, side * -0.12, 0.17, 0.4, 0.15);
+      part(sphere, side * 0.3, 1.2, -0.02, 0, 0, 0, 0.085, 0.1, 0.085);
+      part(new THREE.CapsuleGeometry(0.075, 0.28, 6, 16), side * 0.3, 0.36, 0.2, Math.PI / 2 - 0.25);
+      part(new THREE.CapsuleGeometry(0.06, 0.32, 6, 16), side * 0.3, 0.14, 0.4, 0.1);
+    }
+    // de armen vormen samen een boog die het kind draagt
+    part(new THREE.TorusGeometry(0.26, 0.045, 12, 40, Math.PI), 0, 0.78, 0.1, Math.PI * 0.08, 0, Math.PI);
+    part(new THREE.CapsuleGeometry(0.075, 0.16, 6, 16), 0, 0.62, 0.12, 0, 0, Math.PI / 2);
+    part(sphere, 0.15, 0.64, 0.12, 0, 0, 0, 0.065, 0.065, 0.065);
     form.position.y = plinthH;
     form.scale.setScalar(1.05);
     g.add(form);
@@ -316,7 +322,7 @@ export class ArtworkPresenter {
     const x = c.getContext('2d');
     x.fillStyle = '#efece6'; x.fillRect(0, 0, 1000, 100);
     x.fillStyle = '#5d5850';
-    x.font = '600 40px "Inter Variable", Arial, sans-serif';
+    x.font = '600 32px "Inter Variable", Arial, sans-serif';
     x.textAlign = 'center';
     x.fillText(text, 500, 64);
     const tex = new THREE.CanvasTexture(c);

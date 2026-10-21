@@ -93,7 +93,7 @@ export class Game {
     this.art.items.set('eigen-installatie', {
       art: ART_BY_ID['eigen-installatie'], room: 'finale', installation: true,
       center: new THREE.Vector3(ROOM_BY_ID.finale.installation.x, 3.2, ROOM_BY_ID.finale.installation.z),
-      normal: new THREE.Vector3(0, 0, -1), w: 6.4, h: 6.2, loaded: true
+      normal: new THREE.Vector3(-1, 0, 0), w: 6.4, h: 6.2, loaded: true
     });
 
     step(0.5, 'Licht en schaduw instellen…');
@@ -181,6 +181,7 @@ export class Game {
     $('#hud-progress').addEventListener('click', () => this.openModal('collection'));
     $('#hud-sound').addEventListener('click', () => this.toggleSound());
     $('#hud-fullscreen').addEventListener('click', () => this.toggleFullscreen());
+    $('#minimap').addEventListener('click', () => this.openModal('map'));
 
     this.input.on('lockchange', (locked) => {
       $('#resume-hint').hidden = locked || this.state !== 'play' || this.settings.dragLook;
@@ -401,7 +402,7 @@ export class Game {
 
   panelAction(p, uv) {
     if (p.action === 'timeline') {
-      const i = uv ? Math.min(TIMELINE_YEARS.length - 1, Math.max(0, Math.floor(((uv.x * 4400 - 60) / (4280)) * TIMELINE_YEARS.length))) : 0;
+      const i = uv ? Math.min(TIMELINE_YEARS.length - 1, Math.max(0, Math.floor(((uv.x * 4096 - 60) / (4096 - 120)) * TIMELINE_YEARS.length))) : 0;
       this.openModal('timeline', TIMELINE_YEARS[i]);
     } else if (p.action === 'room') this.openModal('room', p.room);
     else this.openModal(p.action);
@@ -432,7 +433,7 @@ export class Game {
     const twoPane = !centered && window.innerWidth >= 900;
     const narrow = !centered && !twoPane;
     if (item.sculpture || item.installation) {
-      const dist = item.installation ? 13 : 3.2;
+      const dist = item.installation ? 10.5 : 3.2;
       const pos = item.center.clone().addScaledVector(item.normal, dist);
       pos.y = item.installation ? 2.4 : 1.6;
       const target = item.center.clone();

@@ -69,8 +69,8 @@ export const ROOMS = [
     height: 5.2,
     theme: {
       wall: '#34383c', wallRough: 0.95, floor: 'oak-dark', floorColor: '#2d241c',
-      ceiling: 'track', ceilingColor: '#17181a', trim: '#6f7276',
-      ambient: 0.32, key: 0.8, keyColor: '#dfe6ff', wash: '#e8ecff', washStrength: 1.0,
+      ceiling: 'track', ceilingColor: '#2a2c2f', trim: '#6f7276',
+      ambient: 0.4, key: 0.8, keyColor: '#dfe6ff', wash: '#e8ecff', washStrength: 1.0,
       fog: '#0b0c0e', mood: 'crisis'
     },
     partitions: [{ id: 'p1', cx: 0, cz: -7, len: 9, rot: 0, h: 3.8 }],
@@ -97,7 +97,7 @@ export const ROOMS = [
     height: 5.6,
     theme: {
       wall: '#57524c', wallRough: 0.95, floor: 'oak', floorColor: '#5a4632',
-      ceiling: 'track', ceilingColor: '#2a2826', trim: '#8a7a64',
+      ceiling: 'track', ceilingColor: '#3a3734', trim: '#8a7a64',
       ambient: 0.45, key: 0.95, keyColor: '#fff0dc', wash: '#ffe6c4', washStrength: 0.95,
       fog: '#14110e', mood: 'mens'
     },

@@ -47,10 +47,14 @@ function softBlob(g, x, y, rad, rgb, alpha) {
 export function plasterTexture(base, seed = 1) {
   const S = 512, c = canvas(S, S), g = c.getContext('2d'), r = rng(seed);
   g.fillStyle = base; g.fillRect(0, 0, S, S);
-  for (let i = 0; i < 160; i++) {
-    const x = r() * S, y = r() * S, rad = 40 + r() * 140;
-    // ook net over de rand tekenen, zodat de tegel naadloos herhaalt
-    for (const [dx, dy] of [[0, 0], [S, 0], [-S, 0], [0, S], [0, -S]]) softBlob(g, x + dx, y + dy, rad, r() > 0.5 ? '255,255,255' : '0,0,0', 0.018);
+  // lichte muren tonen variatie sterker; daarom minder contrast op licht pleister
+  const lum = new THREE.Color(base).getHSL({}).l;
+  const alpha = lum > 0.6 ? 0.007 : 0.012;
+  for (let i = 0; i < 220; i++) {
+    const x = r() * S, y = r() * S, rad = 30 + r() * 110;
+    const rgb = r() > 0.5 ? '255,255,255' : '0,0,0';
+    // ook over de randen tekenen, zodat de tegel naadloos herhaalt
+    for (const dx of [-S, 0, S]) for (const dy of [-S, 0, S]) softBlob(g, x + dx, y + dy, rad, rgb, alpha);
   }
   const img = g.getImageData(0, 0, S, S);
   for (let i = 0; i < img.data.length; i += 4) {

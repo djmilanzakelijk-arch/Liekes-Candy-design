@@ -305,7 +305,7 @@ textarea { width: 100%; background: #22201d; border: 1px solid var(--line); bord
 .tour-text { font: 500 1.2em/1.45 var(--serif); margin: 0 0 0.8em; }
 
 /* ───── lijstweergave ───── */
-#gallery2d { position: fixed; inset: 0; overflow-y: auto; z-index: 28; background: #0e0d0b; padding: 32px clamp(16px, 5vw, 64px) 64px; }
+#gallery2d { position: fixed; inset: 0; overflow-y: auto; z-index: 16; background: #0e0d0b; padding: 32px clamp(16px, 5vw, 64px) 64px; }
 .g2d-head { display: flex; flex-wrap: wrap; justify-content: space-between; align-items: flex-end; gap: 1em; border-bottom: 1px solid var(--line); padding-bottom: 1.4em; }
 .g2d-room h2 { font: 600 2em var(--serif); margin: 1.6em 0 0.2em; }
 .g2d-grid { list-style: none; padding: 0; display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 14px; }

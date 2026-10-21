@@ -132,6 +132,7 @@ export class DetailView {
         <div><dt>Collectie</dt><dd>${esc(art.collection)}</dd></div>
       </dl>
       ${art.interpretation ? `<div class="notice"><strong>Waarom zie je een kleurnotitie?</strong> Dit werk is nog auteursrechtelijk beschermd. We tonen daarom geen reproductie, maar een duidelijk gelabelde abstracte samenvatting. ${art.rightsNote ? esc(art.rightsNote) + ' ' : ''}${firstSource ? `Bekijk het origineel: ${link(firstSource.url, firstSource.label)}.` : ''}</div>` : ''}
+      ${art.type === 'beeld' ? `<div class="notice"><strong>Waarom zie je een ruimtelijke impressie?</strong> Dit beeld is nog auteursrechtelijk beschermd. Op de sokkel staat daarom een abstracte vorm van de curatoren, geen replica. ${firstSource ? `Bekijk het origineel: ${link(firstSource.url, firstSource.label)}.` : ''}</div>` : ''}
       ${sec(1, 'Wat zie je?', 'BESCHRIJVING', t.zien)}
       ${sec(2, 'Wie maakte het en wanneer?', 'FEIT', maker)}
       ${sec(3, 'Historische context', art.status === 'eigen' ? 'KEUZE' : 'FEIT', t.context)}

@@ -390,6 +390,7 @@ function badge(a) {
   if (a.status === 'context') return ' <span class="badge">context · vóór 1940</span>';
   if (a.status === 'vergelijking') return ' <span class="badge">latere vergelijking</span>';
   if (a.status === 'eigen') return ' <span class="badge gold">eigen werk</span>';
+  if (a.type === 'beeld') return ' <span class="badge muted">ruimtelijke impressie</span>';
   if (a.interpretation) return ' <span class="badge muted">kleurnotitie</span>';
   return '';
 }
