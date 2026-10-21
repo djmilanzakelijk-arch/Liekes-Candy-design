@@ -154,7 +154,7 @@ Netlify bouwt en publiceert dan **automatisch** de nieuwe versie (zie het tabbla
 
 Automatisch getest met Playwright in headless Chromium (`tests/browser-test.mjs`), op de productiebuild. Resultaat van de laatste run: **49 van 49 controles geslaagd, geen fouten of waarschuwingen in de console.** Getest is onder meer:
 
-- **Installatie en build:** `npm ci` en `npm run build` slagen vanaf een schone kopie (0 kwetsbaarheden); alle 18 afbeeldingen komen in `dist/`.
+- **Installatie en build:** `npm ci` en `npm run build` slagen vanaf een schone kopie (0 kwetsbaarheden); alle 41 afbeeldingen komen in `dist/`.
 - **Gameplay:** startknop, W/A/S/D-lopen, camera op ooghoogte, botsing met muren en pilaren, door deuropeningen lopen, Esc → pauzemenu, ‘Terug naar de entree’, tour starten/stoppen, eindscherm, route opnieuw beginnen, terug naar het startscherm.
 - **Acceptatiescenario:** naar *Totes Meer* lopen → hint “Klik om dit werk van dichtbij te bekijken” → klikken → camera beweegt vloeiend dichterbij → juiste titel en informatie rechts, afbeelding links geladen → vergroten → *Volgend kunstwerk* wisselt beeld én tekst → *Terug naar het museum* zet de camera terug op exact dezelfde positie (afwijking 0,000 m) → direct verder lopen. Ook de **E-toets**, **Esc** en ‘klik op een muur opent niets’.
 - **Alle 43 werken** (39 uit 1940–1950 plus context, vergelijking en twee eigen werken) één voor één geopend: juiste titel, acht gevulde tekstsecties en een geladen afbeelding.
