@@ -15,7 +15,7 @@ Een interactief **3D-museum in de browser**, gemaakt voor CKV Beeldend (4 vwo) d
 |---|---|
 | **7 ruimtes** | Entree · Zaal 1 *Een wereld in crisis* · Zaal 2 *De mens achter de geschiedenis* · Zaal 3 *Dromen, symbolen en het onderbewuste* · Zaal 4 *Een nieuwe beeldtaal* · Zaal 5 *Op weg naar een andere toekomst* · Finale *Wat bouwen we opnieuw op?* |
 | **39 werken uit 1940–1950** | 7 tot 9 per zaal, elk met titel, maker, jaar, techniek, afmetingen, collectie en acht vaste vragen (wat zie je, wie/wanneer, context, beeldaspecten, betekenis, waarom deze zaal, wat zegt het over 1940–1950, bron). |
-| **Beeldrechten** | 18 echte afbeeldingen (publiek domein of vrij gelicenseerd). Werken die nog beschermd zijn, tonen we als duidelijk gelabelde **kleurnotitie** (geen reproductie) met een link naar het museum. |
+| **Afbeeldingen** | Alle 41 werken met hun echte afbeelding. 18 zijn publiek domein of vrij gelicenseerd; 23 zijn nog auteursrechtelijk beschermd en worden getoond als citaat voor onderwijsdoeleinden, met maker, collectie, herkomst en ©-vermelding. |
 | **First-person** | WASD/pijltjes, muis met Pointer Lock (of slepen), Shift rennen, botsingen met muren, wanden, pilaren, banken en sokkels. |
 | **Inzoomen** | Klik op een werk (of druk **E**): de camera vliegt vloeiend en om muren heen naar het werk; links het beeld, rechts de informatie; vorig/volgend werk; vergroten met zoomen en verschuiven; terug naar exact je oude positie. |
 | **Educatieve laag** | Zaalteksten met begrippen, interactieve tijdlijn 1940–1950, quiz, reflectie, eindscherm met inzichten, bronnenpagina, credits, labels FEIT / INTERPRETATIE / KEUZE. |
@@ -167,7 +167,9 @@ Automatisch getest met Playwright in headless Chromium (`tests/browser-test.mjs`
 
 ## Bekende beperkingen
 
-- Werken die nog auteursrechtelijk beschermd zijn (o.a. Pollock, Rothko, Picasso, Hopper, Kahlo) tonen we als **kleurnotitie**, niet als afbeelding. Wil je ze in de klas laten zien, gebruik dan de link naar het museum.
+- **Auteursrecht.** 23 werken (o.a. Pollock, Rothko, Picasso, Hopper, Kahlo) zijn nog beschermd. Op verzoek van de groep tonen we ze toch, als citaat voor onderwijsdoeleinden met bronvermelding. Let op: de onderwijsuitzondering in de Auteurswet is bedoeld voor gebruik *in de les*; een openbare website valt daar strikt genomen buiten. De site vraagt zoekmachines daarom om haar niet te indexeren (`robots.txt`, `noindex`). Het veiligst is de link alleen met je docent en klas te delen. Wil je toch volledig rechtenvrij publiceren, dan kunnen de oude ‘kleurnotities’ terug (de code ondersteunt `interpretation` nog).
+- Een aantal beschermde afbeeldingen is in **lage resolutie** beschikbaar (bijv. Autumn Rhythm, Magritte, Krasner, Lawrence) en ziet er van dichtbij wat zachter uit.
+- Bij **Krasner, Appel en Léger** konden we niet met zekerheid vaststellen dat de afbeelding precies het genoemde museumexemplaar toont; dat staat bij het werk vermeld.
 - De foto van Nash valt onder CC BY-NC-ND 3.0: alleen niet-commercieel gebruik, met naamsvermelding (zoals op deze site).
 - De 3D-ervaring is gemaakt voor laptop en computer. Op telefoons werkt een eenvoudige aanraakbediening, maar de **lijstweergave** is daar prettiger.
 - Pointer Lock werkt niet in elke browser (bijvoorbeeld in sommige ingesloten vensters); dan kijk je rond door te slepen.

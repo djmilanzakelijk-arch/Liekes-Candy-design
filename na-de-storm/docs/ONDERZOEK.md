@@ -54,57 +54,55 @@ Van *getuigen en verbeelden* naar *uitdrukken en opbouwen*. De verandering komt 
 
 ## 3. Selectie per zaal
 
-Status: **P** = publiek domein / vrij beeld getoond · **K** = kleurnotitie (werk nog beschermd, geen reproductie) · **R** = ruimtelijke impressie (geen replica).
+Status: **P** = publiek domein / vrij beeld · **C** = beschermd werk, getoond als citaat voor onderwijsdoeleinden met bronvermelding · **R** = in de zaal een ruimtelijke impressie (geen replica), in de detailweergave een foto.
 
 | Zaal | Werk | Maker | Jaar | Collectie | Beeld |
 |---|---|---|---|---|---|
-| Entree (context) | Guernica | Picasso | 1937 | Museo Reina Sofía | K |
+| Entree (context) | Guernica | Picasso | 1937 | Museo Reina Sofía | C |
 | 1 | Tod und Feuer | Paul Klee | 1940 | Zentrum Paul Klee | P |
 | 1 | Totes Meer | Paul Nash | 1940–1941 | Tate | P (foto Tate CC BY-NC-ND) |
-| 1 | Pink and Green Sleepers | Henry Moore | 1941 | Tate | K |
+| 1 | Pink and Green Sleepers | Henry Moore | 1941 | Tate | C |
 | 1 | This Is Nazi Brutality | Ben Shahn | 1942 | NARA / USHMM | P |
 | 1 | Triumph des Todes | Felix Nussbaum | 1944 | Felix-Nussbaum-Haus | P (NL/EU) |
 | 1 | Into the Jaws of Death | Robert F. Sargent | 1944 | NARA | P |
-| 1 | Le Charnier | Picasso | 1944–1945 | MoMA | K |
+| 1 | Le Charnier | Picasso | 1944–1945 | MoMA | C |
 | 1 | Atomic Cloud over Nagasaki | Charles Levy | 1945 | NARA | P |
 | 2 | “I Am an American” | Dorothea Lange | 1942 | LOC / NARA | P |
 | 2 | Familie Mochida | Dorothea Lange | 1942 | NARA | P |
 | 2 | Louise Tami Nakamura | Ansel Adams | 1943 | LOC | P (geen bekende beperkingen) |
 | 2 | American Gothic | Gordon Parks | 1942 | LOC | P |
 | 2 | Selbstbildnis mit Judenpass | Felix Nussbaum | ca. 1943 | Felix-Nussbaum-Haus | P (NL/EU) |
-| 2 | Migration Series, panel 1 | Jacob Lawrence | 1940–1941 | Phillips Collection | K |
-| 2 | Leben? oder Theater? | Charlotte Salomon | 1940–1942 | Joods Museum Amsterdam | K* |
-| 2 | Nighthawks | Edward Hopper | 1942 | Art Institute of Chicago | K |
+| 2 | Migration Series, panel 1 | Jacob Lawrence | 1940–1941 | Phillips Collection | C |
+| 2 | Leben? oder Theater? | Charlotte Salomon | 1940–1942 | Joods Museum Amsterdam | P (NL; titelblad) |
+| 2 | Nighthawks | Edward Hopper | 1942 | Art Institute of Chicago | C |
 | 2 | Tussen de klok en het bed | Edvard Munch | 1940–1943 | Munchmuseet | P |
 | 3 | Bleu de ciel | Kandinsky | 1940 | Centre Pompidou | P |
-| 3 | Europe after the Rain II | Max Ernst | 1940–1942 | Wadsworth Atheneum | K |
-| 3 | The Escape Ladder | Joan Miró | 1940 | MoMA | K |
-| 3 | Birthday | Dorothea Tanning | 1942 | Philadelphia Museum of Art | K |
-| 3 | The Jungle | Wifredo Lam | 1943 | MoMA | K |
-| 3 | The Broken Column | Frida Kahlo | 1944 | Museo Dolores Olmedo | K |
-| 3 | The Empire of Light, II | Magritte | 1950 | MoMA | K |
+| 3 | Europe after the Rain II | Max Ernst | 1940–1942 | Wadsworth Atheneum | C |
+| 3 | The Escape Ladder | Joan Miró | 1940 | MoMA | C |
+| 3 | Birthday | Dorothea Tanning | 1942 | Philadelphia Museum of Art | C |
+| 3 | The Jungle | Wifredo Lam | 1943 | MoMA | C |
+| 3 | The Broken Column | Frida Kahlo | 1944 | Museo Dolores Olmedo | C |
+| 3 | The Empire of Light, II | Magritte | 1950 | MoMA | C |
 | 3 | The Liver Is the Cock’s Comb | Arshile Gorky | 1944 | Buffalo AKG | P |
 | 4 | Broadway Boogie Woogie | Mondriaan | 1942–1943 | MoMA | P |
-| 4 | The She-Wolf | Pollock | 1943 | MoMA | K |
-| 4 | Autumn Rhythm (Number 30) | Pollock | 1950 | The Met | K |
-| 4 | Untitled (Little Image) | Lee Krasner | 1949 | MoMA | K |
-| 4 | Excavation | Willem de Kooning | 1950 | Art Institute of Chicago | K |
-| 4 | No. 3/No. 13 | Mark Rothko | 1949 | MoMA | K |
-| 4 | Onement I | Barnett Newman | 1948 | MoMA | K |
+| 4 | The She-Wolf | Pollock | 1943 | MoMA | C |
+| 4 | Autumn Rhythm (Number 30) | Pollock | 1950 | The Met | C |
+| 4 | Untitled (Little Image) | Lee Krasner | 1949 | MoMA | C |
+| 4 | Excavation | Willem de Kooning | 1950 | Art Institute of Chicago | C |
+| 4 | No. 3/No. 13 | Mark Rothko | 1949 | MoMA | C |
+| 4 | Onement I | Barnett Newman | 1948 | MoMA | C |
 | 5 | Victory Boogie Woogie | Mondriaan | 1942–1944 | Kunstmuseum Den Haag | P (NL/EU) |
-| 5 | Icarus (Jazz) | Matisse | 1947 | MoMA / The Met | K |
-| 5 | Les Constructeurs | Fernand Léger | 1950 | Musée national Fernand Léger | K |
-| 5 | Vragende kinderen | Karel Appel | 1949 | Stedelijk Museum Amsterdam | K |
+| 5 | Icarus (Jazz) | Matisse | 1947 | MoMA / The Met | C |
+| 5 | Les Constructeurs | Fernand Léger | 1950 | Musée national Fernand Léger | C |
+| 5 | Vragende kinderen | Karel Appel | 1949 | Stedelijk Museum Amsterdam | C |
 | 5 | All Our Colours to the Mast | Reyn Dirksen | 1950 | o.a. Marshall Foundation | P (Amerikaanse overheid) |
-| 5 | LCW | Charles en Ray Eames | 1945–1946 | o.a. AIC, V&A | K |
-| 5 | Family Group | Henry Moore | 1948–1949 | o.a. Tate, MoMA | R |
+| 5 | LCW | Charles en Ray Eames | 1945–1946 | o.a. AIC, V&A | C |
+| 5 | Family Group | Henry Moore | 1948–1949 | o.a. Tate, MoMA | R + C (foto) |
 | 5 (vergelijking) | De verwoeste stad | Ossip Zadkine | 1951–1953 | Rotterdam | foto CC BY 3.0 (panoramavrijheid) |
 
 Elke inhoudelijke zaal heeft minimaal **zes** werken uit 1940–1950 (zaal 1: 8, zaal 2: 9, zaal 3: 8, zaal 4: 7, zaal 5: 7). *Guernica* (context) en *De verwoeste stad* (vergelijking) tellen niet mee.
 
-\* *Salomon:* in Nederland publiek domein; over de Amerikaanse status bestaat onduidelijkheid, daarom een kleurnotitie.
-
-**Waarom kleurnotities?** Werken van kunstenaars die na 1955 overleden, zijn in Nederland nog auteursrechtelijk beschermd (70 jaar na de dood). Een publieke website mag die niet zomaar reproduceren. We verzinnen geen afbeelding en doen niet alsof iets het origineel is: de kleurnotitie is een abstracte samenvatting, met het label ‘geen reproductie’ in het beeld zelf, en een link naar de museumpagina met het echte werk.
+**Beschermde werken (C).** Werken van kunstenaars die na 1955 overleden, zijn in Nederland nog auteursrechtelijk beschermd (70 jaar na de dood). Op verzoek van de groep tonen we ze toch, als citaat voor onderwijsdoeleinden: niet-commercieel, met maker, titel, collectie en herkomst van de afbeelding, en zonder te beweren dat de afbeelding van ons is. De onderwijsuitzondering (art. 16 Auteurswet) is bedoeld voor gebruik in de les; een openbare website valt daar strikt genomen buiten. Daarom vraagt de site zoekmachines haar niet te indexeren, en adviseren we de link alleen met de docent en de klas te delen. Herkomst: WikiArt, Tate, Philadelphia Museum of Art, Wikipedia (niet-vrije bestanden) en Wikimedia Commons. Elk beeld is visueel vergeleken met het genoemde werk; bij Krasner, Appel en Léger is niet zeker dat het om precies het genoemde museumexemplaar gaat.
 
 ---
 
@@ -131,7 +129,9 @@ Elke inhoudelijke zaal heeft minimaal **zes** werken uit 1940–1950 (zaal 1: 8,
 | dirksen-marshall.jpg | George C. Marshall Foundation via Commons | PD volgens Commons (Amerikaanse overheidsuitgave, ECA) |
 | zadkine-stad.jpg | F. Eveleens via Commons | foto CC BY 3.0 / GFDL; beeld beschermd, toegestaan via panoramavrijheid (art. 18 Auteurswet) |
 
-Alle overige beelden (architectuur, kleurnotities, installatie, studie) zijn in code gemaakt voor dit project. Geluid wordt live gegenereerd; er is geen bestaande muziek gebruikt.
+**Beschermde werken (23 bestanden):** herkomst en ©-vermelding staan per werk in de site (bronnenpagina en detailweergave), en in `src/data/artworks.js`.
+
+Alle overige beelden (architectuur, installatie, studie) zijn in code gemaakt voor dit project. Geluid wordt live gegenereerd; er is geen bestaande muziek gebruikt.
 
 ---
 

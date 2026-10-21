@@ -55,7 +55,7 @@ export const ABOUT = {
     {
       h: 'Hoe lees je dit museum?',
       tag: 'UITLEG',
-      p: 'Bij elk werk zie je labels: FEIT (historisch gecontroleerd), INTERPRETATIE (een mogelijke lezing) en KEUZE (onze curatoriële keuze of mening). Sommige werken zijn nog auteursrechtelijk beschermd. Die tonen we niet als afbeelding, maar als een duidelijk gelabelde KLEURNOTITIE: een abstracte samenvatting van het kleurgebruik en de compositie, gemaakt door de curatoren. Dat is uitdrukkelijk geen reproductie. Via de bronnen bij elk werk bekijk je het origineel op de website van het museum.'
+      p: 'Bij elk werk zie je labels: FEIT (historisch gecontroleerd), INTERPRETATIE (een mogelijke lezing) en KEUZE (onze curatoriële keuze of mening). Veel werken uit deze periode zijn nog auteursrechtelijk beschermd. Wij tonen ze als citaat voor onderwijsdoeleinden: voor een niet-commercieel schoolproject, met de naam van de maker, de collectie en de bron van de afbeelding. De rechten blijven bij de rechthebbenden. Bij het beeld van Henry Moore staat in de zaal een abstracte ruimtelijke impressie; in de detailweergave zie je een foto van het echte beeld.'
     }
   ]
 };

@@ -35,7 +35,12 @@ export const ARTWORKS = [
     size: { w: 776.6, h: 349.3 },
     collection: 'Museo Nacional Centro de Arte Reina Sofía, Madrid',
     type: 'schilderij',
-    interpretation: { palette: ['#141414', '#4d4d4b', '#8f8e89', '#cfccc4', '#efede6'], scheme: 'scherven' },
+    image: {
+      file: 'picasso-guernica.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Pablo Picasso. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/pablo-picasso/guernica-1937'
+    },
     texts: {
       zien: 'Een breed, bijna kleurloos doek vol schreeuwende mensen en dieren: een stier, een stervend paard, een moeder met een dood kind in haar armen, een gevallen soldaat met een gebroken zwaard en een vrouw die met een lamp naar binnen leunt. Bovenin hangt een lamp in de vorm van een oog.',
       context: 'Op 26 april 1937, tijdens de Spaanse Burgeroorlog, bombardeerde het Duitse Legioen Condor het Baskische stadje Guernica. Picasso schilderde het doek binnen enkele weken voor het Spaanse paviljoen van de Wereldtentoonstelling van 1937 in Parijs.',
@@ -130,7 +135,12 @@ export const ARTWORKS = [
     size: { w: 56, h: 38 },
     collection: 'Tate, Londen (N05713), geschonken door de War Artists’ Advisory Committee in 1946',
     type: 'tekening',
-    interpretation: { palette: ['#2b2c2a', '#5f6e5c', '#8fa08a', '#c9a19a', '#e3d9c6'], scheme: 'figuratief' },
+    image: {
+      file: 'moore-sleepers.jpg',
+      credit: 'Foto © Tate',
+      license: '© de rechthebbenden van Henry Moore. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.tate.org.uk/art/artworks/moore-pink-and-green-sleepers-n05713'
+    },
     texts: {
       zien: 'Twee mensen liggen naast elkaar te slapen onder dekens, hun hoofden achterover gekanteld. Hun lichamen zijn opgebouwd uit vele kleine lijntjes, alsof ze uit steen zijn gehouwen. Roze en groene tinten geven kleur aan het verder donkere blad.',
       context: 'Tijdens de Blitz (september 1940 – mei 1941) zochten duizenden Londenaren ’s nachts beschutting in de metrostations. Henry Moore werkte als oorlogskunstenaar, maakte daar schetsen en werkte ze later uit tot zijn bekende ‘Shelter Drawings’ (schuilkelder-tekeningen).',
@@ -260,7 +270,12 @@ export const ARTWORKS = [
     size: { w: 250.1, h: 199.8 },
     collection: 'The Museum of Modern Art (MoMA), New York (93.1971)',
     type: 'schilderij',
-    interpretation: { palette: ['#121212', '#3f3f3d', '#7b7a76', '#b8b6af', '#ebe8e0'], scheme: 'scherven' },
+    image: {
+      file: 'picasso-charnel.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Pablo Picasso. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/pablo-picasso/the-charnel-house-1945'
+    },
     texts: {
       zien: 'Onder een tafel met een kan en een pan ligt een stapel verwrongen lichamen; handen lijken vastgebonden. Delen van het doek zijn onaf: je ziet houtskoollijnen en kale stukken doek zonder kleur.',
       context: 'Picasso bleef tijdens de Duitse bezetting in Parijs. Het werk ontstond in 1944–1945, toen de eerste berichten en beelden van massamoorden en concentratiekampen naar buiten kwamen. Het wordt vaak gezien als tegenhanger van Guernica (1937), dat in de entree hangt.',
@@ -491,7 +506,12 @@ export const ARTWORKS = [
     size: { w: 45.7, h: 30.5 },
     collection: 'The Phillips Collection, Washington (de oneven panelen); de even panelen zijn van het MoMA',
     type: 'schilderij',
-    interpretation: { palette: ['#3a2a20', '#6e4a30', '#c99a3e', '#2f5d7c', '#7a8a4a', '#e8dcc2'], scheme: 'vlakken' },
+    image: {
+      file: 'lawrence-migration.jpg',
+      credit: 'Wikipedia (niet-vrij bestand)',
+      license: '© de rechthebbenden van Jacob Lawrence. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://en.wikipedia.org/wiki/File:Migration_Series_Panel_1.jpg'
+    },
     texts: {
       zien: 'Een grote menigte mensen met koffers en bundels haast zich naar drie doorgangen in een treinstation. Boven de doorgangen staan de namen van steden in het noorden: Chicago, New York en St. Louis.',
       context: 'De serie van zestig panelen vertelt over de Grote Migratie: vanaf ongeveer 1915 trokken honderdduizenden Afro-Amerikanen van het zuiden naar de steden in het noorden van de VS, op zoek naar werk en minder discriminatie. Lawrence was begin twintig toen hij de serie maakte. In 1942 kochten de Phillips Collection en het MoMA elk de helft.',
@@ -519,7 +539,12 @@ export const ARTWORKS = [
     size: { w: 32.5, h: 25 },
     collection: 'Joods Museum, Amsterdam (geschonken door Paula en Albert Salomon, 1971)',
     type: 'schilderij',
-    interpretation: { palette: ['#2f4f9a', '#d64a35', '#f0c34a', '#5f9a62', '#f1e8d6'], scheme: 'vlakken' },
+    image: {
+      file: 'salomon-leben.jpg',
+      credit: 'Joods Museum Amsterdam, via Wikimedia Commons',
+      license: 'Publiek domein in Nederland (maker overleed in 1943) Getoond: het titelblad van de reeks.',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Charlotte_Salomon_-_JHM_4155.jpg'
+    },
     texts: {
       zien: 'Geen enkel schilderij, maar een lange reeks genummerde gouaches in felle kleuren. Beelden, tekst en aanwijzingen voor muziek lopen door elkaar. Figuren komen vaak meerdere keren op één blad voor, alsof je naar een filmstrip kijkt.',
       context: 'Salomon, een jonge Duits-joodse kunstenares uit Berlijn, vluchtte in 1939 naar Zuid-Frankrijk. Daar maakte ze in korte tijd dit autobiografische werk over haar familie en haar eigen leven. In 1943 werd ze naar Auschwitz gedeporteerd en vermoord; ze was zwanger.',
@@ -528,7 +553,6 @@ export const ARTWORKS = [
       zaal: 'Onze keuze: dit werk geeft de zaal een Nederlandse verbinding, want het wordt bewaard in Amsterdam. Het hangt tegenover Nussbaum: twee joodse kunstenaars die in ballingschap hun eigen verhaal vastlegden.',
       periode: 'Kunst werd voor vervolgde kunstenaars een manier om herinnering te bewaren toen hun bestaan werd bedreigd.'
     },
-    rightsNote: 'Salomon overleed in 1943; in Nederland zijn haar werken publiek domein. Over de Amerikaanse rechtenstatus bestaat onduidelijkheid; omdat deze website wereldwijd bereikbaar is, tonen we een kleurnotitie.',
     sources: [
       { label: 'Jüdisches Museum Berlin – Charlotte Salomon. Life? or Theatre?', url: 'https://www.jmberlin.de/charlottesalomon/en' },
       { label: 'Joods Museum Amsterdam (Joods Cultureel Kwartier)', url: 'https://jck.nl' }
@@ -548,7 +572,12 @@ export const ARTWORKS = [
     size: { w: 152.4, h: 84.1 },
     collection: 'Art Institute of Chicago (1942.51), Friends of American Art Collection',
     type: 'schilderij',
-    interpretation: { palette: ['#13241f', '#264a40', '#e6e1a6', '#b5463a', '#3a3a40', '#c9b48a'], scheme: 'figuratief' },
+    image: {
+      file: 'hopper-nighthawks.jpg',
+      credit: 'Art Institute of Chicago, via Wikimedia Commons',
+      license: '© de rechthebbenden van Edward Hopper. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Nighthawks_by_Edward_Hopper_1942.jpg'
+    },
     texts: {
       zien: '’s Nachts zitten drie klanten aan de bar van een eethuis op een straathoek; een man in het wit werkt achter de bar. Door het grote, ronde raam valt fel licht op de verder lege, donkere straat. Een deur naar binnen is niet te zien.',
       context: 'Hopper voltooide het werk begin 1942, enkele weken na de aanval op Pearl Harbor. Het Art Institute of Chicago kocht het nog in hetzelfde jaar. Hopper zei later dat hij waarschijnlijk onbewust ‘de eenzaamheid van een grote stad’ had geschilderd.',
@@ -643,7 +672,12 @@ export const ARTWORKS = [
     size: { w: 148, h: 55 },
     collection: 'Wadsworth Atheneum Museum of Art, Hartford (Connecticut)',
     type: 'schilderij',
-    interpretation: { palette: ['#3a2416', '#7a3d1d', '#b8793a', '#4a6a5e', '#8eb3bb', '#d8c79a'], scheme: 'figuratief' },
+    image: {
+      file: 'ernst-europe.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Max Ernst. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/max-ernst/europe-after-the-rain-ii'
+    },
     texts: {
       zien: 'Een breed landschap van verweerde, zwamachtige rotsen, ruïnes en vergane vormen, als een wereld na een ramp. Tussen de vormen ontdek je half verborgen figuren. Boven alles strekt zich een heldere lucht uit.',
       context: 'Ernst, een Duitse kunstenaar die in Frankrijk woonde, werd bij het uitbreken van de oorlog als ‘vijandige vreemdeling’ geïnterneerd, onder meer in Camp des Milles. In 1941 vluchtte hij naar de VS, mede met hulp van het Emergency Rescue Committee van Varian Fry en van verzamelaar Peggy Guggenheim. Daar voltooide hij het schilderij.',
@@ -670,7 +704,12 @@ export const ARTWORKS = [
     size: { w: 47.6, h: 40 },
     collection: 'The Museum of Modern Art (MoMA), New York (743.1978), Helen Acheson Bequest',
     type: 'schilderij',
-    interpretation: { palette: ['#e6dcc2', '#151515', '#c6322a', '#2a4f9a', '#e7b52c', '#3d7a4f'], scheme: 'tekens' },
+    image: {
+      file: 'miro-escape.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Joan Miró. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/joan-miro/the-escape-ladder-1940'
+    },
     texts: {
       zien: 'Over een lichte, gevlekte achtergrond zweven sterren, ogen, manen, vogels en vrouwfiguren, verbonden door dunne zwarte lijnen. Kleine vlakjes rood, blauw en geel geven ritme aan het geheel.',
       context: 'Miró begon de reeks van 23 Constellations in januari 1940 in Varengeville (Normandië) en voltooide haar in september 1941, nadat hij voor de oorlog naar Spanje was teruggekeerd. Het Metropolitan Museum en het MoMA beschrijven de reeks als een ontsnapping uit de oorlog in de wereld van de nacht, de muziek en de sterren.',
@@ -698,7 +737,12 @@ export const ARTWORKS = [
     size: { w: 64.8, h: 102.2 },
     collection: 'Philadelphia Museum of Art (aangekocht in 1999)',
     type: 'schilderij',
-    interpretation: { palette: ['#2b2420', '#4f3f36', '#e9dcc6', '#6b2a3a', '#8d8e86', '#c7b391'], scheme: 'figuratief' },
+    image: {
+      file: 'tanning-birthday.jpg',
+      credit: 'Philadelphia Museum of Art',
+      license: '© de rechthebbenden van Dorothea Tanning. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://philamuseum.org/collection/object/93232'
+    },
     texts: {
       zien: 'De kunstenares staat blootsvoets in een kamer met een reeks openstaande deuren die eindeloos achter elkaar doorlopen. Ze draagt een bloes met pofmouwen en een rok die lijkt te bestaan uit takken en wortels. Aan haar voeten zit een vreemd, gevleugeld fabeldier.',
       context: 'Tanning schilderde dit zelfportret in New York, waar ze toen woonde. Max Ernst zag het in haar atelier toen hij werken zocht voor een tentoonstelling van vrouwelijke kunstenaars in de galerie van Peggy Guggenheim, en stelde de titel voor.',
@@ -725,7 +769,12 @@ export const ARTWORKS = [
     size: { w: 229.9, h: 239.4 },
     collection: 'The Museum of Modern Art (MoMA), New York',
     type: 'schilderij',
-    interpretation: { palette: ['#22402c', '#2e5c3a', '#3d6fa3', '#d9b04a', '#e8d9b0', '#6b8f3c'], scheme: 'figuratief' },
+    image: {
+      file: 'lam-jungle.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Wifredo Lam. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/wifredo-lam/the-jungle-1943'
+    },
     texts: {
       zien: 'Tussen hoge stengels van suikerriet en bamboe staan lange, gemaskerde figuren met grote handen en voeten en maanvormige gezichten. Ze lijken in elkaar en in de planten over te lopen.',
       context: 'Lam, een Cubaanse kunstenaar met Chinese, Afrikaanse en Spaanse wortels, woonde in Parijs en was bevriend met Picasso en de surrealisten. In 1941 vertrok hij met onder anderen André Breton per schip uit Marseille en keerde terug naar Cuba, waar hij dit werk schilderde.',
@@ -752,7 +801,12 @@ export const ARTWORKS = [
     size: { w: 30.6, h: 39.8 },
     collection: 'Museo Dolores Olmedo, Mexico-Stad',
     type: 'schilderij',
-    interpretation: { palette: ['#2f4c6e', '#6f8fae', '#a36a3c', '#efe9df', '#7d2a22', '#3b3226'], scheme: 'figuratief' },
+    image: {
+      file: 'kahlo-column.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Frida Kahlo. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/frida-kahlo/the-broken-column-1944'
+    },
     texts: {
       zien: 'Kahlo staat in een kaal, gebarsten landschap. Haar bovenlichaam is opengesneden; in plaats van een ruggengraat zie je een brokkelende Griekse zuil. Een metalen korset houdt haar lichaam bij elkaar. Overal in haar huid steken spijkers. Tranen lopen over haar wangen, maar ze kijkt de kijker recht aan.',
       context: 'Kahlo liep in 1925 bij een busongeluk zware verwondingen op en onderging haar hele leven operaties. In 1944 moest ze een stalen korset dragen. André Breton bewonderde haar werk en noemde het surrealistisch, maar Kahlo zei zelf dat ze geen dromen schilderde, maar haar eigen werkelijkheid.',
@@ -779,7 +833,12 @@ export const ARTWORKS = [
     size: { w: 99.1, h: 78.8 },
     collection: 'The Museum of Modern Art (MoMA), New York (16.1951), schenking D. en J. de Menil',
     type: 'schilderij',
-    interpretation: { palette: ['#10161a', '#2d3b2a', '#e9c46a', '#5f8fc9', '#a9c6e6', '#f4f5f2'], scheme: 'figuratief' },
+    image: {
+      file: 'magritte-empire.jpg',
+      credit: 'Wikipedia (niet-vrij bestand)',
+      license: '© de rechthebbenden van René Magritte. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://en.wikipedia.org/wiki/File:The_Empire_of_Light_MOMA.jpg'
+    },
     texts: {
       zien: 'Een straat met een huis, bomen en één brandende straatlantaarn is in nachtelijk duister gehuld. Maar de lucht erboven is helder blauw met witte wolken, als op een zonnige middag.',
       context: 'Magritte, een Belgische surrealist, woonde tijdens de oorlog in bezet Brussel. Vanaf het eind van de jaren veertig schilderde hij talrijke versies van dit thema; deze versie uit 1950 kwam in 1951 in het MoMA.',
@@ -873,7 +932,12 @@ export const ARTWORKS = [
     size: { w: 170.2, h: 106.4 },
     collection: 'The Museum of Modern Art (MoMA), New York (82.1944), aangekocht in 1944',
     type: 'schilderij',
-    interpretation: { palette: ['#1d1d1c', '#d8cfb6', '#9a7b4f', '#3b5f8a', '#c8412e', '#6f6a5e'], scheme: 'gebaar' },
+    image: {
+      file: 'pollock-shewolf.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Jackson Pollock. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/jackson-pollock/the-she-wolf-1943'
+    },
     texts: {
       zien: 'Een dierachtige figuur, een wolf, loopt horizontaal over het doek. Het lichaam is omringd en deels bedekt door krabbels, vlekken, spatten en tekens in zwart, wit, oker, blauw en rood.',
       context: 'Het werk hing in Pollocks eerste solotentoonstelling, in november 1943 in de galerie Art of This Century van Peggy Guggenheim in New York. Het MoMA kocht het in 1944.',
@@ -900,7 +964,12 @@ export const ARTWORKS = [
     size: { w: 525.8, h: 266.7 },
     collection: 'The Metropolitan Museum of Art, New York (aangekocht in 1957)',
     type: 'schilderij',
-    interpretation: { palette: ['#cdbb93', '#141414', '#f1ede2', '#6e5136', '#3f5a6a'], scheme: 'web' },
+    image: {
+      file: 'pollock-autumn.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Jackson Pollock. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/jackson-pollock/autumn-rhythm-number-30-1950'
+    },
     texts: {
       zien: 'Een enorm doek zonder grondlaag, bedekt met lijnen, slierten, vlekken en spatten van zwart, wit, bruin en grijsblauw. Er is geen middelpunt: het netwerk van lijnen beslaat het hele vlak.',
       context: 'Vanaf 1947 legde Pollock zijn doeken op de vloer van zijn schuur in Springs (Long Island) en liet hij verf druipen, gieten en slingeren met stokken en verharde kwasten. In 1949 vroeg het tijdschrift Life zich af of hij ‘de grootste levende schilder van de Verenigde Staten’ was. In 1950 fotografeerde en filmde Hans Namuth hem aan het werk.',
@@ -927,7 +996,12 @@ export const ARTWORKS = [
     size: { w: 93.9, h: 121.9 },
     collection: 'The Museum of Modern Art (MoMA), New York (500.1969), schenking Alfonso A. Ossorio',
     type: 'schilderij',
-    interpretation: { palette: ['#ece4d2', '#222222', '#c43c2d', '#3d6a8e', '#e2b43b', '#7c8a5a'], scheme: 'raster' },
+    image: {
+      file: 'krasner-untitled.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Lee Krasner. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding. Let op: WikiArt noemt dit werk ‘Untitled, 1949’; we konden niet met zekerheid vaststellen dat het om precies het MoMA-exemplaar gaat.',
+      sourceUrl: 'https://www.wikiart.org/en/lee-krasner/untitled-1949'
+    },
     texts: {
       zien: 'Een dicht raster van kleine, dikke tekens in wit, zwart en kleuren. Ze lijken op letters van een onbekend schrift en vullen rij na rij het hele vlak.',
       context: 'Krasner was al een gevestigde abstracte schilder toen ze Pollock leerde kennen; ze trouwden in 1945 en verhuisden naar Springs op Long Island. Daar maakte ze eind jaren veertig de reeks ‘Little Images’, aan een tafel in haar slaapkamer. Lange tijd werd ze vooral gezien als ‘de vrouw van Pollock’.',
@@ -954,7 +1028,12 @@ export const ARTWORKS = [
     size: { w: 254.6, h: 205.7 },
     collection: 'Art Institute of Chicago (1952.1)',
     type: 'schilderij',
-    interpretation: { palette: ['#ebe4cf', '#161616', '#e0b83a', '#c13a2a', '#3f6fa8', '#8a8676'], scheme: 'gebaar' },
+    image: {
+      file: 'dekooning-excavation.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Willem de Kooning. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/willem-de-kooning/excavation-1950'
+    },
     texts: {
       zien: 'Een gebroken wit vlak vol in elkaar grijpende, hoekige en ronde vormen, omlijnd met zwarte lijnen. Kleine accenten geel, rood en blauw lichten op. Hier en daar lijk je fragmenten van ogen, monden of lichaamsdelen te zien.',
       context: 'De Kooning werd in Rotterdam geboren en reisde in 1926 als verstekeling naar de VS. Excavation was het grootste doek dat hij tot dan toe had gemaakt. Het werd in 1950 getoond op de Biënnale van Venetië; het Art Institute of Chicago kocht het in 1952.',
@@ -982,7 +1061,12 @@ export const ARTWORKS = [
     size: { w: 164.8, h: 216.5 },
     collection: 'The Museum of Modern Art (MoMA), New York (428.1981)',
     type: 'schilderij',
-    interpretation: { palette: ['#e0762c', '#b1245e', '#151515', '#2f6b4a'], scheme: 'velden' },
+    image: {
+      file: 'rothko-no3.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Mark Rothko. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/mark-rothko/no-3-no-13'
+    },
     texts: {
       zien: 'Op een oranje veld zweven boven elkaar rechthoeken met zachte, vervagende randen, in magenta, zwart en groen, gescheiden door smalle banden.',
       context: 'Rothko werd geboren in Daugavpils (toen Rusland, nu Letland) en emigreerde als kind naar de VS. In 1943 schreef hij met Adolph Gottlieb een brief aan The New York Times waarin zij pleitten voor eenvoudige, grote vormen met een ‘tragische en tijdloze’ inhoud. Rond 1949 kwam hij tot zijn kenmerkende kleurvelden.',
@@ -1008,7 +1092,12 @@ export const ARTWORKS = [
     size: { w: 41.2, h: 69.2 },
     collection: 'The Museum of Modern Art (MoMA), New York (390.1992), schenking Annalee Newman',
     type: 'schilderij',
-    interpretation: { palette: ['#5f1714', '#7a1f1a', '#e1743a'], scheme: 'zip' },
+    image: {
+      file: 'newman-onement.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Barnett Newman. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://www.wikiart.org/en/barnett-newman/onement-i-1948'
+    },
     texts: {
       zien: 'Een donkerrood vlak wordt precies in het midden verticaal gedeeld door een smalle, oranje streep met een ruwe rand.',
       context: 'Newman maakte dit werk in 1948. Hij plakte een strook afplakband op het doek, maar besloot het band te laten zitten en er met oranje verf overheen te schilderen. Later zag hij dit kleine doek als zijn doorbraak; zo’n verticale streep noemde hij een ‘zip’.',
@@ -1072,7 +1161,12 @@ export const ARTWORKS = [
     size: { w: 32.5, h: 42 },
     collection: 'O.a. MoMA, New York (930.1964.8) en The Metropolitan Museum of Art; uitgever Tériade, Parijs',
     type: 'grafiek',
-    interpretation: { palette: ['#1f3e8f', '#121212', '#f0d43a', '#d4322b', '#f3eee2'], scheme: 'knipsel' },
+    image: {
+      file: 'matisse-icarus.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Henri Matisse. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding. Het beeld toont de compositie van Icarus; WikiArt dateert dit ontwerp 1943–1944, de boekuitgave volgde in 1947.',
+      sourceUrl: 'https://www.wikiart.org/en/henri-matisse/icarus-1944'
+    },
     texts: {
       zien: 'Een zwarte, vereenvoudigde figuur met gespreide armen zweeft of valt tegen een diepblauwe lucht vol grillige gele vormen. In de borst zit een kleine rode vlek, als een hart.',
       context: 'Matisse was na een zware operatie in 1941 grotendeels aan bed of rolstoel gebonden. Hij ging ‘tekenen met de schaar’ in beschilderd papier. Het boek Jazz verscheen in 1947 bij uitgever Tériade, met twintig platen en zijn eigen handgeschreven teksten. De pochoir-techniek zorgde dat de felle kleuren van de knipsels behouden bleven.',
@@ -1100,7 +1194,12 @@ export const ARTWORKS = [
     size: { w: 228, h: 300 },
     collection: 'Musée national Fernand Léger, Biot (MNFL 94001)',
     type: 'schilderij',
-    interpretation: { palette: ['#f2f2ee', '#121212', '#d9342b', '#2c5aa0', '#f1c232', '#8fb7d8'], scheme: 'vlakken' },
+    image: {
+      file: 'leger-constructeurs.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Fernand Léger. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding. WikiArt vermeldt dit werk als ‘Les Constructeurs’ (1950); de afmetingen staan er niet bij, dus het is niet met zekerheid de definitieve versie uit Biot.',
+      sourceUrl: 'https://www.wikiart.org/en/fernand-leger/manufacturers-1950'
+    },
     texts: {
       zien: 'Bouwvakkers werken hoog in een stalen constructie van rode balken, met touwen en ladders. Achter hen een blauwe lucht met witte wolken. De figuren zijn stevig en hebben dikke zwarte contouren.',
       context: 'Léger verbleef tijdens de oorlog in de Verenigde Staten (1940–1945) en keerde daarna terug naar Frankrijk, waar de wederopbouw volop bezig was. Volgens Léger kreeg hij het idee toen hij arbeiders hoog in een stalen constructie aan het werk zag. Het museum in Biot kreeg het werk in 1969 geschonken.',
@@ -1128,7 +1227,12 @@ export const ARTWORKS = [
     size: { w: 67, h: 105 },
     collection: 'Stedelijk Museum Amsterdam (BA 481)',
     type: 'reliëf',
-    interpretation: { palette: ['#e23d2c', '#f2c230', '#2f6fb3', '#1c1c1c', '#6fbf5f', '#f3ede0'], scheme: 'gebaar' },
+    image: {
+      file: 'appel-vragende.jpg',
+      credit: 'WikiArt',
+      license: '© de rechthebbenden van Karel Appel. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding. Let op: Appel maakte in 1948–1949 meerdere werken met deze titel; het kan om een verwante versie uit dezelfde reeks gaan.',
+      sourceUrl: 'https://www.wikiart.org/en/karel-appel/questioning-children-1949'
+    },
     texts: {
       zien: 'Op een plank zijn houten blokken en restjes afvalhout bevestigd. Daarop zijn met felle kleuren kindergezichten geschilderd, met stippen en lijnen als ogen en monden. Ze lijken je smekend aan te kijken.',
       context: 'Appel was in 1948 een van de oprichters van de internationale kunstenaarsgroep CoBrA (naar Copenhagen, Brussel, Amsterdam). De reeks Vragende kinderen ontstond na een treinreis door Duitsland kort na de oorlog, waar hij bedelende kinderen op de stations zag. Een muurschildering met hetzelfde thema in de kantine van het Amsterdamse stadhuis (1949) werd na klachten van ambtenaren afgedekt en pas in 1959 weer zichtbaar.',
@@ -1189,7 +1293,12 @@ export const ARTWORKS = [
     size: { w: 70, h: 70 },
     collection: 'O.a. Art Institute of Chicago en Victoria and Albert Museum, Londen',
     type: 'ontwerp',
-    interpretation: { palette: ['#efe9dd', '#b5793f', '#d9a066', '#6b4524', '#2b2b2b'], scheme: 'contour' },
+    image: {
+      file: 'eames-lcw.jpg',
+      credit: 'Honolulu Museum of Art, foto via Wikimedia Commons',
+      license: '© de rechthebbenden van Charles en Ray Eames. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:LCW_(Lounge_Chair_Wood)_Chair_by_Charles_and_Ray_Eames,_Honolulu_Museum_of_Art_4410.1.JPG'
+    },
     texts: {
       zien: 'Een lage stoel van gebogen houten platen. Zitting en rugleuning zijn losse, gevormde schalen op een onderstel van gebogen multiplex. Er is geen bekleding; de verbindingen zitten verborgen.',
       context: 'Tijdens de oorlog ontwikkelden Charles en Ray Eames voor de Amerikaanse marine spalken van gevormd multiplex. Die techniek gebruikten ze na de oorlog voor betaalbare meubels in massaproductie. Evans Products maakte de eerste exemplaren; Herman Miller nam de verkoop in 1946 over en later ook de productie.',
@@ -1218,6 +1327,12 @@ export const ARTWORKS = [
     size: { w: 113, h: 152, d: 76 },
     collection: 'Afgietsels o.a. in The Barclay School (Stevenage), Tate (Londen) en MoMA (New York)',
     type: 'beeld',
+    image: {
+      file: 'moore-family.jpg',
+      credit: 'Foto via Wikimedia Commons',
+      license: '© de rechthebbenden van Henry Moore. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding. In de zaal staat een abstracte ruimtelijke impressie; de foto toont een afgietsel van het echte beeld.',
+      sourceUrl: 'https://commons.wikimedia.org/wiki/File:Henry_Moore,_Family_Group_(1950).jpg'
+    },
     texts: {
       zien: 'Een zittende man en vrouw houden samen een klein kind vast, dat tussen hen in op hun armen rust. De vormen zijn vereenvoudigd en rond; de figuren vormen samen één blok.',
       context: 'Moore werkte al sinds de oorlog aan het thema ‘familie’. Een eerste afgietsel kwam in 1950 bij The Barclay School in Stevenage, een van de eerste Britse ‘new towns’ die na de oorlog werden gebouwd. Het was zijn eerste grote brons met meerdere afgietsels.',

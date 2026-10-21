@@ -71,7 +71,7 @@ export class DetailView {
     const src = this.getSource(art.id);
     this.figure.innerHTML = '';
     $('#detail-zoom').hidden = !(src.kind === 'img' || src.kind === 'canvas');
-    if (src.kind === 'installation' || (art.type === 'beeld')) {
+    if (src.kind === 'installation' || (art.type === 'beeld' && !art.image)) {
       this.figure.innerHTML = `<figcaption class="media-note">${art.type === 'beeld'
         ? 'Je kijkt naar een <strong>ruimtelijke impressie</strong> van dit beeld in de zaal. Het is geen replica; het beeld is auteursrechtelijk beschermd. Bekijk het origineel via de bronnen.'
         : 'Je kijkt naar de installatie in de ruimte. Loop er straks omheen om haar van alle kanten te zien.'}</figcaption>`;
@@ -132,7 +132,7 @@ export class DetailView {
         <div><dt>Collectie</dt><dd>${esc(art.collection)}</dd></div>
       </dl>
       ${art.interpretation ? `<div class="notice"><strong>Waarom zie je een kleurnotitie?</strong> Dit werk is nog auteursrechtelijk beschermd. We tonen daarom geen reproductie, maar een duidelijk gelabelde abstracte samenvatting. ${art.rightsNote ? esc(art.rightsNote) + ' ' : ''}${firstSource ? `Bekijk het origineel: ${link(firstSource.url, firstSource.label)}.` : ''}</div>` : ''}
-      ${art.type === 'beeld' ? `<div class="notice"><strong>Waarom zie je een ruimtelijke impressie?</strong> Dit beeld is nog auteursrechtelijk beschermd. Op de sokkel staat daarom een abstracte vorm van de curatoren, geen replica. ${firstSource ? `Bekijk het origineel: ${link(firstSource.url, firstSource.label)}.` : ''}</div>` : ''}
+      ${art.type === 'beeld' ? `<div class="notice"><strong>In de zaal staat een ruimtelijke impressie.</strong> Op de sokkel staat een abstracte vorm van de curatoren, geen replica. De foto hiernaast toont het echte beeld. ${firstSource ? `Meer informatie: ${link(firstSource.url, firstSource.label)}.` : ''}</div>` : ''}
       ${sec(1, 'Wat zie je?', 'BESCHRIJVING', t.zien)}
       ${sec(2, 'Wie maakte het en wanneer?', 'FEIT', maker)}
       ${sec(3, 'Historische context', art.status === 'eigen' ? 'KEUZE' : 'FEIT', t.context)}

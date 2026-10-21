@@ -233,7 +233,7 @@ export const MODALS = {
           <li>3D: ${link('https://threejs.org', 'Three.js')} (MIT-licentie), gebouwd met ${link('https://vite.dev', 'Vite')}.</li>
           <li>Lettertypen: Cormorant Garamond en Inter (SIL Open Font License), meegeleverd via Fontsource.</li>
           <li>Geluid: volledig in de browser gegenereerd met de Web Audio API – er zijn geen bestaande muziek- of geluidsfragmenten gebruikt.</li>
-          <li>Architectuur, texturen, kleurnotities en de installatie zijn in code ontworpen voor dit project.</li>
+          <li>Architectuur, texturen en de installatie zijn in code ontworpen voor dit project.</li>
         </ul></section>
         <section class="text-sec"><h3>Afbeeldingen</h3><p>Zie <em>Bronnen</em> voor de herkomst en licentie van elke afbeelding.</p></section>
         <p class="disclaimer">${esc(EXHIBITION.disclaimer)}</p>`
@@ -257,10 +257,10 @@ export const MODALS = {
       wide: true,
       html: `
         <p>Alle bronnen zijn geraadpleegd op ${esc(ACCESSED)}. We maken onderscheid tussen <strong>feiten</strong> (gecontroleerd in museum- en archiefbronnen), <strong>interpretaties</strong> en onze eigen <strong>curatoriële keuzes</strong>. We hebben geen kunstwerken, citaten of gebeurtenissen verzonnen. Waar bronnen elkaar tegenspreken (bijvoorbeeld over een datering of afmeting), staat dat bij het werk vermeld.</p>
-        <section class="text-sec"><h3>Soorten afbeeldingen</h3><ul>
-          <li><strong>Museum- en archiefbeeld:</strong> een foto van het echte werk, publiek domein of vrij gelicenseerd, via Wikimedia Commons, de Library of Congress of de National Archives. Herkomst en licentie staan bij elk werk.</li>
-          <li><strong>Kleurnotitie:</strong> het werk is nog auteursrechtelijk beschermd. De curatoren maakten een abstracte samenvatting van kleur en compositie. Dit is <em>geen</em> reproductie; bekijk het origineel via de link van het museum.</li>
-          <li><strong>Ruimtelijke impressie:</strong> bij het beeld van Henry Moore staat een abstracte vorm op de sokkel, geen replica.</li>
+        <section class="text-sec"><h3>Afbeeldingen en auteursrecht</h3><ul>
+          <li><strong>Publiek domein of vrij gelicenseerd:</strong> werken van kunstenaars die vóór 1956 overleden, en foto’s en affiches van de Amerikaanse overheid (via Wikimedia Commons, de Library of Congress en de National Archives).</li>
+          <li><strong>Auteursrechtelijk beschermd:</strong> werken van onder meer Picasso, Pollock, Rothko, Hopper en Kahlo. Die tonen we als citaat voor onderwijsdoeleinden, voor dit niet-commerciële CKV-schoolproject, met de naam van de maker, de collectie en de herkomst van de afbeelding (onder meer WikiArt, Tate, het Philadelphia Museum of Art en Wikipedia). De rechten blijven bij de rechthebbenden.</li>
+          <li><strong>Ruimtelijke impressie:</strong> bij het beeld van Henry Moore staat in de zaal een abstracte vorm, geen replica.</li>
           <li><strong>Eigen werk:</strong> de installatie, de studie en alle architectuur zijn speciaal voor dit project gemaakt.</li>
         </ul></section>
         <section class="text-sec"><h3>Algemene bronnen</h3><ul>${general.map(([l, u]) => `<li>${link(u, l)}</li>`).join('')}</ul>
@@ -272,7 +272,7 @@ export const MODALS = {
             return `<h4>${esc(r.id === 'entree' ? 'Entree' : r.label)} · ${esc(r.title)}</h4><ul class="src-list">${works.map((a) => `
               <li><strong>${esc(a.artist)}, ${esc(a.title)}, ${esc(a.year)}</strong> – ${esc(a.collection)}.
                 <br>Bronnen: ${a.sources.map((s) => link(s.url, s.label)).join(' · ')}
-                <br>Beeld: ${a.image ? `${esc(a.image.credit)} – ${esc(a.image.license)} (${link(a.image.sourceUrl, 'bestand')})` : a.type === 'beeld' ? 'ruimtelijke impressie door de curatoren (geen replica)' : 'kleurnotitie door de curatoren (geen reproductie)'}</li>`).join('')}</ul>`;
+                <br>Beeld: ${a.image ? `${esc(a.image.credit)} – ${esc(a.image.license)} (${link(a.image.sourceUrl, 'herkomst')})` : 'ruimtelijke impressie door de curatoren (geen replica)'}</li>`).join('')}</ul>`;
           }).join('')}
         </section>`
     };
