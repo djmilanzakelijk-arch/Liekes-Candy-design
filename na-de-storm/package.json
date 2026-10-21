@@ -2,12 +2,13 @@
   "name": "na-de-storm",
   "private": true,
   "version": "1.0.0",
-  "description": "NA DE STORM — Kunst, chaos en een nieuwe wereld (1940–1950). Een interactief 3D-museum voor CKV Beeldend, 4 vwo, door Milan, Berend en Polle.",
+  "description": "NA DE STORM \u2014 Kunst, chaos en een nieuwe wereld (1940\u20131950). Een interactief 3D-museum voor CKV Beeldend, 4 vwo, door Milan, Berend en Polle.",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
-    "preview": "vite preview"
+    "preview": "vite preview",
+    "build:single": "node scripts/build-single.mjs"
   },
   "engines": {
     "node": ">=20.19"
@@ -18,6 +19,7 @@
     "three": "^0.186.1"
   },
   "devDependencies": {
-    "vite": "^7.3.7"
+    "vite": "^7.3.7",
+    "vite-plugin-singlefile": "^2.3.4"
   }
 }

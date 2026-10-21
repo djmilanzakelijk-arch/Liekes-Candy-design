@@ -3,3 +3,5 @@ dist/
 .DS_Store
 *.log
 test-screenshots/
+dist-single/
+na-de-storm.html

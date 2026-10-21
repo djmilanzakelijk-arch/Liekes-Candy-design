@@ -7,8 +7,8 @@ import { wallPlacement } from './layout.js';
 import { washTexture, placeholderCanvas, wrapText } from './textures.js';
 import { interpretationCanvas, ownPaintingCanvas } from './interpretation.js';
 
-const BASE = import.meta.env.BASE_URL;
-export const imageUrl = (file) => `${BASE}beelden/${file}`;
+import { imageUrl } from '../core/assets.js';
+export { imageUrl };
 
 const STATUS_TAG = {
   context: 'HISTORISCHE CONTEXT · vóór 1940',

@@ -5,11 +5,11 @@ import { ROOM_TEXTS, EXHIBITION } from '../data/texts.js';
 import { DetailView } from './detail.js';
 import { interpretationCanvas, ownPaintingCanvas } from '../world/interpretation.js';
 
-const BASE = import.meta.env.BASE_URL;
+import { imageUrl } from '../core/assets.js';
 
 function sourceFor(id) {
   const a = ART_BY_ID[id];
-  if (a.image) return { kind: 'img', src: `${BASE}beelden/${a.image.file}` };
+  if (a.image) return { kind: 'img', src: imageUrl(a.image.file) };
   if (id === 'eigen-doek') return { kind: 'canvas', canvas: ownPaintingCanvas() };
   if (id === 'eigen-installatie') return { kind: 'installation' };
   if (a.interpretation) return { kind: 'canvas', canvas: interpretationCanvas(a), interpretation: true };
