@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="nl">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>Na de storm · 1940–1950</title>
+    <meta name="description" content="NA DE STORM – Kunst, chaos en een nieuwe wereld (1940–1950). Een interactief 3D-museum voor CKV Beeldend (4 vwo), samengesteld door Milan, Berend en Polle." />
+    <meta name="theme-color" content="#14120f" />
+    <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  </head>
+  <body>
+    <div id="app">
+      <canvas id="scene" aria-label="3D-museum" tabindex="-1"></canvas>
+      <div id="vignette" aria-hidden="true"></div>
+
+      <!-- Laadscherm -->
+      <section id="loading" class="screen" aria-live="polite">
+        <div class="loading-inner">
+          <p class="eyebrow">CKV Beeldend · 4 vwo</p>
+          <h1 class="display">NA DE STORM</h1>
+          <p class="sub">Kunst, chaos en een nieuwe wereld · 1940–1950</p>
+          <div class="progress" role="progressbar" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><span></span></div>
+          <p class="loading-status">Het museum wordt opgebouwd…</p>
+        </div>
+      </section>
+
+      <!-- Startscherm -->
+      <section id="start" class="screen" hidden>
+        <div class="start-inner">
+          <p class="eyebrow">Een fictieve wereldtentoonstelling · CKV Beeldend · 4 vwo</p>
+          <h1 class="display">NA DE STORM</h1>
+          <p class="sub">Kunst, chaos en een nieuwe wereld · 1940–1950</p>
+          <p class="question">“Hoe veranderden oorlog, verlies, onzekerheid en hoop de manier waarop kunstenaars de wereld afbeeldden?”</p>
+          <div class="start-actions">
+            <button id="btn-enter" class="btn primary large" type="button">Betreed het museum</button>
+            <button id="btn-2d" class="btn ghost" type="button">Bekijk zonder 3D</button>
+          </div>
+          <div class="start-links">
+            <button class="link" data-open="help" type="button">Bediening</button>
+            <button class="link" data-open="about" type="button">Over de tentoonstelling</button>
+            <button class="link" data-open="sources" type="button">Bronnen</button>
+            <button class="link" data-open="credits" type="button">Credits</button>
+          </div>
+          <p class="curators">Samengesteld door <strong>Milan</strong>, <strong>Berend</strong> en <strong>Polle</strong></p>
+          <p class="fine">Lopen met <kbd>W</kbd><kbd>A</kbd><kbd>S</kbd><kbd>D</kbd> · rondkijken met de muis · <kbd>E</kbd> of klikken om een werk te bekijken · <kbd>Esc</kbd> voor het menu</p>
+          <p id="webgl-warning" class="warning" hidden></p>
+        </div>
+      </section>
+
+      <!-- HUD tijdens het rondlopen -->
+      <div id="hud" hidden>
+        <div class="hud-top-left">
+          <div class="room-badge">
+            <span class="room-label" id="hud-room-label">Entree</span>
+            <span class="room-title" id="hud-room-title">De wereld staat stil</span>
+          </div>
+          <div class="next-room" id="hud-next">
+            <span class="arrow" id="hud-next-arrow" aria-hidden="true">↑</span>
+            <span>Volgende: <strong id="hud-next-title">Zaal 1</strong></span>
+          </div>
+        </div>
+        <div class="hud-top-right">
+          <button class="hud-btn" id="hud-progress" type="button" title="Bekeken kunstwerken (C)"><span id="hud-progress-text">0/0</span> bekeken</button>
+          <button class="hud-btn icon" data-open="map" type="button" title="Plattegrond (M)" aria-label="Plattegrond">⌖</button>
+          <button class="hud-btn icon" data-open="timeline" type="button" title="Tijdlijn (T)" aria-label="Tijdlijn">⏱</button>
+          <button class="hud-btn icon" id="hud-sound" type="button" title="Geluid aan/uit (G)" aria-label="Geluid aan of uit">♪</button>
+          <button class="hud-btn icon" id="hud-fullscreen" type="button" title="Volledig scherm (F)" aria-label="Volledig scherm">⛶</button>
+          <button class="hud-btn icon" id="hud-menu" type="button" title="Menu (Esc)" aria-label="Menu">☰</button>
+        </div>
+        <div id="crosshair" aria-hidden="true"><span></span></div>
+        <div id="hint" role="status" aria-live="polite" hidden></div>
+        <canvas id="minimap" width="200" height="200" aria-label="Kleine plattegrond"></canvas>
+        <div id="banner" aria-live="polite" hidden>
+          <span class="banner-label"></span>
+          <span class="banner-title"></span>
+        </div>
+        <div id="controls-strip">
+          <span><kbd>WASD</kbd> lopen</span><span><kbd>Shift</kbd> rennen</span><span><kbd>E</kbd>/klik bekijken</span><span><kbd>M</kbd> kaart</span><span><kbd>H</kbd> hulp</span><span><kbd>Esc</kbd> menu</span>
+        </div>
+        <div id="resume-hint" hidden>Klik in het beeld om weer rond te kijken · lopen kan meteen met <kbd>WASD</kbd></div>
+      </div>
+
+      <div id="joystick" hidden><span></span></div>
+
+      <!-- Detailweergave van een kunstwerk -->
+      <section id="detail" hidden aria-modal="true" role="dialog" aria-labelledby="detail-title">
+        <div class="detail-media">
+          <figure class="detail-figure" id="detail-figure"></figure>
+          <div class="detail-media-actions">
+            <button class="btn ghost small" id="detail-zoom" type="button">Vergroot afbeelding <kbd>Z</kbd></button>
+          </div>
+        </div>
+        <aside class="detail-info" id="detail-info" tabindex="-1"></aside>
+        <nav class="detail-nav">
+          <button class="btn ghost" id="detail-prev" type="button">← Vorig kunstwerk</button>
+          <span class="detail-count" id="detail-count"></span>
+          <button class="btn ghost" id="detail-next" type="button">Volgend kunstwerk →</button>
+          <button class="btn primary" id="detail-close" type="button">Terug naar het museum</button>
+        </nav>
+      </section>
+
+      <!-- Vergroting -->
+      <section id="lightbox" hidden role="dialog" aria-label="Vergrote afbeelding">
+        <div class="lightbox-stage" id="lightbox-stage"></div>
+        <div class="lightbox-tools">
+          <button class="btn ghost small" data-zoom="in" type="button" aria-label="Inzoomen">＋</button>
+          <button class="btn ghost small" data-zoom="out" type="button" aria-label="Uitzoomen">－</button>
+          <button class="btn ghost small" data-zoom="reset" type="button">Passend</button>
+          <button class="btn primary small" data-zoom="close" type="button">Sluiten</button>
+        </div>
+        <p class="lightbox-help">Scroll of gebruik ＋/－ om te zoomen, sleep om te verschuiven, <kbd>Esc</kbd> om te sluiten.</p>
+      </section>
+
+      <!-- Algemene vensters (menu, kaart, tijdlijn, quiz, …) -->
+      <section id="modal" hidden role="dialog" aria-modal="true" aria-labelledby="modal-title">
+        <div class="modal-card" id="modal-card">
+          <header class="modal-head">
+            <h2 id="modal-title"></h2>
+            <button class="btn ghost small" id="modal-close" type="button">Sluiten <kbd>Esc</kbd></button>
+          </header>
+          <div class="modal-body" id="modal-body"></div>
+        </div>
+      </section>
+
+      <div id="tour-card" hidden role="region" aria-label="Museumtour"></div>
+      <div id="toasts" aria-live="polite"></div>
+      <div id="fade" aria-hidden="true"></div>
+
+      <!-- Lijstweergave zonder 3D -->
+      <section id="gallery2d" hidden></section>
+    </div>
+    <noscript>
+      <p style="padding:2rem;font-family:sans-serif">Deze tentoonstelling heeft JavaScript nodig. Zet JavaScript aan om het museum te bezoeken.</p>
+    </noscript>
+    <script type="module" src="/src/main.js"></script>
+  </body>
+</html>
