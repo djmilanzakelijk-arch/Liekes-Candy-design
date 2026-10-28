@@ -1,5 +1,5 @@
 // Centrale gegevensbron voor alle kunstwerken. Elk werk heeft een uniek `id`;
-// de 3D-wereld, het detailpaneel, de plattegrond, de tijdlijn en de quiz lezen
+// de 3D-wereld, het detailpaneel, de plattegrond en de tijdlijn lezen
 // allemaal uit deze ene lijst, zodat beeld en informatie nooit door elkaar raken.
 //
 // status:

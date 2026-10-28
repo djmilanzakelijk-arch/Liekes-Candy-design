@@ -1,7 +1,7 @@
 import * as THREE from 'three';
 import { ROOMS, DOORS, ROOM_BY_ID, WALL_T } from '../data/rooms.js';
 import { EXHIBITION, ABOUT, CURATORS, ROOM_TEXTS } from '../data/texts.js';
-import { TIMELINE_YEARS, YEAR_HEADLINES, TIMELINE } from '../data/timeline.js';
+import { TIMELINE_YEARS, worksInYear } from '../data/timeline.js';
 import { wallPlacement, doorCenter } from './layout.js';
 import { wrapText } from './textures.js';
 
@@ -168,7 +168,7 @@ export class Panels {
     g.fillStyle = '#1b1a18'; g.fillRect(0, 0, W, H);
     g.fillStyle = '#c9a56a';
     g.font = `700 38px ${SANS}`;
-    g.fillText('TIJDLIJN 1940–1950 · klik op een jaar voor de interactieve tijdlijn', 60, 70);
+    g.fillText('TIJDLIJN 1940–1950 · klik op een jaar', 60, 70);
     const colW = (W - 120) / TIMELINE_YEARS.length;
     g.strokeStyle = '#8a6b43'; g.lineWidth = 4;
     g.beginPath(); g.moveTo(60, 200); g.lineTo(W - 60, 200); g.stroke();
@@ -179,15 +179,17 @@ export class Panels {
       g.fillStyle = '#f0e6d2';
       g.font = `600 100px ${SERIF}`;
       g.fillText(String(yr), x, 165);
-      g.fillStyle = '#e3d6bd';
-      g.font = `600 34px ${SANS}`;
-      let y = 270;
-      y += wrapText(g, YEAR_HEADLINES[yr], x, y, colW - 40, 42) * 42 + 20;
-      g.font = `400 27px ${SANS}`;
-      g.fillStyle = '#b8ab92';
-      for (const ev of TIMELINE.filter((e) => e.year === yr).slice(0, 3)) {
-        y += wrapText(g, '· ' + ev.title, x, y, colW - 40, 34) * 34 + 10;
-        if (y > H - 40) break;
+      // per jaar de titels van de werken, één regel per werk
+      let y = 280;
+      g.font = `500 26px ${SANS}`;
+      const works = worksInYear(yr);
+      if (!works.length) { g.fillStyle = '#7d725f'; g.fillText('geen werk', x, y); }
+      for (const a of works) {
+        let t = a.title.split(' (')[0].split(':')[0].replace(/[“”]/g, '');
+        while (g.measureText(t).width > colW - 40 && t.length > 4) t = t.slice(0, -2).trimEnd() + '…';
+        g.fillStyle = '#e3d6bd';
+        g.fillText('· ' + t, x, y);
+        y += 40;
       }
       if (i > 0) {
         g.strokeStyle = 'rgba(201,165,106,0.25)'; g.lineWidth = 2;
@@ -210,10 +212,10 @@ export class Panels {
     g.font = `400 32px ${SANS}`;
     g.fillStyle = '#ddd2bd';
     let y = 310;
-    y += wrapText(g, 'Bekijk de belangrijkste inzichten van de tentoonstelling en test je kennis met de quiz.', 90, y, 1020, 46) * 46 + 40;
+    y += wrapText(g, 'Bekijk de belangrijkste inzichten van de tentoonstelling.', 90, y, 1020, 46) * 46 + 40;
     g.fillStyle = '#c9a56a';
     g.font = `600 34px ${SANS}`;
-    ['Inzichten', 'Quiz', 'Credits', 'Opnieuw beginnen'].forEach((t) => {
+    ['Inzichten', 'Credits', 'Opnieuw beginnen'].forEach((t) => {
       g.fillText('→  ' + t, 90, y); y += 64;
     });
     g.fillStyle = '#a89c86';

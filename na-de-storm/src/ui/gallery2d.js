@@ -60,7 +60,6 @@ export class Gallery2D {
         <div class="row-actions">
           ${this.canGo3D ? '<button class="btn primary" data-g="back">Naar het 3D-museum</button>' : ''}
           <button class="btn ghost" data-open="timeline">Tijdlijn</button>
-          <button class="btn ghost" data-open="quiz">Quiz</button>
         </div>
       </header>
       ${ROOMS.map((r) => {

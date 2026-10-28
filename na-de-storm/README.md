@@ -18,7 +18,7 @@ Een interactief **3D-museum in de browser**, gemaakt voor CKV Beeldend (4 vwo) d
 | **Afbeeldingen** | Alle 41 werken met hun echte afbeelding. 18 zijn publiek domein of vrij gelicenseerd; 23 zijn nog auteursrechtelijk beschermd en worden getoond als citaat voor onderwijsdoeleinden, met maker, collectie, herkomst en ©-vermelding. |
 | **First-person** | WASD/pijltjes, muis met Pointer Lock (of slepen), Shift rennen, botsingen met muren, wanden, pilaren, banken en sokkels. |
 | **Inzoomen** | Klik op een werk (of druk **E**): de camera vliegt vloeiend en om muren heen naar het werk; links het beeld, rechts de informatie; vorig/volgend werk; vergroten met zoomen en verschuiven; terug naar exact je oude positie. |
-| **Educatieve laag** | Korte zaalteksten, interactieve tijdlijn 1940–1950, quiz, eindscherm met inzichten, credits. |
+| **Educatieve laag** | Korte zaalteksten, tijdlijn 1940–1950 met per jaar de werken, eindscherm met inzichten, credits. |
 | **Navigatie** | Kompas naar de volgende zaal, minikaart, grote plattegrond met ‘ga hierheen’, terug naar de entree, korte tour, voortgang. |
 | **Toegankelijkheid** | Muisgevoeligheid, gezichtsveld, loopbeweging uit, minder beweging, tekstgrootte, hoog contrast, volume/geluid uit, kwaliteit laag/normaal/hoog, volledige toetsenbordbediening. |
 | **Fallback** | Lijstweergave zonder 3D (ook automatisch als WebGL 2 ontbreekt). |
@@ -69,8 +69,7 @@ na-de-storm/
     │   ├── artworks.js        ★ alle kunstwerken en hun teksten (één centrale bron)
     │   ├── rooms.js           ★ plattegrond: zalen, deuren, ophangplekken
     │   ├── texts.js           ★ introductie, zaalteksten, begrippen, reflectie, tour
-    │   ├── timeline.js        tijdlijn 1940–1950
-    │   ├── quiz.js            quizvragen
+    │   ├── timeline.js        jaartallen voor de tijdlijn
     │   └── imageSizes.js      pixelmaten van de afbeeldingen (tegen vervorming)
     ├── core/                  botsingen + padvinding, besturing, camera, audio, opslag
     ├── world/                 architectuur, licht, kunstwerken in 3D, wandteksten, installatie
@@ -158,7 +157,7 @@ Automatisch getest met Playwright in headless Chromium (`tests/browser-test.mjs`
 - **Gameplay:** startknop, W/A/S/D-lopen, camera op ooghoogte, botsing met muren en pilaren, door deuropeningen lopen, Esc → pauzemenu, ‘Terug naar de entree’, tour starten/stoppen, eindscherm, route opnieuw beginnen, terug naar het startscherm.
 - **Acceptatiescenario:** naar *Totes Meer* lopen → hint “Klik om dit werk van dichtbij te bekijken” → klikken → camera beweegt vloeiend dichterbij → juiste titel en informatie rechts, afbeelding links geladen → vergroten → *Volgend kunstwerk* wisselt beeld én tekst → *Terug naar het museum* zet de camera terug op exact dezelfde positie (afwijking 0,000 m) → direct verder lopen. Ook de **E-toets**, **Esc** en ‘klik op een muur opent niets’.
 - **Alle 43 werken** (39 uit 1940–1950 plus context, vergelijking en twee eigen werken) één voor één geopend: juiste titel, gevulde basisgegevens en een geladen afbeelding.
-- **Vensters:** plattegrond, tijdlijn (jaar 1944), instellingen vanuit het pauzemenu, quiz-feedback, lijstweergave zonder 3D (openen, volgend, sluiten, tijdlijn → werk).
+- **Vensters:** plattegrond, tijdlijn (jaar 1944), instellingen vanuit het pauzemenu, lijstweergave zonder 3D (openen, volgend, sluiten, tijdlijn → werk).
 
 **Niet getest – eerlijk vermeld:**
 

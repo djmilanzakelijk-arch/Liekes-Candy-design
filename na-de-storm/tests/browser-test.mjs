@@ -192,7 +192,7 @@ await page.keyboard.press('Escape'); await sleep(300);
 ok('Esc sluit de plattegrond', !(await page.isVisible('#modal')));
 await page.keyboard.press('KeyT'); await sleep(400);
 await page.click('[data-year="1944"]'); await sleep(200);
-ok('Tijdlijn toont 1944', /D-Day/.test(await page.textContent('#tl-events')));
+ok('Tijdlijn toont 1944', /Victory Boogie Woogie|Triumph des Todes/.test(await page.textContent('#tl-events')));
 await shot('09-timeline');
 await page.keyboard.press('Escape'); await sleep(300);
 await page.keyboard.press('Escape'); await sleep(400);
@@ -205,13 +205,6 @@ ok('Terug naar pauzemenu na sluiten instellingen', /Gepauzeerd/.test(await page.
 await page.click('[data-act="entrance"]'); await sleep(1500);
 s = await st();
 ok('“Terug naar de entree” werkt', s.room === 'entree' && s.state === 'play', s.room);
-
-// ── quiz ──
-await page.evaluate(() => window.__nds.openModal('quiz'));
-await sleep(300);
-await page.click('.quiz-options .option'); await sleep(200);
-ok('Quiz geeft feedback', /Goed!|Helaas/.test(await page.textContent('.quiz-feedback')));
-await page.keyboard.press('Escape'); await sleep(300);
 
 // ── alle kunstwerken één voor één openen ──
 if (ONLY === 'all' || ONLY === 'art') {

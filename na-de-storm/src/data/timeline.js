@@ -1,3 +1,5 @@
+import { ARTWORKS } from './artworks.js';
+
 // Tijdlijn 1940–1950. cat: 'wereld' (geschiedenis), 'kunst' of 'nl' (Nederland).
 // `art` verwijst naar een kunstwerk-id in artworks.js.
 
@@ -60,3 +62,8 @@ export const YEAR_HEADLINES = {
   1949: 'Is Pollock de grootste?',
   1950: 'Een nieuwe wereld, nieuwe dreiging'
 };
+
+// Werken uit het museum per jaar (het eerste jaartal in de datering telt).
+export function worksInYear(year) {
+  return ARTWORKS.filter((a) => a.status === 'periode' && Number((a.year.match(/\d{4}/) || [])[0]) === year);
+}

@@ -2,8 +2,7 @@ import { esc, link } from './dom.js';
 import { ROOMS, ROOM_BY_ID } from '../data/rooms.js';
 import { ARTWORKS, ART_BY_ID, ACCESSED, isCounted } from '../data/artworks.js';
 import { EXHIBITION, CURATORS, ROOM_TEXTS, INSIGHTS } from '../data/texts.js';
-import { TIMELINE, TIMELINE_YEARS } from '../data/timeline.js';
-import { QUIZ } from '../data/quiz.js';
+import { TIMELINE_YEARS, worksInYear } from '../data/timeline.js';
 import { drawMap } from './map.js';
 
 // Elk venster is een functie die { title, html, bind } teruggeeft.
@@ -21,7 +20,6 @@ export const MODALS = {
           <button class="btn ghost" data-open="collection">Bekeken werken <kbd>C</kbd></button>
           <button class="btn ghost" data-open="timeline">Tijdlijn <kbd>T</kbd></button>
           <button class="btn ghost" data-act="tour">${g.tourActive ? 'Tour stoppen' : 'Start de korte tour'}</button>
-          <button class="btn ghost" data-open="quiz">Quiz</button>
           <button class="btn ghost" data-open="credits">Credits</button>
           <button class="btn ghost" data-open="settings">Instellingen en toegankelijkheid</button>
           <button class="btn ghost" data-open="help">Bediening <kbd>H</kbd></button>
@@ -130,20 +128,17 @@ export const MODALS = {
   },
 
   timeline(g, year = 1940) {
-    const catLabel = { wereld: 'Wereld', kunst: 'Kunst', nl: 'Nederland' };
-    const yearHtml = (y) => TIMELINE.filter((e) => e.year === y).map((e) => `
-      <li class="ev cat-${e.cat}">
-        <span class="when">${esc(e.date)}</span>
-        <div><span class="chip">${catLabel[e.cat]}</span><strong>${esc(e.title)}</strong><p>${esc(e.text)}</p>
-        ${e.art ? `<button class="btn ghost small" data-art="${e.art}">Bekijk: ${esc(ART_BY_ID[e.art].title.split(' (')[0])}</button>` : ''}</div>
-      </li>`).join('');
+    const yearHtml = (y) => {
+      const works = worksInYear(y);
+      if (!works.length) return '<li>Geen werken uit dit jaar in het museum.</li>';
+      return works.map((a) => `<li><button class="link" data-art="${a.id}"><em>${esc(a.title.split(' (')[0])}</em> · ${esc(a.artist)}</button></li>`).join('');
+    };
     return {
       title: 'Tijdlijn 1940–1950',
       wide: true,
       html: `
         <div class="years" role="tablist">${TIMELINE_YEARS.map((y) => `<button role="tab" class="year ${y === year ? 'active' : ''}" data-year="${y}" aria-selected="${y === year}">${y}</button>`).join('')}</div>
-        <ul class="events" id="tl-events">${yearHtml(year)}</ul>
-        <p class="small">Jaartallen gecontroleerd op ${esc(ACCESSED)}. ‘Kunst’ = gebeurtenis in de kunstwereld, ‘Wereld’ = algemene geschiedenis, ‘Nederland’ = Nederlandse geschiedenis.</p>`,
+        <ul class="tl-works" id="tl-events">${yearHtml(year)}</ul>`,
       bind(root) {
         const list = root.querySelector('#tl-events');
         const bindArt = () => list.querySelectorAll('[data-art]').forEach((b) => b.addEventListener('click', () => g.openArtFromList(b.dataset.art)));
@@ -220,52 +215,6 @@ export const MODALS = {
     };
   },
 
-  quiz(g) {
-    let i = 0, score = 0, answered = false;
-    const render = (root) => {
-      const body = root.querySelector('#quiz');
-      if (i >= QUIZ.length) {
-        g.saveQuiz(score);
-        body.innerHTML = `
-          <div class="quiz-end"><p class="big">${score} / ${QUIZ.length}</p>
-          <p>${score >= 8 ? 'Uitstekend! Je hebt goed gekeken.' : score >= 5 ? 'Goed bezig. Loop gerust nog eens langs de werken die je miste.' : 'Er is nog genoeg te ontdekken. Probeer het na een rondje opnieuw.'}</p>
-          <button class="btn primary" data-q="restart">Opnieuw</button></div>`;
-        body.querySelector('[data-q="restart"]').addEventListener('click', () => { i = 0; score = 0; render(root); });
-        return;
-      }
-      const q = QUIZ[i];
-      answered = false;
-      body.innerHTML = `
-        <p class="quiz-count">Vraag ${i + 1} van ${QUIZ.length}</p>
-        <h3 class="quiz-q">${esc(q.q)}</h3>
-        <div class="quiz-options">${q.options.map((o, k) => `<button class="btn ghost option" data-k="${k}">${esc(o)}</button>`).join('')}</div>
-        <div class="quiz-feedback" aria-live="polite"></div>`;
-      body.querySelectorAll('.option').forEach((b) => b.addEventListener('click', () => {
-        if (answered) return;
-        answered = true;
-        const k = Number(b.dataset.k);
-        const ok = k === q.answer;
-        if (ok) score++;
-        body.querySelectorAll('.option').forEach((x) => {
-          x.disabled = true;
-          if (Number(x.dataset.k) === q.answer) x.classList.add('correct');
-          else if (x === b) x.classList.add('wrong');
-        });
-        const fb = body.querySelector('.quiz-feedback');
-        fb.innerHTML = `<p><strong>${ok ? 'Goed!' : 'Helaas.'}</strong> ${esc(q.explain)}</p>
-          <div class="row-actions">${q.art ? `<button class="btn ghost small" data-art="${q.art}">Bekijk het werk</button>` : ''}<button class="btn primary small" data-q="next">${i + 1 < QUIZ.length ? 'Volgende vraag' : 'Uitslag'}</button></div>`;
-        fb.querySelector('[data-q="next"]').addEventListener('click', () => { i++; render(root); });
-        fb.querySelector('[data-art]')?.addEventListener('click', () => g.openArtFromList(q.art));
-        fb.querySelector('[data-q="next"]').focus();
-      }));
-    };
-    return {
-      title: 'Quiz over de tentoonstelling',
-      html: `<div id="quiz"></div>${g.quizBest !== null ? `<p class="small">Je beste score tot nu toe: ${g.quizBest} / ${QUIZ.length}</p>` : ''}`,
-      bind: render
-    };
-  },
-
   end(g) {
     const counted = ARTWORKS.filter(isCounted);
     const seen = counted.filter((a) => g.viewed.has(a.id)).length;
@@ -279,8 +228,7 @@ export const MODALS = {
         <ol class="insights">${INSIGHTS.map((x) => `<li><strong>${esc(x.h)}</strong><p>${esc(x.p)}</p></li>`).join('')}</ol>
         <div class="question-box"><span>Terug naar de hoofdvraag</span>${esc(EXHIBITION.question)}<p>Ons antwoord in één zin: oorlog en verlies maakten het afbeelden van de werkelijkheid urgenter (fotografie, affiches) én ontoereikender – en daarom zochten kunstenaars naar een nieuwe beeldtaal van gebaar, kleur en schaal om te laten voelen wat niet te zeggen was.</p></div>
         <div class="end-actions">
-          <button class="btn primary" data-open="quiz">Doe de quiz</button>
-          <button class="btn ghost" data-open="credits">Credits</button>
+          <button class="btn primary" data-open="credits">Credits</button>
           <button class="btn ghost" data-act="restart">Route opnieuw beginnen</button>
           <button class="btn ghost" data-act="resume">Verder rondkijken</button>
         </div>`,
