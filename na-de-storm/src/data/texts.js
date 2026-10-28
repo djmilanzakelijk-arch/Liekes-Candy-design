@@ -63,8 +63,8 @@ export const CURATORS = [
   },
   {
     name: 'Constantijn',
-    role: 'Entree en zaal 2',
-    task: 'Onderzoek naar documentaire fotografie; werken en teksten voor de entree, de tijdlijn en ‘De mens achter de geschiedenis’.'
+    role: 'Zaal 2',
+    task: 'Onderzoek naar documentaire fotografie; werken en teksten voor ‘De mens achter de geschiedenis’.'
   },
   {
     name: 'Berend',

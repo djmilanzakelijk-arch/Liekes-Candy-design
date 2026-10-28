@@ -37,7 +37,6 @@ export const ROOMS = [
     nr: 0,
     label: 'Entree',
     title: 'De wereld staat stil',
-    curator: 'Constantijn',
     rect: [-10, 10, 0, 22],
     height: 12,
     theme: {

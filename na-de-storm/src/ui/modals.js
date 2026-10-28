@@ -108,7 +108,7 @@ export const MODALS = {
             ${ROOMS.map((r) => `
               <li class="${r.id === g.currentRoom ? 'current' : ''}">
                 <div><strong>${esc(r.id === 'entree' ? 'Entree' : r.label)} · ${esc(r.title)}</strong>
-                <span>${countRoom(r.id, g.viewed)} · curator ${esc(r.curator)}</span></div>
+                <span>${countRoom(r.id, g.viewed)}${r.curator ? ` · curator ${esc(r.curator)}` : ''}</span></div>
                 <div class="row-actions">
                   <button class="btn ghost small" data-room-text="${r.id}">Zaaltekst</button>
                   <button class="btn small ${r.id === g.currentRoom ? 'ghost' : 'primary'}" data-go="${r.id}">${r.id === g.currentRoom ? 'Je bent hier' : 'Ga hierheen'}</button>
@@ -194,7 +194,7 @@ export const MODALS = {
       wide: true,
       html: `
         <p class="lead">${esc(t.lead)}</p>
-        <p class="small">Curator: ${esc(room.curator)}</p>
+        ${room.curator ? `<p class="small">Curator: ${esc(room.curator)}</p>` : ''}
         <p class="small"><strong>Zie het verslag voor meer informatie over deze zaal.</strong></p>
         ${works.length ? `<section class="text-sec"><h3>Werken in deze zaal</h3><ul class="work-list">${works.map((a) => `<li><button class="link" data-art="${a.id}">${esc(a.artist)} – <em>${esc(a.title)}</em> (${esc(a.year)})</button>${badge(a)}</li>`).join('')}</ul></section>` : ''}`,
       bind(root) {
