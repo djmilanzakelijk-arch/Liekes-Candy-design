@@ -166,12 +166,12 @@ ok('Na sluiten kan direct verder gelopen worden', Math.hypot(s.pos.x - pb.x, s.p
 ok('Voortgang bijgehouden', s.viewed >= 2, `bekeken=${s.viewed}`);
 
 // ── E-toets ──
-await page.evaluate(() => { const g = window.__nds; g.player.place(-8.2, -4.5, Math.PI / 2); });
+await page.evaluate(() => { const g = window.__nds; g.player.place(-8.2, -11, Math.PI / 2); });
 await settle(0.2);
 await page.keyboard.press('KeyE');
 await sleep(300);
 s = await st();
-ok('E opent het werk dichtbij (Klee)', s.state === 'detail' && s.detail === 'klee-tod-und-feuer', s.detail);
+ok('E opent het werk dichtbij (Moore)', s.state === 'detail' && s.detail === 'moore-sleepers', s.detail);
 await waitState('detail');
 await page.keyboard.press('Escape');
 await waitState('play');
@@ -225,7 +225,7 @@ if (ONLY === 'all' || ONLY === 'art') {
     }, id);
     const pass = info.state === 'detail' && info.det === id && info.title === info.expected && info.secs === 3 && !info.empty && info.img !== false;
     if (pass) good++; else bad.push(`${id}: ${JSON.stringify(info)}`);
-    if (['pollock-autumn', 'mondrian-victory', 'lange-american', 'rothko-no3', 'eigen-installatie', 'moore-family', 'lam-jungle', 'leger-constructeurs'].includes(id)) await shot(`art-${id}`);
+    if (['pollock-autumn', 'mondrian-victory', 'lange-american', 'rothko-no3', 'eigen-installatie', 'moore-family', 'leger-constructeurs'].includes(id)) await shot(`art-${id}`);
   }
   ok(`Alle ${ids.length} werken openen met juiste titel, gegevens en beeld`, bad.length === 0, bad.join('\n'));
   await page.evaluate(() => { const g = window.__nds; g.closeDetail('button'); });

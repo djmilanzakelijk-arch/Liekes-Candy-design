@@ -16,10 +16,6 @@ export const IMAGE_SIZES = {
     "w": 714,
     "h": 1000
   },
-  "eames-lcw": {
-    "w": 1215,
-    "h": 1600
-  },
   "ernst-europe": {
     "w": 1151,
     "h": 416
@@ -36,33 +32,13 @@ export const IMAGE_SIZES = {
     "w": 1215,
     "h": 1600
   },
-  "kandinsky-bleu": {
-    "w": 1176,
-    "h": 1600
-  },
-  "klee-tod-und-feuer": {
-    "w": 634,
-    "h": 667
-  },
   "krasner-untitled": {
     "w": 325,
     "h": 420
   },
-  "lam-jungle": {
-    "w": 734,
-    "h": 765
-  },
   "lange-american": {
     "w": 1600,
     "h": 1257
-  },
-  "lange-mochida": {
-    "w": 1600,
-    "h": 1253
-  },
-  "lawrence-migration": {
-    "w": 422,
-    "h": 236
   },
   "leger-constructeurs": {
     "w": 1122,
@@ -100,10 +76,6 @@ export const IMAGE_SIZES = {
     "w": 1536,
     "h": 1043
   },
-  "munch-klokken": {
-    "w": 1274,
-    "h": 1600
-  },
   "nash-totes-meer": {
     "w": 1536,
     "h": 1036
@@ -115,10 +87,6 @@ export const IMAGE_SIZES = {
   "nussbaum-judenpass": {
     "w": 960,
     "h": 1105
-  },
-  "nussbaum-triumph": {
-    "w": 956,
-    "h": 640
   },
   "parks-gothic": {
     "w": 1131,
@@ -135,10 +103,6 @@ export const IMAGE_SIZES = {
   "pollock-autumn": {
     "w": 650,
     "h": 329
-  },
-  "pollock-shewolf": {
-    "w": 1183,
-    "h": 729
   },
   "rothko-no3": {
     "w": 709,

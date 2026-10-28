@@ -74,11 +74,9 @@ export const ROOMS = [
     partitions: [{ id: 'p1', cx: 0, cz: -7, len: 9, rot: 0, h: 3.8 }],
     benches: [{ x: 3.5, z: -18.6, rot: 0, len: 2.2 }],
     slots: [
-      { art: 'klee-tod-und-feuer', wall: 'W', at: -4.5 },
       { art: 'nash-totes-meer', wall: 'p1:a', at: 1.6 },
       { art: 'moore-sleepers', wall: 'W', at: -11 },
       { art: 'shahn-nazi-brutality', wall: 'E', at: -5 },
-      { art: 'nussbaum-triumph', wall: 'p1:b', at: 0 },
       { art: 'sargent-jaws', wall: 'E', at: -12 },
       { art: 'picasso-charnel', wall: 'N', at: 3.5 },
       { art: 'levy-nagasaki', wall: 'E', at: -19 }
@@ -102,15 +100,12 @@ export const ROOMS = [
     partitions: [{ id: 'p2', cx: 0, cz: -34.5, len: 9, rot: Math.PI / 2, h: 3.6 }],
     benches: [{ x: 5.6, z: -29.2, rot: Math.PI / 2, len: 1.8 }],
     slots: [
-      { art: 'lange-american', wall: 'W', at: -28.5 },
-      { art: 'lange-mochida', wall: 'W', at: -33.6 },
-      { art: 'adams-nakamura', wall: 'W', at: -39.6 },
+      { art: 'lange-american', wall: 'W', at: -30.5 },
+      { art: 'adams-nakamura', wall: 'W', at: -37.5 },
       { art: 'parks-gothic', wall: 'p2:b', at: -3 },
       { art: 'nussbaum-judenpass', wall: 'p2:b', at: 3 },
-      { art: 'lawrence-migration', wall: 'p2:a', at: 3 },
-      { art: 'salomon-leben', wall: 'p2:a', at: -3 },
-      { art: 'hopper-nighthawks', wall: 'E', at: -29.2 },
-      { art: 'munch-klokken', wall: 'E', at: -40.4 }
+      { art: 'salomon-leben', wall: 'p2:a', at: 0 },
+      { art: 'hopper-nighthawks', wall: 'E', at: -34.5 }
     ],
     stele: { x: -1.9, z: -25.7, faceTo: [-5.5, -23.2] }
   },
@@ -134,12 +129,10 @@ export const ROOMS = [
     ],
     benches: [],
     slots: [
-      { art: 'kandinsky-bleu', wall: 'W', at: -50.5 },
-      { art: 'ernst-europe', wall: 'W', at: -58.6 },
+      { art: 'ernst-europe', wall: 'W', at: -54.5 },
       { art: 'miro-escape', wall: 'p3a:a', at: 1.3 },
       { art: 'tanning-birthday', wall: 'p3a:b', at: 0 },
-      { art: 'lam-jungle', wall: 'N', at: -4.6 },
-      { art: 'magritte-empire', wall: 'N', at: 4.2 },
+      { art: 'magritte-empire', wall: 'N', at: 0 },
       { art: 'kahlo-column', wall: 'p3b:a', at: 0 },
       { art: 'gorky-liver', wall: 'E', at: -66.6 }
     ],
@@ -169,7 +162,6 @@ export const ROOMS = [
       { art: 'rothko-no3', wall: 'E', at: -59.5 },
       { art: 'newman-onement', wall: 'E', at: -50.2 },
       { art: 'dekooning-excavation', wall: 'E', at: -42.2 },
-      { art: 'pollock-shewolf', wall: 'W', at: -50.2 },
       { art: 'krasner-untitled', wall: 'W', at: -42.2 }
     ],
     stele: { x: 14.4, z: -55.2, faceTo: [10.6, -59.5] }
@@ -198,7 +190,6 @@ export const ROOMS = [
       { art: 'leger-constructeurs', wall: 'W', at: -18 },
       { art: 'appel-vragende', wall: 'p5:b', at: -3.4 },
       { art: 'dirksen-marshall', wall: 'N', at: 15.6 },
-      { art: 'eames-lcw', wall: 'N', at: 31.4 },
       { art: 'moore-family', sculpture: true },
       { art: 'zadkine-stad', wall: 'p5:a', at: 0 }
     ],

@@ -14,8 +14,8 @@ Een interactief **3D-museum in de browser**, gemaakt voor CKV Beeldend (4 vwo) d
 | Onderdeel | Uitleg |
 |---|---|
 | **7 ruimtes** | Entree · Zaal 1 *Een wereld in crisis* · Zaal 2 *De mens achter de geschiedenis* · Zaal 3 *Dromen, symbolen en het onderbewuste* · Zaal 4 *Een nieuwe beeldtaal* · Zaal 5 *Op weg naar een andere toekomst* · Finale *Wat bouwen we opnieuw op?* |
-| **39 werken uit 1940–1950** | 7 tot 9 per zaal. Klik je op een werk, dan zie je de afbeelding met titel, maker, jaar, techniek, collectie en de bron van de afbeelding. De uitleg per werk staat in het verslag. |
-| **Afbeeldingen** | Alle 41 werken met hun echte afbeelding. 18 zijn publiek domein of vrij gelicenseerd; 23 zijn nog auteursrechtelijk beschermd en worden getoond als citaat voor onderwijsdoeleinden, met maker, collectie, herkomst en ©-vermelding. |
+| **30 werken uit 1940–1950** | 6 per zaal. Klik je op een werk, dan zie je de afbeelding met titel, maker, jaar, techniek, collectie en de bron van de afbeelding. De uitleg per werk staat in het verslag. |
+| **Afbeeldingen** | Alle 32 werken met hun echte afbeelding. 13 zijn publiek domein of vrij gelicenseerd; 19 zijn nog auteursrechtelijk beschermd en worden getoond als citaat voor onderwijsdoeleinden, met maker, collectie, herkomst en ©-vermelding. |
 | **First-person** | WASD/pijltjes, muis met Pointer Lock (of slepen), Shift rennen, botsingen met muren, wanden, pilaren, banken en sokkels. |
 | **Inzoomen** | Klik op een werk (of druk **E**): de camera vliegt vloeiend en om muren heen naar het werk; links het beeld, rechts de informatie; vorig/volgend werk; vergroten met zoomen en verschuiven; terug naar exact je oude positie. |
 | **Educatieve laag** | Korte zaalteksten, tijdlijn 1940–1950 met per jaar de werken, eindscherm met inzichten, credits. |
@@ -153,10 +153,10 @@ Netlify bouwt en publiceert dan **automatisch** de nieuwe versie (zie het tabbla
 
 Automatisch getest met Playwright in headless Chromium (`tests/browser-test.mjs`), op de productiebuild. Resultaat van de laatste run: **49 van 49 controles geslaagd, geen fouten of waarschuwingen in de console.** Getest is onder meer:
 
-- **Installatie en build:** `npm ci` en `npm run build` slagen vanaf een schone kopie (0 kwetsbaarheden); alle 41 afbeeldingen komen in `dist/`.
+- **Installatie en build:** `npm ci` en `npm run build` slagen vanaf een schone kopie (0 kwetsbaarheden); alle 32 afbeeldingen komen in `dist/`.
 - **Gameplay:** startknop, W/A/S/D-lopen, camera op ooghoogte, botsing met muren en pilaren, door deuropeningen lopen, Esc → pauzemenu, ‘Terug naar de entree’, tour starten/stoppen, eindscherm, route opnieuw beginnen, terug naar het startscherm.
 - **Acceptatiescenario:** naar *Totes Meer* lopen → hint “Klik om dit werk van dichtbij te bekijken” → klikken → camera beweegt vloeiend dichterbij → juiste titel en informatie rechts, afbeelding links geladen → vergroten → *Volgend kunstwerk* wisselt beeld én tekst → *Terug naar het museum* zet de camera terug op exact dezelfde positie (afwijking 0,000 m) → direct verder lopen. Ook de **E-toets**, **Esc** en ‘klik op een muur opent niets’.
-- **Alle 43 werken** (39 uit 1940–1950 plus context, vergelijking en twee eigen werken) één voor één geopend: juiste titel, gevulde basisgegevens en een geladen afbeelding.
+- **Alle 34 werken** (30 uit 1940–1950 plus context, vergelijking en twee eigen werken) één voor één geopend: juiste titel, gevulde basisgegevens en een geladen afbeelding.
 - **Vensters:** plattegrond, tijdlijn (jaar 1944), instellingen vanuit het pauzemenu, lijstweergave zonder 3D (openen, volgend, sluiten, tijdlijn → werk).
 
 **Niet getest – eerlijk vermeld:**
@@ -166,8 +166,8 @@ Automatisch getest met Playwright in headless Chromium (`tests/browser-test.mjs`
 
 ## Bekende beperkingen
 
-- **Auteursrecht.** 23 werken (o.a. Pollock, Rothko, Picasso, Hopper, Kahlo) zijn nog beschermd. Op verzoek van de groep tonen we ze toch, als citaat voor onderwijsdoeleinden met bronvermelding. Let op: de onderwijsuitzondering in de Auteurswet is bedoeld voor gebruik *in de les*; een openbare website valt daar strikt genomen buiten. De site vraagt zoekmachines daarom om haar niet te indexeren (`robots.txt`, `noindex`). Het veiligst is de link alleen met je docent en klas te delen. Wil je toch volledig rechtenvrij publiceren, dan kunnen de oude ‘kleurnotities’ terug (de code ondersteunt `interpretation` nog).
-- Een aantal beschermde afbeeldingen is in **lage resolutie** beschikbaar (bijv. Autumn Rhythm, Magritte, Krasner, Lawrence) en ziet er van dichtbij wat zachter uit.
+- **Auteursrecht.** 19 werken (o.a. Pollock, Rothko, Picasso, Hopper, Kahlo) zijn nog beschermd. Op verzoek van de groep tonen we ze toch, als citaat voor onderwijsdoeleinden met bronvermelding. Let op: de onderwijsuitzondering in de Auteurswet is bedoeld voor gebruik *in de les*; een openbare website valt daar strikt genomen buiten. De site vraagt zoekmachines daarom om haar niet te indexeren (`robots.txt`, `noindex`). Het veiligst is de link alleen met je docent en klas te delen. Wil je toch volledig rechtenvrij publiceren, dan kunnen de oude ‘kleurnotities’ terug (de code ondersteunt `interpretation` nog).
+- Een aantal beschermde afbeeldingen is in **lage resolutie** beschikbaar (bijv. Autumn Rhythm, Magritte en Krasner) en ziet er van dichtbij wat zachter uit.
 - Bij **Krasner, Appel en Léger** konden we niet met zekerheid vaststellen dat de afbeelding precies het genoemde museumexemplaar toont; dat staat bij het werk vermeld.
 - De foto van Nash valt onder CC BY-NC-ND 3.0: alleen niet-commercieel gebruik, met naamsvermelding (zoals op deze site).
 - De 3D-ervaring is gemaakt voor laptop en computer. Op telefoons werkt een eenvoudige aanraakbediening, maar de **lijstweergave** is daar prettiger.

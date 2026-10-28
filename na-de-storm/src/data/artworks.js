@@ -57,39 +57,6 @@ export const ARTWORKS = [
 
   // ───────────────────────────── ZAAL 1 ─────────────────────────────
   {
-    id: 'klee-tod-und-feuer',
-    room: 'zaal1',
-    status: 'periode',
-    title: 'Tod und Feuer (Dood en vuur)',
-    artist: 'Paul Klee',
-    artistLife: '1879–1940',
-    year: '1940',
-    medium: 'Olieverf en gekleurde pasta op jute, in de oorspronkelijke lijst',
-    dimensions: '46,7 × 44,6 cm',
-    size: { w: 44.6, h: 46.7 },
-    collection: 'Zentrum Paul Klee, Bern (inv. 332)',
-    type: 'schilderij',
-    image: {
-      file: 'klee-tod-und-feuer.jpg',
-      credit: 'Wikimedia Commons',
-      license: 'Publiek domein (de maker overleed in 1940)',
-      sourceUrl: commons('Death_and_Fire_(1940)_-_Paul_Klee_(Zentrum_Paul_Klee).jpg')
-    },
-    texts: {
-      zien: 'In het midden staart een grote, bleke kop je aan. In het gezicht zijn de letters T, O en D – Duits voor ‘dood’ – te herkennen als ogen, neus en mond. Rechts loopt een klein, streepvormig mannetje; linksboven hangt een gele zon of vuurbal. Alles staat op een gloeiende ondergrond van oranje en rood.',
-      context: 'Klee maakte dit werk in 1940, kort voor zijn dood op 29 juni 1940. Hij was ernstig ziek en woonde in Zwitserland, terwijl de oorlog over Europa raasde. De nazi’s hadden zijn werk in 1937 als ‘ontaarde kunst’ uit Duitse musea verwijderd.',
-      beeldaspecten: 'Dikke zwarte lijnen werken als balken of tekens. Het sterke contrast tussen de witte kop en het vurige oranje trekt direct je blik. De grove jute blijft zichtbaar door de verf heen. De vormen zijn vereenvoudigd tot bijna kinderlijke symbolen.',
-      betekenis: 'De dood wordt niet griezelig, maar bijna rustig en eenvoudig verbeeld – als een gezicht dat je recht aankijkt. Het werk wordt vaak gelezen als Klees persoonlijke afrekening met zijn eigen sterfelijkheid. Of hij ook naar de oorlog verwees, weten we niet zeker; dat verband is onze interpretatie.',
-      zaal: 'Onze keuze: we openen de route met dit kleine werk, omdat het laat zien dat ‘crisis’ in 1940 tegelijk persoonlijk en wereldwijd was. Het is klein, maar het trekt je naar binnen.',
-      periode: 'Klee laat zien hoe kunstenaars met tekens, letters en vereenvoudiging iets uitdrukten dat te groot was voor een realistische afbeelding – een vooruitblik op de abstractie later in het decennium.'
-    },
-    sources: [
-      { label: 'Zentrum Paul Klee, Bern', url: 'https://www.zpk.org' },
-      { label: 'Wikimedia Commons – bestandspagina met collectiegegevens', url: commons('Death_and_Fire_(1940)_-_Paul_Klee_(Zentrum_Paul_Klee).jpg') },
-      { label: 'Wikipedia – Death and Fire', url: 'https://en.wikipedia.org/wiki/Death_and_Fire' }
-    ]
-  },
-  {
     id: 'nash-totes-meer',
     room: 'zaal1',
     status: 'periode',
@@ -186,41 +153,6 @@ export const ARTWORKS = [
       { label: 'United States Holocaust Memorial Museum – collectie', url: 'https://collections.ushmm.org/search/catalog/irn33819' },
       { label: 'Franklin D. Roosevelt Library – This Is Nazi Brutality', url: 'https://fdr.artifacts.archives.gov/objects/14526/this-is-nazi-brutality' },
       { label: 'Wikimedia Commons – NARA-scan', url: commons('THIS_IS_NAZI_BRUTALITY_-_NARA_-_513687.jpg') }
-    ]
-  },
-  {
-    id: 'nussbaum-triumph',
-    room: 'zaal1',
-    status: 'periode',
-    featured: true,
-    title: 'Triumph des Todes (Triomf van de dood)',
-    artist: 'Felix Nussbaum',
-    artistLife: '1904–1944',
-    year: '1944',
-    yearNote: 'Gedateerd 18 april 1944; zijn laatste bekende werk.',
-    medium: 'Olieverf op doek',
-    dimensions: 'ca. 100 × 150 cm',
-    size: { w: 150, h: 100 },
-    collection: 'Felix-Nussbaum-Haus, Osnabrück',
-    type: 'schilderij',
-    image: {
-      file: 'nussbaum-triumph.jpg',
-      credit: 'Niedersächsische Sparkassenstiftung, via Wikimedia Commons',
-      license: 'Publiek domein in Nederland en de EU (de maker overleed in 1944)',
-      sourceUrl: commons("'Triumph_des_Todes_(Die_Gerippe_spielen_zum_Tanz)',_1944_by_Felix_Nussbaum.jpg")
-    },
-    texts: {
-      zien: 'Skeletten maken muziek en dansen tussen de resten van de beschaving: kapotte instrumenten, boeken, papieren, een globe en een klok. Boven de chaos zweven vliegers en papieren door de lucht. Het lijkt een wereld waaruit alle levende mensen verdwenen zijn.',
-      context: 'Nussbaum was een Duits-joodse schilder die naar België vluchtte. Hij leefde ondergedoken in Brussel toen hij dit werk voltooide. Op 20 juni 1944 werden hij en zijn vrouw Felka Platek gearresteerd; op 31 juli 1944 werden ze naar Auschwitz gedeporteerd, waar ze werden vermoord.',
-      beeldaspecten: 'Een overvolle, chaotische compositie zonder rustpunt. Aardetinten en grauwe kleuren. De voorwerpen zijn helder en scherp getekend. Het middeleeuwse thema van de ‘dodendans’ wordt gecombineerd met moderne voorwerpen.',
-      betekenis: 'Alles wat beschaving betekent – wetenschap, kunst, muziek, tijd – ligt in puin, terwijl de dood triomfeert. Het werk wordt gelezen als aanklacht én testament van een kunstenaar die wist dat hij in levensgevaar was.',
-      zaal: 'Onze keuze: het hangt aan de achterkant van de middenwand. Je ontdekt het pas als je verder loopt, zoals de dreiging in 1944 steeds dichterbij kwam.',
-      periode: 'Een eeuwenoud motief uit de kunstgeschiedenis, de dodendans, kreeg in de Tweede Wereldoorlog een nieuwe, verschrikkelijk letterlijke betekenis.'
-    },
-    sources: [
-      { label: 'Deutsches Historisches Museum (LeMO) – biografie Felix Nussbaum', url: 'https://www.dhm.de/lemo/biografie/felix-nussbaum' },
-      { label: 'Art Inquiry – Felix Nussbaum’s Triumph of Death', url: 'https://journals.ltn.lodz.pl/Art-Inquiry/article/view/2575' },
-      { label: 'Wikimedia Commons – bestandspagina', url: commons("'Triumph_des_Todes_(Die_Gerippe_spielen_zum_Tanz)',_1944_by_Felix_Nussbaum.jpg") }
     ]
   },
   {
@@ -359,39 +291,6 @@ export const ARTWORKS = [
     ]
   },
   {
-    id: 'lange-mochida',
-    room: 'zaal2',
-    status: 'periode',
-    title: 'Leden van de familie Mochida wachten op de evacuatiebus (Hayward, Californië)',
-    artist: 'Dorothea Lange',
-    artistLife: '1895–1965',
-    year: '8 mei 1942',
-    medium: 'Foto, gemaakt voor de War Relocation Authority',
-    dimensions: 'Getoond als tentoonstellingsafdruk',
-    size: { w: 110 },
-    sizeNote: 'Getoond als vergrote tentoonstellingsafdruk.',
-    collection: 'National Archives, College Park (210-G-C153)',
-    type: 'foto',
-    image: {
-      file: 'lange-mochida.jpg',
-      credit: 'U.S. National Archives, via Wikimedia Commons',
-      license: 'Publiek domein (werk voor de Amerikaanse overheid)',
-      sourceUrl: commons('Photograph_of_Members_of_the_Mochida_Family_Awaiting_Evacuation_-_NARA_-_537505_-_Restoration.png')
-    },
-    texts: {
-      zien: 'Een vader en een groep kinderen staan netjes aangekleed in een rij, met tassen en koffers aan hun voeten. Op hun jassen hangen witte labels. Op een van de tassen staat de naam ‘Mochida’.',
-      context: 'De familie Mochida had een kwekerij met kassen in Eden Township, bij Hayward. Zoals duizenden andere Japans-Amerikaanse families werden zij in mei 1942 weggevoerd naar een kamp. De labels met een nummer moesten het gezin tijdens de evacuatie bij elkaar houden.',
-      beeldaspecten: 'Een frontale groepsopname, bijna als een familieportret. De herhaling van de witte labels valt direct op. De kinderen kijken ernstig of afwachtend; de zachte grijstonen houden het beeld rustig.',
-      betekenis: 'Mensen krijgen labels zoals bagage. Juist de nette kleding en de waardige houding maken het onrecht voelbaar: dit is een gewoon gezin dat zijn thuis kwijtraakt.',
-      zaal: 'Onze keuze: naast de winkelgevel laat deze foto zien wat er met de mensen achter die gevel gebeurde.',
-      periode: 'Gedwongen verplaatsing was een van de grote menselijke gevolgen van de oorlog, in Europa én in Amerika.'
-    },
-    sources: [
-      { label: 'Wikimedia Commons – NARA-bestand 537505', url: commons('Photograph_of_Members_of_the_Mochida_Family_Awaiting_Evacuation_-_NARA_-_537505_-_Restoration.png') },
-      { label: 'National Archives – catalogus', url: 'https://catalog.archives.gov/id/537505' }
-    ]
-  },
-  {
     id: 'adams-nakamura',
     room: 'zaal2',
     status: 'periode',
@@ -494,38 +393,6 @@ export const ARTWORKS = [
     ]
   },
   {
-    id: 'lawrence-migration',
-    room: 'zaal2',
-    status: 'periode',
-    title: 'The Migration Series, Panel nr. 1: “During World War I there was a great migration north by southern African Americans”',
-    artist: 'Jacob Lawrence',
-    artistLife: '1917–2000',
-    year: '1940–1941',
-    medium: 'Caseïne-tempera op hardboard',
-    dimensions: '30,5 × 45,7 cm',
-    size: { w: 45.7, h: 30.5 },
-    collection: 'The Phillips Collection, Washington (de oneven panelen); de even panelen zijn van het MoMA',
-    type: 'schilderij',
-    image: {
-      file: 'lawrence-migration.jpg',
-      credit: 'Wikipedia (niet-vrij bestand)',
-      license: '© de rechthebbenden van Jacob Lawrence. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
-      sourceUrl: 'https://en.wikipedia.org/wiki/File:Migration_Series_Panel_1.jpg'
-    },
-    texts: {
-      zien: 'Een grote menigte mensen met koffers en bundels haast zich naar drie doorgangen in een treinstation. Boven de doorgangen staan de namen van steden in het noorden: Chicago, New York en St. Louis.',
-      context: 'De serie van zestig panelen vertelt over de Grote Migratie: vanaf ongeveer 1915 trokken honderdduizenden Afro-Amerikanen van het zuiden naar de steden in het noorden van de VS, op zoek naar werk en minder discriminatie. Lawrence was begin twintig toen hij de serie maakte. In 1942 kochten de Phillips Collection en het MoMA elk de helft.',
-      beeldaspecten: 'Platte kleurvlakken en silhouetten zonder gezichtsdetails. Lawrence gebruikte in alle panelen hetzelfde beperkte palet (bruin, oker, blauw, groen, zwart), zodat de serie één geheel vormt. De figuren herhalen zich ritmisch, als in een beweging.',
-      betekenis: 'Een collectieve geschiedenis wordt verteld als een beeldverhaal, bijna als een strip of film. De mensen zijn anoniem: het gaat om een heel volk in beweging, op zoek naar een beter leven.',
-      zaal: 'Onze keuze: verplaatsing en hoop op een nieuw begin werden in de jaren veertig opnieuw actueel, met miljoenen ontheemden in Europa en Azië.',
-      periode: 'In de VS ontstond een eigen, moderne figuratieve kunst die over identiteit en geschiedenis ging, naast de opkomende abstractie.'
-    },
-    sources: [
-      { label: 'The Phillips Collection – Migration Series, Panel no. 1', url: 'https://www.phillipscollection.org/collection/migration-series-panel-no-1-during-world-war-i-there-was-great-migration-north-southern' },
-      { label: 'MoMA – Jacob Lawrence: The Migration Series', url: 'https://www.moma.org/calendar/exhibitions/444' }
-    ]
-  },
-  {
     id: 'salomon-leben',
     room: 'zaal2',
     status: 'periode',
@@ -591,72 +458,8 @@ export const ARTWORKS = [
       { label: 'Wikipedia – Nighthawks (Hopper)', url: 'https://en.wikipedia.org/wiki/Nighthawks_(Hopper)' }
     ]
   },
-  {
-    id: 'munch-klokken',
-    room: 'zaal2',
-    status: 'periode',
-    title: 'Selvportrett. Mellom klokken og sengen (Zelfportret. Tussen de klok en het bed)',
-    artist: 'Edvard Munch',
-    artistLife: '1863–1944',
-    year: '1940–1943',
-    medium: 'Olieverf op doek',
-    dimensions: '149,5 × 120,5 cm',
-    size: { w: 120.5, h: 149.5 },
-    collection: 'Munchmuseet, Oslo (MM.M.00023)',
-    type: 'schilderij',
-    image: {
-      file: 'munch-klokken.jpg',
-      credit: 'Wikimedia Commons',
-      license: 'Publiek domein (de maker overleed in 1944)',
-      sourceUrl: commons('Edvard_Munch,_Selvportrett._Mellom_klokken_og_sengen.JPG')
-    },
-    texts: {
-      zien: 'De oude kunstenaar staat stijf rechtop in een kamer, tussen een hoge staande klok (links) en een bed met een gestreepte sprei (rechts). Achter hem, in een fel gekleurde kamer, hangen zijn eigen schilderijen aan de muur.',
-      context: 'Munch woonde tijdens de Duitse bezetting van Noorwegen (vanaf april 1940) teruggetrokken op zijn landgoed Ekely bij Oslo. Hij was in de zeventig en overleed op 23 januari 1944.',
-      beeldaspecten: 'Een losse, expressieve penseelstreek. Felle geeltinten naast donkere vlakken. De figuur vormt een verticale as tussen twee voorwerpen. De ruimte is ondiep, bijna als een toneel.',
-      betekenis: 'De klok (tijd) en het bed (ziekte, slaap, dood) omringen de kunstenaar; zijn levenswerk hangt achter hem. Hij staat letterlijk tussen leven en sterven. Een persoonlijk beeld van ouderdom en eenzaamheid in donkere jaren.',
-      zaal: 'Onze keuze: de zaal over de mens eindigt bij een oude kunstenaar die terugkijkt op zijn leven – na de ontheemden en de vervolgden een stille, persoonlijke afsluiting.',
-      periode: 'Het expressionisme, ontstaan rond 1900, bleef een taal voor innerlijke ervaring. Dat ‘expressieve’ keert terug in het abstract expressionisme van zaal 4.'
-    },
-    sources: [
-      { label: 'Munchmuseet, Oslo', url: 'https://www.munchmuseet.no/en/' },
-      { label: 'Wikimedia Commons – bestandspagina met collectiegegevens', url: commons('Edvard_Munch,_Selvportrett._Mellom_klokken_og_sengen.JPG') }
-    ]
-  },
 
   // ───────────────────────────── ZAAL 3 ─────────────────────────────
-  {
-    id: 'kandinsky-bleu',
-    room: 'zaal3',
-    status: 'periode',
-    title: 'Bleu de ciel (Hemelsblauw)',
-    artist: 'Wassily Kandinsky',
-    artistLife: '1866–1944',
-    year: '1940',
-    medium: 'Olieverf op doek',
-    dimensions: '100 × 73 cm',
-    size: { w: 73, h: 100 },
-    collection: 'Centre Pompidou – Musée national d’art moderne, Parijs (AM 1976-862), schenking Nina Kandinsky 1976',
-    type: 'schilderij',
-    image: {
-      file: 'kandinsky-bleu.jpg',
-      credit: 'Wikimedia Commons',
-      license: 'Publiek domein (de maker overleed in 1944)',
-      sourceUrl: commons('Wassily_Kandinsky_-_Sky_Blue,_1940.jpg')
-    },
-    texts: {
-      zien: 'Op een egaal hemelsblauw vlak zweven kleine, kleurrijke wezentjes: gestreepte, gespikkelde en gekrulde vormen die doen denken aan insecten, zeedieren of speelgoed. Ze raken elkaar niet en lijken gewichtloos.',
-      context: 'Kandinsky woonde sinds 1933 in Neuilly-sur-Seine bij Parijs, nadat de nazi’s het Bauhaus hadden gesloten. Hij schilderde dit werk in 1940, het jaar waarin Frankrijk werd bezet. Het Centre Pompidou wijst op de verwantschap met de ‘biomorfe’ (op levende wezens lijkende) vormen van onder anderen Miró.',
-      beeldaspecten: 'Een rustige, effen achtergrond met vrij zwevende figuren. Fijne details en kleurrijke patronen. Er is geen horizon en geen zwaartekracht. De vormen zijn evenwichtig over het vlak verdeeld.',
-      betekenis: 'Midden in de oorlog schept Kandinsky een lichte, speelse wereld. Je kunt het lezen als ontsnapping, als geloof in de innerlijke kracht van kunst, of als een blik door een microscoop op het leven zelf.',
-      zaal: 'Onze keuze: dit werk opent de droomzaal. Het is een brug tussen abstracte kunst en de biomorfe vormen van het surrealisme.',
-      periode: 'Kunstenaars die in bezet Europa bleven, schiepen soms een innerlijke wereld als antwoord op een bedreigende buitenwereld.'
-    },
-    sources: [
-      { label: 'Centre Pompidou – Bleu de ciel', url: 'https://www.centrepompidou.fr/fr/ressources/oeuvre/cEbLda' },
-      { label: 'Wikimedia Commons – bestandspagina', url: commons('Wassily_Kandinsky_-_Sky_Blue,_1940.jpg') }
-    ]
-  },
   {
     id: 'ernst-europe',
     room: 'zaal3',
@@ -753,39 +556,6 @@ export const ARTWORKS = [
     },
     sources: [
       { label: 'Philadelphia Museum of Art – Birthday', url: 'https://philamuseum.org/collection/object/93232' }
-    ]
-  },
-  {
-    id: 'lam-jungle',
-    room: 'zaal3',
-    status: 'periode',
-    featured: true,
-    title: 'La Jungla (De jungle)',
-    artist: 'Wifredo Lam',
-    artistLife: '1902–1982',
-    year: '1943',
-    medium: 'Gouache op papier, op doek gemonteerd',
-    dimensions: '239,4 × 229,9 cm',
-    size: { w: 229.9, h: 239.4 },
-    collection: 'The Museum of Modern Art (MoMA), New York',
-    type: 'schilderij',
-    image: {
-      file: 'lam-jungle.jpg',
-      credit: 'WikiArt',
-      license: '© de rechthebbenden van Wifredo Lam. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
-      sourceUrl: 'https://www.wikiart.org/en/wifredo-lam/the-jungle-1943'
-    },
-    texts: {
-      zien: 'Tussen hoge stengels van suikerriet en bamboe staan lange, gemaskerde figuren met grote handen en voeten en maanvormige gezichten. Ze lijken in elkaar en in de planten over te lopen.',
-      context: 'Lam, een Cubaanse kunstenaar met Chinese, Afrikaanse en Spaanse wortels, woonde in Parijs en was bevriend met Picasso en de surrealisten. In 1941 vertrok hij met onder anderen André Breton per schip uit Marseille en keerde terug naar Cuba, waar hij dit werk schilderde.',
-      beeldaspecten: 'Groen, blauw, geel en oker in een dicht, verticaal ritme. De figuren zijn kubistisch opgebouwd uit vlakken, met maskerachtige gezichten. Het formaat is groter dan de kijker.',
-      betekenis: 'Lam verwerkte Afro-Cubaanse spiritualiteit in zijn werk. Het suikerriet verwijst naar de plantages en het koloniale verleden van Cuba. Zo ontstaat een surrealisme dat niet Europees is, maar wortels heeft in de Caribische cultuur.',
-      zaal: 'Onze keuze: het grootste werk van de droomzaal hangt op de verste wand, zodat je door de ruimte naar de jungle toe loopt.',
-      periode: 'De kunst van de jaren veertig was internationaal en speelde zich niet alleen af tussen Parijs en New York.'
-    },
-    sources: [
-      { label: 'University of Utah – beeldrecord The Jungle (MoMA)', url: 'https://collections.lib.utah.edu/ark:/87278/s62n8dgz' },
-      { label: 'MoMA – Wifredo Lam (kunstenaarspagina)', url: 'https://www.moma.org/artists/3332' }
     ]
   },
   {
@@ -917,37 +687,6 @@ export const ARTWORKS = [
     sources: [
       { label: 'MoMA – Piet Mondrian, Broadway Boogie Woogie', url: 'https://www.moma.org/collection/works/78682' },
       { label: 'Wikimedia Commons – bestandspagina', url: commons('Piet_Mondrian,_1942_-_Broadway_Boogie_Woogie.jpg') }
-    ]
-  },
-  {
-    id: 'pollock-shewolf',
-    room: 'zaal4',
-    status: 'periode',
-    title: 'The She-Wolf (De wolvin)',
-    artist: 'Jackson Pollock',
-    artistLife: '1912–1956',
-    year: '1943',
-    medium: 'Olieverf, gouache en gips op doek',
-    dimensions: '106,4 × 170,2 cm',
-    size: { w: 170.2, h: 106.4 },
-    collection: 'The Museum of Modern Art (MoMA), New York (82.1944), aangekocht in 1944',
-    type: 'schilderij',
-    image: {
-      file: 'pollock-shewolf.jpg',
-      credit: 'WikiArt',
-      license: '© de rechthebbenden van Jackson Pollock. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
-      sourceUrl: 'https://www.wikiart.org/en/jackson-pollock/the-she-wolf-1943'
-    },
-    texts: {
-      zien: 'Een dierachtige figuur, een wolf, loopt horizontaal over het doek. Het lichaam is omringd en deels bedekt door krabbels, vlekken, spatten en tekens in zwart, wit, oker, blauw en rood.',
-      context: 'Het werk hing in Pollocks eerste solotentoonstelling, in november 1943 in de galerie Art of This Century van Peggy Guggenheim in New York. Het MoMA kocht het in 1944.',
-      beeldaspecten: 'Een mythische figuur, half verborgen in abstracte tekens. Dynamische spatten en lijnen, aardetinten, en geen duidelijke ruimte of diepte.',
-      betekenis: 'Het werk kan verwijzen naar de wolvin uit de Romeinse mythe van Romulus en Remus, maar Pollock weigerde het uit te leggen. Hij was geïnteresseerd in mythen, het onderbewuste en inheemse Amerikaanse kunst.',
-      zaal: 'Onze keuze: dit werk laat zien dat Pollock begon met mythische, surrealistische beelden, vóórdat hij in 1947 tot zijn bekende druiptechniek kwam. Vergelijk het met zijn grote doek op de noordwand.',
-      periode: 'De vroege fase van het abstract expressionisme: zoeken naar ‘oerbeelden’ na een wereldwijde catastrofe.'
-    },
-    sources: [
-      { label: 'MoMA – Jackson Pollock, The She-Wolf', url: 'https://www.moma.org/collection/works/78719' }
     ]
   },
   {
@@ -1277,39 +1016,6 @@ export const ARTWORKS = [
       { label: 'The Henry Ford – ERP-affiche ‘All Our Colours to the Mast’', url: 'https://www.thehenryford.org/collections/explore/artifact/343111' },
       { label: 'George C. Marshall Foundation', url: 'https://marshallfoundation.org/?p=1200' },
       { label: 'Wikimedia Commons – bestandspagina', url: commons('Europe_Plan_Marshall._Poster_1947.JPG') }
-    ]
-  },
-  {
-    id: 'eames-lcw',
-    room: 'zaal5',
-    status: 'periode',
-    title: 'LCW (Lounge Chair Wood)',
-    artist: 'Charles en Ray Eames',
-    artistLife: '1907–1978 en 1912–1988',
-    year: '1945–1946',
-    yearNote: 'Ontwerp 1945–1946; productie vanaf 1946.',
-    medium: 'Gevormd (gebogen) multiplex, rubberen schokdempers',
-    dimensions: 'Afmetingen verschillen per uitvoering',
-    size: { w: 70, h: 70 },
-    collection: 'O.a. Art Institute of Chicago en Victoria and Albert Museum, Londen',
-    type: 'ontwerp',
-    image: {
-      file: 'eames-lcw.jpg',
-      credit: 'Honolulu Museum of Art, foto via Wikimedia Commons',
-      license: '© de rechthebbenden van Charles en Ray Eames. Getoond als citaat voor onderwijsdoeleinden (CKV-schoolproject, niet-commercieel), met bronvermelding.',
-      sourceUrl: 'https://commons.wikimedia.org/wiki/File:LCW_(Lounge_Chair_Wood)_Chair_by_Charles_and_Ray_Eames,_Honolulu_Museum_of_Art_4410.1.JPG'
-    },
-    texts: {
-      zien: 'Een lage stoel van gebogen houten platen. Zitting en rugleuning zijn losse, gevormde schalen op een onderstel van gebogen multiplex. Er is geen bekleding; de verbindingen zitten verborgen.',
-      context: 'Tijdens de oorlog ontwikkelden Charles en Ray Eames voor de Amerikaanse marine spalken van gevormd multiplex. Die techniek gebruikten ze na de oorlog voor betaalbare meubels in massaproductie. Evans Products maakte de eerste exemplaren; Herman Miller nam de verkoop in 1946 over en later ook de productie.',
-      beeldaspecten: 'Organische, lichaamsvormige curven. Het materiaal wordt eerlijk getoond. De onderdelen zijn met rubberen dempers verbonden, waardoor de stoel licht en een beetje verend is.',
-      betekenis: 'Oorlogstechnologie wordt omgezet in iets alledaags en vriendelijks: wonen in een nieuwe tijd. Ontwerp als optimisme.',
-      zaal: 'Onze keuze: vormgeving hoort ook bij de beeldende kunst van deze periode. Dit ontwerp laat zien hoe de naoorlogse wereld er letterlijk anders uit ging zien.',
-      periode: 'Na 1945 groeide het geloof in modern design voor iedereen: mooi, praktisch en betaalbaar.'
-    },
-    sources: [
-      { label: 'Art Institute of Chicago – Lounge Chair (Model LCW)', url: 'https://www.artic.edu/artworks/35305/lounge-chair-model-lcw' },
-      { label: 'Victoria and Albert Museum – LCW', url: 'https://collections.vam.ac.uk/item/O144157' }
     ]
   },
   {
