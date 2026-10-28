@@ -210,7 +210,7 @@ export const ROOMS = [
     nr: 6,
     label: 'Finale',
     title: 'Wat bouwen we opnieuw op?',
-    curator: 'Milan',
+    curator: 'Milan, Berend, Polle en Constantijn',
     rect: [10.6, 36.6, -5.4, 22],
     height: 14,
     theme: {

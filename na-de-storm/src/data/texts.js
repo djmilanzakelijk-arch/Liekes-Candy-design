@@ -58,23 +58,23 @@ export const ABOUT = {
 export const CURATORS = [
   {
     name: 'Milan',
-    role: 'Zaal 1, zaal 4 en de finale',
-    task: 'Onderzoek naar de oorlogskunst en het abstract expressionisme; werken en teksten voor ‘Een wereld in crisis’, ‘Een nieuwe beeldtaal’ en de finale met ons eigen werk.'
+    role: 'Zaal 1, zaal 4, de finale en het verslag',
+    task: 'Onderzoek naar de oorlogskunst en het abstract expressionisme; werken en teksten voor ‘Een wereld in crisis’ en ‘Een nieuwe beeldtaal’. Samen met de groep: de finale met ons eigen werk en het verslag.'
   },
   {
     name: 'Constantijn',
-    role: 'Zaal 2',
-    task: 'Onderzoek naar documentaire fotografie; werken en teksten voor ‘De mens achter de geschiedenis’.'
+    role: 'Zaal 2, de finale en het verslag',
+    task: 'Onderzoek naar documentaire fotografie; werken en teksten voor ‘De mens achter de geschiedenis’. Samen met de groep: de finale met ons eigen werk en het verslag.'
   },
   {
     name: 'Berend',
-    role: 'Zaal 3',
-    task: 'Onderzoek naar het surrealisme; werken en teksten voor ‘Dromen, symbolen en het onderbewuste’.'
+    role: 'Zaal 3, de finale en het verslag',
+    task: 'Onderzoek naar het surrealisme; werken en teksten voor ‘Dromen, symbolen en het onderbewuste’. Samen met de groep: de finale met ons eigen werk en het verslag.'
   },
   {
     name: 'Polle',
-    role: 'Zaal 5',
-    task: 'Onderzoek naar de wederopbouw, CoBrA en het Marshallplan; werken en teksten voor ‘Op weg naar een andere toekomst’.'
+    role: 'Zaal 5, de finale en het verslag',
+    task: 'Onderzoek naar de wederopbouw, CoBrA en het Marshallplan; werken en teksten voor ‘Op weg naar een andere toekomst’. Samen met de groep: de finale met ons eigen werk en het verslag.'
   }
 ];
 

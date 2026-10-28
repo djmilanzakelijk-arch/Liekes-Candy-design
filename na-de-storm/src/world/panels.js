@@ -275,7 +275,11 @@ export class Panels {
     y += wrapText(g, ROOM_TEXTS[room.id].lead, 60, y, 640, 45) * 45 + 30;
     g.fillStyle = accent;
     g.font = `600 26px ${SANS}`;
-    if (room.curator) g.fillText(`Curator: ${room.curator}`, 60, H - 150);
+    if (room.curator) {
+      const group = / en /.test(room.curator);
+      if (group) g.font = `600 22px ${SANS}`;
+      g.fillText(`${group ? 'Curatoren' : 'Curator'}: ${room.curator}`, 60, H - 150);
+    }
     g.fillStyle = ink;
     g.font = `600 30px ${SANS}`;
     g.fillText('Klik voor de zaaltekst →', 60, H - 90);

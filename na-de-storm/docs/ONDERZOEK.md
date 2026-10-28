@@ -189,10 +189,11 @@ Alle overige beelden (architectuur, installatie, studie) zijn in code gemaakt vo
 
 ## 7. Taakverdeling
 
-- **Milan:** zaal 1, zaal 4 en de finale met ons eigen werk.
+- **Milan:** zaal 1 en zaal 4.
 - **Constantijn:** zaal 2.
 - **Berend:** zaal 3.
 - **Polle:** zaal 5.
+- **Iedereen samen:** de finale met ons eigen werk en het verslag.
 
 ## 8. Aandachtspunt
 
