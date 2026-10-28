@@ -187,8 +187,13 @@ Alle overige beelden (architectuur, installatie, studie) zijn in code gemaakt vo
 
 ---
 
-## 7. Nog te doen door de groep
+## 7. Taakverdeling
 
-- De **voorgestelde taakverdeling** (Milan: entree en zaal 1; Constantijn: zaal 2 en de tijdlijn; Berend: zaal 3–4; Polle: zaal 5, finale, praktijkwerk) controleren en aanpassen aan wat ieder werkelijk deed.
-- De **meningen** in de zaalteksten en de **voorbeeldreflectie** zijn als *concept* gemarkeerd: herschrijf ze in je eigen woorden.
+- **Milan:** zaal 1, zaal 4 en de finale met ons eigen werk.
+- **Constantijn:** de entree, de tijdlijn en zaal 2.
+- **Berend:** zaal 3.
+- **Polle:** zaal 5.
+
+## 8. Aandachtspunt
+
 - Controleer de werken met afwijkende bronnen (§5) zelf nog eens bij het museum als je ze in een presentatie noemt.

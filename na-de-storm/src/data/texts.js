@@ -58,26 +58,25 @@ export const ABOUT = {
 export const CURATORS = [
   {
     name: 'Milan',
-    role: 'Historisch onderzoek, entree en zaal 1',
-    task: 'Onderzoek naar de Tweede Wereldoorlog en de oorlogskunst; selectie en teksten voor de entree en ‘Een wereld in crisis’.'
+    role: 'Zaal 1, zaal 4 en de finale',
+    task: 'Onderzoek naar de oorlogskunst en het abstract expressionisme; werken en teksten voor ‘Een wereld in crisis’, ‘Een nieuwe beeldtaal’ en de finale met ons eigen werk.'
   },
   {
     name: 'Constantijn',
-    role: 'Documentaire fotografie, zaal 2 en de tijdlijn',
-    task: 'Onderzoek naar documentaire fotografie, identiteit en verplaatsing; selectie en teksten voor ‘De mens achter de geschiedenis’ en de controle van de tijdlijn 1940–1950.'
+    role: 'Entree en zaal 2',
+    task: 'Onderzoek naar documentaire fotografie; werken en teksten voor de entree, de tijdlijn en ‘De mens achter de geschiedenis’.'
   },
   {
     name: 'Berend',
-    role: 'Kunsthistorische selectie en interpretaties, zaal 3 en zaal 4',
-    task: 'Onderzoek naar surrealisme en abstract expressionisme, de opkomst van New York en de analyse van beeldaspecten; teksten voor ‘Dromen, symbolen en het onderbewuste’ en ‘Een nieuwe beeldtaal’.'
+    role: 'Zaal 3',
+    task: 'Onderzoek naar het surrealisme; werken en teksten voor ‘Dromen, symbolen en het onderbewuste’.'
   },
   {
     name: 'Polle',
-    role: 'Zaal 5, finale en eigen praktijkwerk',
-    task: 'Onderzoek naar wederopbouw, CoBrA, vormgeving en het Marshallplan; ontwerp van de installatie ‘Na de storm’, de reflectie en de quiz.'
+    role: 'Zaal 5',
+    task: 'Onderzoek naar de wederopbouw, CoBrA en het Marshallplan; werken en teksten voor ‘Op weg naar een andere toekomst’.'
   }
 ];
-export const CURATOR_NOTE = 'Dit is een voorgestelde taakverdeling. Milan, Berend, Polle en Constantijn controleren en passen haar aan op basis van wat ieder werkelijk heeft gedaan.';
 
 export const ROOM_TEXTS = {
   entree: {
@@ -192,8 +191,7 @@ export const REFLECTION = {
     'In een periode van oorlog en onzekerheid is het belangrijk dat kunst de werkelijkheid laat zien. Zonder de foto’s van Dorothea Lange of het affiche van Ben Shahn zouden veel mensen niet hebben geweten wat er gebeurde. Zulke beelden zijn bewijs en herinnering tegelijk.',
     'Toch denken wij dat dat niet genoeg is. Na de Holocaust en de atoombom vonden veel kunstenaars dat een realistisch beeld tekortschoot. Een schilderij als Onement I van Barnett Newman laat geen enkele gebeurtenis zien, maar roept wel een gevoel op van stilte en van een nieuw begin. Dat kan een foto niet.',
     'Onze conclusie is daarom dat kunst allebei mag én moet: ze moet getuigen van wat er gebeurd is, en ze mag nieuwe werelden scheppen voor wat er nog niet in woorden te zeggen is. Juist in de jaren veertig zie je die twee wegen naast elkaar ontstaan.'
-  ],
-  exampleNote: 'Voorbeeldreflectie (concept) – Milan, Berend, Polle en Constantijn controleren deze tekst en passen haar aan aan hun eigen mening.'
+  ]
 };
 
 export const INSIGHTS = [

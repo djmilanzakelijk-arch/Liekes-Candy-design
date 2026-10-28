@@ -37,7 +37,7 @@ export const ROOMS = [
     nr: 0,
     label: 'Entree',
     title: 'De wereld staat stil',
-    curator: 'Milan',
+    curator: 'Constantijn',
     rect: [-10, 10, 0, 22],
     height: 12,
     theme: {
@@ -152,7 +152,7 @@ export const ROOMS = [
     nr: 4,
     label: 'Zaal 4',
     title: 'Een nieuwe beeldtaal',
-    curator: 'Berend',
+    curator: 'Milan',
     rect: [10.6, 36.6, -70.8, -36],
     height: 10,
     theme: {
@@ -211,7 +211,7 @@ export const ROOMS = [
     nr: 6,
     label: 'Finale',
     title: 'Wat bouwen we opnieuw op?',
-    curator: 'Polle',
+    curator: 'Milan',
     rect: [10.6, 36.6, -5.4, 22],
     height: 14,
     theme: {

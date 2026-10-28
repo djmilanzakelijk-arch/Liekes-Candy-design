@@ -1,7 +1,7 @@
 import { esc, tag, link } from './dom.js';
 import { ROOMS, ROOM_BY_ID } from '../data/rooms.js';
 import { ARTWORKS, ART_BY_ID, ACCESSED, isCounted } from '../data/artworks.js';
-import { EXHIBITION, ABOUT, CURATORS, CURATOR_NOTE, ROOM_TEXTS, REFLECTION, INSIGHTS } from '../data/texts.js';
+import { EXHIBITION, ABOUT, CURATORS, ROOM_TEXTS, REFLECTION, INSIGHTS } from '../data/texts.js';
 import { TIMELINE, TIMELINE_YEARS } from '../data/timeline.js';
 import { QUIZ } from '../data/quiz.js';
 import { drawMap } from './map.js';
@@ -108,7 +108,7 @@ export const MODALS = {
             ${ROOMS.map((r) => `
               <li class="${r.id === g.currentRoom ? 'current' : ''}">
                 <div><strong>${esc(r.id === 'entree' ? 'Entree' : r.label)} · ${esc(r.title)}</strong>
-                <span>${countRoom(r.id, g.viewed)} · curator ${esc(r.curator)} (voorstel)</span></div>
+                <span>${countRoom(r.id, g.viewed)} · curator ${esc(r.curator)}</span></div>
                 <div class="row-actions">
                   <button class="btn ghost small" data-room-text="${r.id}">Zaaltekst</button>
                   <button class="btn small ${r.id === g.currentRoom ? 'ghost' : 'primary'}" data-go="${r.id}">${r.id === g.currentRoom ? 'Je bent hier' : 'Ga hierheen'}</button>
@@ -194,7 +194,7 @@ export const MODALS = {
       wide: true,
       html: `
         <p class="lead">${esc(t.lead)}</p>
-        <p class="small">Curator: ${esc(room.curator)} (voorgestelde taakverdeling)</p>
+        <p class="small">Curator: ${esc(room.curator)}</p>
         <p class="small"><strong>Zie het verslag voor meer informatie over deze zaal.</strong></p>
         ${works.length ? `<section class="text-sec"><h3>Werken in deze zaal</h3><ul class="work-list">${works.map((a) => `<li><button class="link" data-art="${a.id}">${esc(a.artist)} – <em>${esc(a.title)}</em> (${esc(a.year)})</button>${badge(a)}</li>`).join('')}</ul></section>` : ''}`,
       bind(root) {
@@ -225,7 +225,6 @@ export const MODALS = {
       html: `
         <section class="text-sec"><h3>Curatoren</h3>
           <ul class="curator-list">${CURATORS.map((c) => `<li><strong>${esc(c.name)}</strong> – ${esc(c.role)}<p>${esc(c.task)}</p></li>`).join('')}</ul>
-          <p class="small">${esc(CURATOR_NOTE)}</p>
         </section>
         <section class="text-sec"><h3>Eigen praktijkwerk</h3><p>De installatie ‘Na de storm’ en de studie ‘Storm en stilte’ zijn eigen praktijkwerk van Milan, Berend, Polle en Constantijn, ontworpen voor deze tentoonstelling.</p></section>
         <section class="text-sec"><h3>Techniek</h3><ul>
