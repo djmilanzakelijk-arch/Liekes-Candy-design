@@ -1,7 +1,7 @@
 import { esc, tag, link } from './dom.js';
 import { ROOMS, ROOM_BY_ID } from '../data/rooms.js';
 import { ARTWORKS, ART_BY_ID, ACCESSED, isCounted } from '../data/artworks.js';
-import { EXHIBITION, ABOUT, CURATORS, CURATOR_NOTE, ROOM_TEXTS, GLOSSARY, REFLECTION, INSIGHTS } from '../data/texts.js';
+import { EXHIBITION, ABOUT, CURATORS, CURATOR_NOTE, ROOM_TEXTS, REFLECTION, INSIGHTS } from '../data/texts.js';
 import { TIMELINE, TIMELINE_YEARS } from '../data/timeline.js';
 import { QUIZ } from '../data/quiz.js';
 import { drawMap } from './map.js';
@@ -195,8 +195,7 @@ export const MODALS = {
       html: `
         <p class="lead">${esc(t.lead)}</p>
         <p class="small">Curator: ${esc(room.curator)} (voorgestelde taakverdeling)</p>
-        ${t.sections.map((s) => `<section class="text-sec"><h3>${esc(s.h)} ${tag(s.tag)}</h3><p>${esc(s.p)}</p></section>`).join('')}
-        ${t.concepts.length ? `<section class="text-sec"><h3>Begrippen</h3><dl class="glossary">${t.concepts.map((c) => `<div><dt>${esc(c)}</dt><dd>${esc(GLOSSARY[c] || '')}</dd></div>`).join('')}</dl></section>` : ''}
+        <p class="small"><strong>Zie het verslag voor meer informatie over deze zaal.</strong></p>
         ${works.length ? `<section class="text-sec"><h3>Werken in deze zaal</h3><ul class="work-list">${works.map((a) => `<li><button class="link" data-art="${a.id}">${esc(a.artist)} – <em>${esc(a.title)}</em> (${esc(a.year)})</button>${badge(a)}</li>`).join('')}</ul></section>` : ''}`,
       bind(root) {
         root.querySelectorAll('[data-art]').forEach((b) => b.addEventListener('click', () => g.openArtFromList(b.dataset.art)));

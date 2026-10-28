@@ -81,12 +81,12 @@ export const CURATOR_NOTE = 'Dit is een voorgestelde taakverdeling. Milan, Beren
 
 export const ROOM_TEXTS = {
   entree: {
-    lead: 'In 1940 lijkt de wereld stil te staan. Deze tentoonstelling volgt hoe kunstenaars tussen 1940 en 1950 reageerden op oorlog, verlies, onzekerheid en hoop.',
+    lead: 'Hoe veranderde de kunst tussen 1940 en 1950 door oorlog, verlies en hoop?',
     sections: [],
     concepts: []
   },
   zaal1: {
-    lead: 'Hoe verbeeld je een catastrofe terwijl die nog gaande is? De kunstenaars in deze zaal tonen de oorlog zelden direct. Ze gebruiken contrast, vervorming en symbolen: een gezicht van letters, een zee van wrakken, een kap over een hoofd.',
+    lead: 'Kunst uit de oorlog zelf. Het geweld zie je bijna nooit direct.',
     sections: [
       { h: 'Historische context', tag: 'FEIT', p: 'In september 1939 viel Duitsland Polen binnen. In mei 1940 werden Nederland, België en Frankrijk bezet; op 14 mei 1940 werd Rotterdam gebombardeerd. Londen werd in 1940–1941 getroffen door de Blitz. De Holocaust kostte miljoenen mensen het leven. In juni 1944 landden de geallieerden in Normandië en in augustus 1945 vielen de atoombommen op Hiroshima en Nagasaki.' },
       { h: 'Waarom deze werken samen?', tag: 'KEUZE', p: 'Alle werken ontstonden tussen 1940 en 1945, midden in de oorlog. Ze zijn bewust gemengd: schilderij, tekening, affiche en foto. Zo zie je dat de oorlog álle beeldende media veranderde – en dat kunstenaars heel verschillende antwoorden vonden op dezelfde crisis.' },
@@ -96,7 +96,7 @@ export const ROOM_TEXTS = {
     concepts: ['propaganda', 'oorlogskunstenaar', 'grisaille', 'kubisme', 'documentaire fotografie', 'dodendans']
   },
   zaal2: {
-    lead: 'Achter elk historisch feit staan mensen. Deze zaal draait om identiteit, verlies, dagelijks leven, verplaatsing en herinnering. Een persoonlijk beeld – een winkelgevel, een kinderportret, een zelfportret – vertelt hier een groot verhaal.',
+    lead: 'De gewone mensen achter de grote geschiedenis.',
     sections: [
       { h: 'Historische context', tag: 'FEIT', p: 'In de VS werden in 1942 ongeveer 120.000 Japanse Amerikanen naar kampen gebracht (Executive Order 9066). Zwarte Amerikanen vochten in een oorlog ‘voor de vrijheid’, terwijl thuis rassenscheiding gold. In bezet Europa werden joden geregistreerd, vervolgd en gedeporteerd. Miljoenen mensen raakten ontheemd.' },
       { h: 'Waarom deze werken samen?', tag: 'KEUZE', p: 'We zetten twee blikken op dezelfde kampen naast elkaar (Lange en Adams), en twee vervolgde joodse kunstenaars tegenover elkaar (Nussbaum en Salomon). Hopper en Munch laten zien hoe eenzaamheid en ouderdom ook deel zijn van ‘de mens achter de geschiedenis’.' },
@@ -106,7 +106,7 @@ export const ROOM_TEXTS = {
     concepts: ['documentaire fotografie', 'identiteit', 'Executive Order 9066', 'Grote Migratie', 'expressionisme', 'zelfportret']
   },
   zaal3: {
-    lead: 'Waar de werkelijkheid onverdraaglijk wordt, zoeken kunstenaars de droom op. Het surrealisme gebruikt het onderbewuste, het toeval en vreemde combinaties. In de oorlog vluchtten veel surrealisten naar New York – en namen hun ideeën mee.',
+    lead: 'Kunstenaars vluchten in de droom: het surrealisme.',
     sections: [
       { h: 'Historische context', tag: 'FEIT', p: 'Het surrealisme ontstond in 1924 in Parijs rond André Breton. In 1940–1941 hielp onder anderen het Emergency Rescue Committee van Varian Fry vanuit Marseille kunstenaars als Max Ernst en André Breton te vluchten. In New York exposeerden zij onder meer bij Peggy Guggenheims galerie Art of This Century (geopend in oktober 1942).' },
       { h: 'Waarom deze werken samen?', tag: 'KEUZE', p: 'We laten zien dat ‘de droom’ in de jaren veertig heel verschillende vormen kreeg: biomorfe abstractie (Kandinsky, Gorky), een verwoest droomlandschap (Ernst), sterrenbeelden (Miró), een vrouwelijke droomwereld (Tanning), Afro-Cubaanse spiritualiteit (Lam), lichamelijke pijn (Kahlo) en een onmogelijk raadsel (Magritte).' },
@@ -116,7 +116,7 @@ export const ROOM_TEXTS = {
     concepts: ['surrealisme', 'automatisme', 'decalcomanie', 'biomorf', 'onderbewuste', 'ballingschap']
   },
   zaal4: {
-    lead: 'In New York ontstaat na de oorlog een nieuwe beeldtaal: groot, abstract en vol energie. Geen afbeelding van de wereld, maar een spoor van een gebaar, een veld van kleur, één verticale streep. Hoe kun je laten voelen wat je niet kunt laten zien?',
+    lead: 'In New York ontstaat een nieuwe, abstracte beeldtaal.',
     sections: [
       { h: 'Wat is abstractie?', tag: 'FEIT', p: 'Abstracte kunst beeldt geen herkenbare voorwerpen of figuren af. Ze werkt met de beeldaspecten zelf: kleur, lijn, vorm, ruimte, textuur en compositie. Mondriaan maakte al vanaf de jaren twintig geometrische abstractie.' },
       { h: 'Wat is abstract expressionisme?', tag: 'FEIT', p: 'Een stroming in New York, vooral rond 1945–1960, waarin kunstenaars als Pollock, de Kooning, Krasner, Rothko en Newman abstracte kunst maakten die emotie en innerlijke ervaring wilde uitdrukken. Criticus Robert Coates gebruikte de term in 1946 in The New Yorker. Er zijn twee hoofdrichtingen: de ‘gestische’ schilderkunst (action painting) en het ‘color field painting’.' },
@@ -127,7 +127,7 @@ export const ROOM_TEXTS = {
     concepts: ['abstractie', 'abstract expressionisme', 'action painting', 'druiptechniek', 'all-over', 'color field', 'zip']
   },
   zaal5: {
-    lead: 'Na de storm begint het opbouwen. Kunst, affiches en vormgeving wijzen vooruit naar een andere wereld: lichter, kleuriger, samen. Maar ook hier blijft de oorlog voelbaar – in de kinderen van Appel en in de vallende Icarus van Matisse.',
+    lead: 'Na de storm begint het opbouwen, met kleur en hoop.',
     sections: [
       { h: 'Historische context', tag: 'FEIT', p: 'Na 1945 lagen grote delen van Europa in puin. Het Marshallplan (aangekondigd in 1947) gaf West-Europa Amerikaanse hulp. In 1945 werden de Verenigde Naties opgericht en in 1948 de Universele Verklaring van de Rechten van de Mens aangenomen. Tegelijk begon de Koude Oorlog.' },
       { h: 'Binnen of buiten de periode?', tag: 'KEUZE', p: 'Alle werken in deze zaal zijn gemaakt tussen 1942 en 1950 – behalve De verwoeste stad van Zadkine (1951–1953), die we duidelijk als latere vergelijking tonen. Ook de term ‘action painting’ (1952) en de bouw van veel wederopbouwwijken vallen na 1950.' },
@@ -137,7 +137,7 @@ export const ROOM_TEXTS = {
     concepts: ['wederopbouw', 'CoBrA', 'Marshallplan', 'papierknipsel', 'pochoir', 'design']
   },
   finale: {
-    lead: 'Wat bouwen we opnieuw op? In deze laatste zaal staat ons eigen praktijkwerk: een installatie die de overgang van chaos naar hoop verbeeldt. Loop eromheen, kijk omhoog, en denk mee over de vraag die ons de hele route bezighield.',
+    lead: 'Ons eigen werk: van chaos naar hoop.',
     sections: [
       { h: 'Eigen praktijkwerk', tag: 'KEUZE', p: 'Eigen praktijkwerk van Milan, Berend, Polle en Constantijn – ontworpen voor deze tentoonstelling. De installatie ‘Na de storm’ en de studie ‘Storm en stilte’ zijn geen historische kunstwerken.' },
       { h: 'Hoe het werk aansluit', tag: 'INTERPRETATIE', p: 'We gebruiken de beeldtaal van het abstract expressionisme: all-over (Pollock), kleurvelden (Rothko) en een verticale lichtlijn (Newman). Onderin begint het werk met de verbrokkeling van zaal 1.' },
