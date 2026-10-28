@@ -206,7 +206,7 @@ export const MODALS = {
       wide: true,
       html: `
         <section class="text-sec"><h3>Curatoren</h3>
-          <ul class="curator-list">${CURATORS.map((c) => `<li><strong>${esc(c.name)}</strong> – ${esc(c.role)}<p>${esc(c.task)}</p></li>`).join('')}</ul>
+          <ul class="curator-list">${CURATORS.map((c) => `<li><strong>${esc(c.name)}</strong></li>`).join('')}</ul>
         </section>
         <section class="text-sec"><h3>Eigen praktijkwerk</h3><p>De installatie ‘Na de storm’ en de studie ‘Storm en stilte’ zijn eigen praktijkwerk van Milan, Berend, Polle en Constantijn, ontworpen voor deze tentoonstelling.</p></section>
         <section class="text-sec"><h3>Techniek</h3><ul>

@@ -154,14 +154,11 @@ export class Panels {
       g.fillStyle = '#f0e6d2';
       g.font = `600 58px ${SERIF}`;
       g.fillText(cur.name, 80, y);
-      g.fillStyle = '#cfc3ac';
-      g.font = `400 27px ${SANS}`;
-      y += 46;
-      y += wrapText(g, cur.role, 80, y, 840, 36) * 36 + 46;
+      y += 110;
     }
     g.fillStyle = '#9a8e78';
     g.font = `400 23px ${SANS}`;
-    wrapText(g, 'Klik voor credits en bronnen.', 80, 1110, 840, 30);
+    wrapText(g, 'Klik voor de credits.', 80, 1110, 840, 30);
     return c;
   }
 

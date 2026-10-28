@@ -826,7 +826,7 @@ export class Game {
       const a = ART_BY_ID[hit.id];
       label = inRange ? `<strong>${esc(a.title)}</strong><span>${esc(a.artist)} · ${esc(a.year)}</span><em>Klik om dit werk van dichtbij te bekijken · of druk op <kbd>E</kbd></em>` : `<span>Loop dichterbij om <strong>${esc(a.title)}</strong> te bekijken</span>`;
     } else {
-      const txt = { room: 'Klik om de zaaltekst te lezen', about: 'Klik voor de toelichting op de tentoonstelling', credits: 'Klik voor credits en bronnen', timeline: 'Klik op een jaar om de tijdlijn te openen', reflection: 'Klik om je reflectie te geven', end: 'Klik om de tentoonstelling af te ronden' }[hit.panel.action] || 'Klik om te openen';
+      const txt = { room: 'Klik om de zaaltekst te lezen', about: 'Klik voor de toelichting op de tentoonstelling', credits: 'Klik voor de credits', timeline: 'Klik op een jaar om de tijdlijn te openen', reflection: 'Klik om je reflectie te geven', end: 'Klik om de tentoonstelling af te ronden' }[hit.panel.action] || 'Klik om te openen';
       label = inRange ? `<em>${txt} · of druk op <kbd>E</kbd></em>` : '<span>Loop dichterbij</span>';
     }
     if (hint.dataset.key !== label) { hint.innerHTML = label; hint.dataset.key = label; }
