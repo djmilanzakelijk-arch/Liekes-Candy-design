@@ -14,11 +14,11 @@ Een interactief **3D-museum in de browser**, gemaakt voor CKV Beeldend (4 vwo) d
 | Onderdeel | Uitleg |
 |---|---|
 | **7 ruimtes** | Entree · Zaal 1 *Een wereld in crisis* · Zaal 2 *De mens achter de geschiedenis* · Zaal 3 *Dromen, symbolen en het onderbewuste* · Zaal 4 *Een nieuwe beeldtaal* · Zaal 5 *Op weg naar een andere toekomst* · Finale *Wat bouwen we opnieuw op?* |
-| **39 werken uit 1940–1950** | 7 tot 9 per zaal, elk met titel, maker, jaar, techniek, afmetingen, collectie en acht vaste vragen (wat zie je, wie/wanneer, context, beeldaspecten, betekenis, waarom deze zaal, wat zegt het over 1940–1950, bron). |
+| **39 werken uit 1940–1950** | 7 tot 9 per zaal. Klik je op een werk, dan zie je de afbeelding met titel, maker, jaar, techniek, afmetingen, collectie en de bron van de afbeelding. De uitleg per werk staat in het verslag. |
 | **Afbeeldingen** | Alle 41 werken met hun echte afbeelding. 18 zijn publiek domein of vrij gelicenseerd; 23 zijn nog auteursrechtelijk beschermd en worden getoond als citaat voor onderwijsdoeleinden, met maker, collectie, herkomst en ©-vermelding. |
 | **First-person** | WASD/pijltjes, muis met Pointer Lock (of slepen), Shift rennen, botsingen met muren, wanden, pilaren, banken en sokkels. |
 | **Inzoomen** | Klik op een werk (of druk **E**): de camera vliegt vloeiend en om muren heen naar het werk; links het beeld, rechts de informatie; vorig/volgend werk; vergroten met zoomen en verschuiven; terug naar exact je oude positie. |
-| **Educatieve laag** | Zaalteksten met begrippen, interactieve tijdlijn 1940–1950, quiz, reflectie, eindscherm met inzichten, bronnenpagina, credits, labels FEIT / INTERPRETATIE / KEUZE. |
+| **Educatieve laag** | Zaalteksten met begrippen, interactieve tijdlijn 1940–1950, quiz, reflectie, eindscherm met inzichten, bronnenpagina, credits. |
 | **Navigatie** | Kompas naar de volgende zaal, minikaart, grote plattegrond met ‘ga hierheen’, terug naar de entree, korte tour, voortgang. |
 | **Toegankelijkheid** | Muisgevoeligheid, gezichtsveld, loopbeweging uit, minder beweging, tekstgrootte, hoog contrast, volume/geluid uit, kwaliteit laag/normaal/hoog, volledige toetsenbordbediening. |
 | **Fallback** | Lijstweergave zonder 3D (ook automatisch als WebGL 2 ontbreekt). |
@@ -80,7 +80,7 @@ na-de-storm/
 **Veelvoorkomende aanpassingen**
 
 - **Tekst van een werk wijzigen:** zoek het werk op `id` in `src/data/artworks.js` en pas `texts` aan.
-- **Je eigen mening invullen:** de concepten staan in `src/data/texts.js` (`ROOM_TEXTS`, sectie ‘Onze mening (concept)’, en `REFLECTION`). Herschrijf ze in je eigen woorden.
+- **Teksten per werk:** de uitleg (`texts` in `src/data/artworks.js`) wordt niet meer in het museum getoond; die staat in het verslag. Het detailvenster toont alleen de basisgegevens.
 - **Taakverdeling aanpassen:** `CURATORS` in `src/data/texts.js` en `curator` per zaal in `src/data/rooms.js`.
 - **Een werk toevoegen:**
   1. Voeg een object toe aan `ARTWORKS` in `artworks.js` (kopieer een bestaand werk en pas alles aan).
@@ -157,7 +157,7 @@ Automatisch getest met Playwright in headless Chromium (`tests/browser-test.mjs`
 - **Installatie en build:** `npm ci` en `npm run build` slagen vanaf een schone kopie (0 kwetsbaarheden); alle 41 afbeeldingen komen in `dist/`.
 - **Gameplay:** startknop, W/A/S/D-lopen, camera op ooghoogte, botsing met muren en pilaren, door deuropeningen lopen, Esc → pauzemenu, ‘Terug naar de entree’, tour starten/stoppen, eindscherm, route opnieuw beginnen, terug naar het startscherm.
 - **Acceptatiescenario:** naar *Totes Meer* lopen → hint “Klik om dit werk van dichtbij te bekijken” → klikken → camera beweegt vloeiend dichterbij → juiste titel en informatie rechts, afbeelding links geladen → vergroten → *Volgend kunstwerk* wisselt beeld én tekst → *Terug naar het museum* zet de camera terug op exact dezelfde positie (afwijking 0,000 m) → direct verder lopen. Ook de **E-toets**, **Esc** en ‘klik op een muur opent niets’.
-- **Alle 43 werken** (39 uit 1940–1950 plus context, vergelijking en twee eigen werken) één voor één geopend: juiste titel, acht gevulde tekstsecties en een geladen afbeelding.
+- **Alle 43 werken** (39 uit 1940–1950 plus context, vergelijking en twee eigen werken) één voor één geopend: juiste titel, gevulde basisgegevens en een geladen afbeelding.
 - **Vensters:** plattegrond, tijdlijn (jaar 1944), instellingen vanuit het pauzemenu, quiz-feedback, lijstweergave zonder 3D (openen, volgend, sluiten, tijdlijn → werk).
 
 **Niet getest – eerlijk vermeld:**

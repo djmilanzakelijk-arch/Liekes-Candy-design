@@ -337,10 +337,6 @@ export const MODALS = {
         <label class="textarea-label" for="refl-text">Leg in een paar zinnen uit waarom. Noem minstens één werk uit het museum.</label>
         <textarea id="refl-text" rows="5" placeholder="Ik vind dat kunst… omdat…">${esc(r.text)}</textarea>
         <div class="row-actions"><button class="btn primary" data-act="save">Bewaar mijn antwoord</button><span class="saved" aria-live="polite"></span></div>
-        <details class="example"><summary>Voorbeeldreflectie (concept)</summary>
-          <p class="small"><strong>${esc(REFLECTION.exampleNote)}</strong></p>
-          ${REFLECTION.example.map((p) => `<p>${esc(p)}</p>`).join('')}
-        </details>
         <p class="small">Je antwoord wordt alleen in deze browser bewaard en nergens naartoe gestuurd.</p>`,
       bind(root) {
         root.querySelector('[data-act="save"]').addEventListener('click', () => {

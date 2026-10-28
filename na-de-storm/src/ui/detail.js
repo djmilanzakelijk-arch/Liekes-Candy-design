@@ -1,6 +1,5 @@
-import { $, esc, tag, link } from './dom.js';
+import { $, esc, link } from './dom.js';
 import { ROOM_BY_ID } from '../data/rooms.js';
-import { ACCESSED } from '../data/artworks.js';
 
 const STATUS_TEXT = {
   periode: null,
@@ -105,47 +104,24 @@ export class DetailView {
     }
   }
 
+  // Alleen de basisgegevens; de uitleg over de werken staat in het verslag.
   renderInfo(art) {
-    const t = art.texts;
     const room = ROOM_BY_ID[art.room];
     const status = STATUS_TEXT[art.status];
-    const firstSource = art.sources[0];
-    const plural = / en /.test(art.artist);
-    const yr = art.year.charAt(0).toLowerCase() + art.year.slice(1);
-    const prep = /^\d{1,2} [a-z]/.test(yr) ? 'op' : 'in';
-    const life = art.status === 'eigen' ? '' : ` (${art.artistLife})`;
-    const maker = `${art.artist}${life} ${plural ? 'maakten' : 'maakte'} dit werk ${prep} ${yr}.${art.yearNote ? ' ' + art.yearNote : ''}`;
-    const sec = (n, h, tg, body) => `
-      <section class="info-sec">
-        <h3><span class="num">${n}</span>${esc(h)} ${tg ? tag(tg) : ''}</h3>
-        <p>${esc(body)}</p>
-      </section>`;
+    const life = art.status === 'eigen' ? '' : ` <span>(${esc(art.artistLife)})</span>`;
     this.info.innerHTML = `
       <p class="eyebrow">${esc(room.label)} · ${esc(room.title)}</p>
       ${status ? `<p class="status-note status-${art.status}">${esc(status)}</p>` : ''}
       <h2 id="detail-title">${esc(art.title)}</h2>
-      <p class="artist">${esc(art.artist)} <span>(${esc(art.artistLife)})</span></p>
+      <p class="artist">${esc(art.artist)}${life}</p>
       <dl class="meta">
         <div><dt>Jaar</dt><dd>${esc(art.year)}</dd></div>
         <div><dt>Materiaal en techniek</dt><dd>${esc(art.medium)}</dd></div>
-        <div><dt>Afmetingen</dt><dd>${esc(art.dimensions)}${art.sizeNote ? ` <small>${esc(art.sizeNote)}</small>` : ''}</dd></div>
+        <div><dt>Afmetingen</dt><dd>${esc(art.dimensions)}</dd></div>
         <div><dt>Collectie</dt><dd>${esc(art.collection)}</dd></div>
       </dl>
-      ${art.interpretation ? `<div class="notice"><strong>Waarom zie je een kleurnotitie?</strong> Dit werk is nog auteursrechtelijk beschermd. We tonen daarom geen reproductie, maar een duidelijk gelabelde abstracte samenvatting. ${art.rightsNote ? esc(art.rightsNote) + ' ' : ''}${firstSource ? `Bekijk het origineel: ${link(firstSource.url, firstSource.label)}.` : ''}</div>` : ''}
-      ${art.type === 'beeld' ? `<div class="notice"><strong>In de zaal staat een ruimtelijke impressie.</strong> Op de sokkel staat een abstracte vorm van de curatoren, geen replica. De foto hiernaast toont het echte beeld. ${firstSource ? `Meer informatie: ${link(firstSource.url, firstSource.label)}.` : ''}</div>` : ''}
-      ${sec(1, 'Wat zie je?', 'BESCHRIJVING', t.zien)}
-      ${sec(2, 'Wie maakte het en wanneer?', 'FEIT', maker)}
-      ${sec(3, 'Historische context', art.status === 'eigen' ? 'KEUZE' : 'FEIT', t.context)}
-      ${sec(4, 'Beeldaspecten: kleur, lijn, vorm en compositie', 'ANALYSE', t.beeldaspecten)}
-      ${sec(5, 'Betekenis en mogelijke interpretatie', 'INTERPRETATIE', t.betekenis)}
-      ${sec(6, 'Waarom hangt dit werk in deze zaal?', 'KEUZE', t.zaal)}
-      ${sec(7, 'Wat vertelt dit werk over 1940–1950?', 'INTERPRETATIE', t.periode)}
-      <section class="info-sec sources">
-        <h3><span class="num">8</span>Bron en collectie ${tag('FEIT')}</h3>
-        <p><strong>Collectie:</strong> ${esc(art.collection)}</p>
-        ${art.sources.length ? `<ul>${art.sources.map((s) => `<li>${link(s.url, s.label)}</li>`).join('')}</ul><p class="small">Geraadpleegd op ${esc(ACCESSED)}.</p>` : '<p>Eigen werk van de curatoren; geen externe bron.</p>'}
-        ${art.image ? `<p class="small"><strong>Afbeelding:</strong> ${esc(art.image.credit)} – ${esc(art.image.license)}. ${link(art.image.sourceUrl, 'Bestandspagina')}</p>` : ''}
-      </section>`;
+      ${art.type === 'beeld' ? '<div class="notice"><strong>In de zaal staat een ruimtelijke impressie.</strong> Op de sokkel staat een abstracte vorm van de curatoren, geen replica. De foto hiernaast toont het echte beeld.</div>' : ''}
+      ${art.image ? `<p class="small">${link(art.image.sourceUrl, 'Bron van de afbeelding')}</p>` : ''}`;
   }
 
   openZoom() {

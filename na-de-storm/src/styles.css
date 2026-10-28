@@ -170,12 +170,6 @@ html[data-contrast='hoog'] .detail-info { background: #fff; }
 .detail-info dt { font: 700 0.72em var(--sans); letter-spacing: 0.08em; text-transform: uppercase; color: #8a6a3a; }
 .detail-info dd { margin: 0.1em 0 0; }
 .detail-info dd small { display: block; color: var(--paper-soft); }
-.info-sec { margin: 0 0 1.05em; }
-.info-sec h3 { display: flex; align-items: center; flex-wrap: wrap; gap: 0.5em; font: 700 0.98em var(--sans); margin: 0 0 0.3em; }
-.info-sec .num { display: inline-grid; place-items: center; width: 1.6em; height: 1.6em; border-radius: 50%; background: #1d1b18; color: #f4efe5; font-size: 0.76em; }
-.info-sec p { margin: 0; color: #2b2823; }
-.info-sec.sources ul { margin: 0.3em 0; padding-left: 1.2em; }
-.info-sec.sources a { color: #7a4f1e; }
 .detail-info .small { color: var(--paper-soft); }
 .notice { background: #efe4cc; border-left: 4px solid #a8834b; padding: 0.8em 1em; border-radius: 8px; margin: 0 0 1.2em; font-size: 0.9em; }
 .notice a { color: #7a4f1e; }

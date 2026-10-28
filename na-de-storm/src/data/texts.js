@@ -48,11 +48,6 @@ export const ABOUT = {
       p: 'Kunstenaars werden vervolgd (Nussbaum, Salomon), geïnterneerd (Ernst) of vluchtten (Mondriaan, Lam, Léger). Overheden gaven opdrachten aan oorlogskunstenaars en fotografen (Nash, Moore, Lange, Parks, Shahn). Na 1945 stonden wederopbouw, de atoomdreiging en de Koude Oorlog centraal. De Amerikaanse kunst kreeg na de oorlog veel internationale aandacht.'
     },
     {
-      h: 'Wat is onze eigen mening?',
-      tag: 'KEUZE',
-      p: 'Concept – nog te controleren door Milan, Berend, Polle en Constantijn: wij denken dat de kunst van 1940–1950 laat zien dat een realistische afbeelding soms tekortschiet. Een foto als die van Lange is onmisbaar als getuigenis, maar een werk als Newmans Onement I laat iets voelen waar geen foto bij kan: stilte, eenheid en een nieuw begin. Allebei zijn nodig.'
-    },
-    {
       h: 'Hoe lees je dit museum?',
       tag: 'UITLEG',
       p: 'Bij elk werk zie je labels: FEIT (historisch gecontroleerd), INTERPRETATIE (een mogelijke lezing) en KEUZE (onze curatoriële keuze of mening). Veel werken uit deze periode zijn nog auteursrechtelijk beschermd. Wij tonen ze als citaat voor onderwijsdoeleinden: voor een niet-commercieel schoolproject, met de naam van de maker, de collectie en de bron van de afbeelding. De rechten blijven bij de rechthebbenden. Bij het beeld van Henry Moore staat in de zaal een abstracte ruimtelijke impressie; in de detailweergave zie je een foto van het echte beeld.'
@@ -97,7 +92,6 @@ export const ROOM_TEXTS = {
       { h: 'Waarom deze werken samen?', tag: 'KEUZE', p: 'Alle werken ontstonden tussen 1940 en 1945, midden in de oorlog. Ze zijn bewust gemengd: schilderij, tekening, affiche en foto. Zo zie je dat de oorlog álle beeldende media veranderde – en dat kunstenaars heel verschillende antwoorden vonden op dezelfde crisis.' },
       { h: 'Beeldaspecten', tag: 'INTERPRETATIE', p: 'Kijk naar donkere en gedempte kleuren, harde licht-donkercontrasten, afgesloten ruimtes (muren bij Shahn en Nussbaum) en verbrokkelde vormen (Picasso). Juist de afwezigheid van geweld in beeld – bij Shahn, Moore en Levy – maakt het geweld voelbaar.' },
       { h: 'De ruimte', tag: 'KEUZE', p: 'Het plafond is laag, de wanden zijn donker en het licht is smal en koel. De zaal mag beklemmend voelen, maar nooit sensationeel.' },
-      { h: 'Onze mening (concept)', tag: 'KEUZE', p: 'Milan: “Wat me het meest raakte, is dat de sterkste werken het geweld niet laten zien. Je vult het zelf in, en daardoor blijft het hangen.” (Concept – door Milan te controleren.)' }
     ],
     concepts: ['propaganda', 'oorlogskunstenaar', 'grisaille', 'kubisme', 'documentaire fotografie', 'dodendans']
   },
@@ -108,7 +102,6 @@ export const ROOM_TEXTS = {
       { h: 'Waarom deze werken samen?', tag: 'KEUZE', p: 'We zetten twee blikken op dezelfde kampen naast elkaar (Lange en Adams), en twee vervolgde joodse kunstenaars tegenover elkaar (Nussbaum en Salomon). Hopper en Munch laten zien hoe eenzaamheid en ouderdom ook deel zijn van ‘de mens achter de geschiedenis’.' },
       { h: 'Beeldaspecten', tag: 'INTERPRETATIE', p: 'Let op frontale composities en blikken recht in de camera (Parks, Adams, Kahlo in zaal 3), op tekst als beeldelement (Lange, Salomon, Nussbaum) en op de manier waarop licht een sfeer bepaalt (Hopper).' },
       { h: 'Documentair = objectief?', tag: 'INTERPRETATIE', p: 'Een foto lijkt de werkelijkheid te tonen, maar de fotograaf kiest het kader, het moment en het licht. Vergelijk Lange en Adams: wie laat het kamp ‘echter’ zien?' },
-      { h: 'Onze mening (concept)', tag: 'KEUZE', p: 'Constantijn: “Het zelfportret van Nussbaum vind ik het belangrijkste werk van de tentoonstelling. Hij laat zien wie hij is, op het moment dat de wereld hem wil uitwissen.” (Concept – door Constantijn te controleren.)' }
     ],
     concepts: ['documentaire fotografie', 'identiteit', 'Executive Order 9066', 'Grote Migratie', 'expressionisme', 'zelfportret']
   },
@@ -119,7 +112,6 @@ export const ROOM_TEXTS = {
       { h: 'Waarom deze werken samen?', tag: 'KEUZE', p: 'We laten zien dat ‘de droom’ in de jaren veertig heel verschillende vormen kreeg: biomorfe abstractie (Kandinsky, Gorky), een verwoest droomlandschap (Ernst), sterrenbeelden (Miró), een vrouwelijke droomwereld (Tanning), Afro-Cubaanse spiritualiteit (Lam), lichamelijke pijn (Kahlo) en een onmogelijk raadsel (Magritte).' },
       { h: 'Beeldaspecten', tag: 'INTERPRETATIE', p: 'Let op biomorfe vormen die op levende wezens lijken, op technieken die het toeval gebruiken (decalcomanie), op de all-over-opbouw bij Miró en op realistisch geschilderde, maar onmogelijke situaties bij Tanning en Magritte.' },
       { h: 'De ruimte', tag: 'KEUZE', p: 'Schuine wanden, een geblokte vloer met diep perspectief, een nachtelijk plafond en zwevende vormen: deze zaal klopt bewust niet helemaal – maar je kunt er gewoon doorheen lopen.' },
-      { h: 'Onze mening (concept)', tag: 'KEUZE', p: 'Berend: “Ik dacht eerst dat surrealisme vooral vreemd en grappig was. Nu zie ik dat het voor veel kunstenaars een manier was om met angst en ballingschap om te gaan.” (Concept – door Berend te controleren.)' }
     ],
     concepts: ['surrealisme', 'automatisme', 'decalcomanie', 'biomorf', 'onderbewuste', 'ballingschap']
   },
@@ -131,7 +123,6 @@ export const ROOM_TEXTS = {
       { h: 'Wat is action painting?', tag: 'FEIT', p: 'Bij action painting is het schilderij het spoor van een handeling. Pollock legde het doek op de vloer en liet verf druipen en slingeren; de Kooning schilderde, schraapte en schilderde opnieuw. De term werd in 1952 bedacht door Harold Rosenberg – na onze periode.' },
       { h: 'Anders dan traditionele schilderkunst', tag: 'INTERPRETATIE', p: 'Traditionele schilderkunst heeft een onderwerp, een middelpunt en diepte (perspectief). Hier is het vlak zelf het onderwerp, is er vaak geen middelpunt (all-over) en is het formaat zo groot dat je er bijna in staat.' },
       { h: 'Waarom is de context belangrijk?', tag: 'FEIT', p: 'Na de Holocaust en de atoombom vonden veel kunstenaars realistische of verhalende kunst ontoereikend. Rothko en Gottlieb schreven in 1943 dat alleen een ‘tragisch en tijdloos’ onderwerp geldig was. Ook speelden de emigratie van Europese kunstenaars en de sterke positie van de VS na 1945 een rol bij de opkomst van New York.' },
-      { h: 'Onze mening (concept)', tag: 'KEUZE', p: 'Berend: “Voor ik dit onderzocht, dacht ik bij Pollock: dat kan mijn kleine broertje ook. Nu snap ik dat het gaat om schaal, ritme en de beslissing om te stoppen.” (Concept – door Berend te controleren.)' }
     ],
     concepts: ['abstractie', 'abstract expressionisme', 'action painting', 'druiptechniek', 'all-over', 'color field', 'zip']
   },
@@ -142,7 +133,6 @@ export const ROOM_TEXTS = {
       { h: 'Binnen of buiten de periode?', tag: 'KEUZE', p: 'Alle werken in deze zaal zijn gemaakt tussen 1942 en 1950 – behalve De verwoeste stad van Zadkine (1951–1953), die we duidelijk als latere vergelijking tonen. Ook de term ‘action painting’ (1952) en de bouw van veel wederopbouwwijken vallen na 1950.' },
       { h: 'Waarom deze werken samen?', tag: 'KEUZE', p: 'Victory Boogie Woogie en Matisse’ Jazz laten zien hoe kleur terugkeert. Léger en Moore tonen mensen die bouwen en beschermen. Appel (CoBrA) zoekt een kinderlijk nieuw begin. Dirksen en de Eames laten zien hoe grafische vormgeving en design meebouwden aan de nieuwe wereld.' },
       { h: 'Beeldaspecten', tag: 'INTERPRETATIE', p: 'Heldere primaire kleuren, open composities, organische curven (Eames, Moore) en eenvoudige, platte vormen (Matisse, Léger). De ruimte wordt lichter: er is daglicht en uitzicht.' },
-      { h: 'Onze mening (concept)', tag: 'KEUZE', p: 'Polle: “Ik vind het mooi dat juist de vrolijkste werken in deze zaal ook verdriet bevatten. Hoop is geen vergeten, maar verder durven.” (Concept – door Polle te controleren.)' }
     ],
     concepts: ['wederopbouw', 'CoBrA', 'Marshallplan', 'papierknipsel', 'pochoir', 'design']
   },
