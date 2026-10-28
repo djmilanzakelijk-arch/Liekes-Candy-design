@@ -120,6 +120,7 @@ export class DetailView {
         <div><dt>Afmetingen</dt><dd>${esc(art.dimensions)}</dd></div>
         <div><dt>Collectie</dt><dd>${esc(art.collection)}</dd></div>
       </dl>
+      <p class="notice">Zie het verslag voor meer informatie over dit werk.</p>
       ${art.type === 'beeld' ? '<div class="notice"><strong>In de zaal staat een ruimtelijke impressie.</strong> Op de sokkel staat een abstracte vorm van de curatoren, geen replica. De foto hiernaast toont het echte beeld.</div>' : ''}
       ${art.image ? `<p class="small">${link(art.image.sourceUrl, 'Bron van de afbeelding')}</p>` : ''}`;
   }
