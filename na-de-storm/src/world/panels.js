@@ -213,10 +213,10 @@ export class Panels {
     g.font = `400 32px ${SANS}`;
     g.fillStyle = '#ddd2bd';
     let y = 310;
-    y += wrapText(g, 'Bekijk de belangrijkste inzichten van de tentoonstelling, test je kennis met de quiz en lees alle bronnen na.', 90, y, 1020, 46) * 46 + 40;
+    y += wrapText(g, 'Bekijk de belangrijkste inzichten van de tentoonstelling en test je kennis met de quiz.', 90, y, 1020, 46) * 46 + 40;
     g.fillStyle = '#c9a56a';
     g.font = `600 34px ${SANS}`;
-    ['Inzichten', 'Quiz', 'Bronnen en verantwoording', 'Credits', 'Opnieuw beginnen'].forEach((t) => {
+    ['Inzichten', 'Quiz', 'Credits', 'Opnieuw beginnen'].forEach((t) => {
       g.fillText('→  ' + t, 90, y); y += 64;
     });
     g.fillStyle = '#a89c86';

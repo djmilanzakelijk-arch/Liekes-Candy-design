@@ -52,7 +52,6 @@ export const ROOMS = [
     ],
     panels: [
       { id: 'title-wall', kind: 'title', wall: 'N', at: 0, y: 7.6, w: 15, h: 5 },
-      { id: 'intro', kind: 'intro', wall: 'E', at: 4.6, y: 2.25, w: 2.7, h: 2.9, action: 'about' },
       { id: 'credits', kind: 'credits', wall: 'E', at: 17.8, y: 2.3, w: 2.5, h: 3.0, action: 'credits' },
       { id: 'timeline-wall', kind: 'timeline', wall: 'W', at: 11, y: 2.45, w: 17.2, h: 2.7, action: 'timeline' }
     ],
@@ -225,7 +224,6 @@ export const ROOMS = [
       { art: 'eigen-doek', wall: 'E', at: 8.3 }
     ],
     panels: [
-      { id: 'reflection', kind: 'kiosk', x: 15.4, z: 2.2, faceTo: [23.6, 8.3], action: 'reflection' },
       { id: 'end', kind: 'end', wall: 'S', at: 23.6, y: 2.2, w: 2.8, h: 2.3, action: 'end' }
     ],
     stele: { x: 19.0, z: -2.5, faceTo: [23.6, -5.4] }

@@ -117,7 +117,6 @@ export class DetailView {
       <dl class="meta">
         <div><dt>Jaar</dt><dd>${esc(art.year)}</dd></div>
         <div><dt>Materiaal en techniek</dt><dd>${esc(art.medium)}</dd></div>
-        <div><dt>Afmetingen</dt><dd>${esc(art.dimensions)}</dd></div>
         <div><dt>Collectie</dt><dd>${esc(art.collection)}</dd></div>
       </dl>
       <p class="notice">Zie het verslag voor meer informatie over dit werk.</p>

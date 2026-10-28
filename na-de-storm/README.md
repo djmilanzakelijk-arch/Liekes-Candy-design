@@ -14,11 +14,11 @@ Een interactief **3D-museum in de browser**, gemaakt voor CKV Beeldend (4 vwo) d
 | Onderdeel | Uitleg |
 |---|---|
 | **7 ruimtes** | Entree · Zaal 1 *Een wereld in crisis* · Zaal 2 *De mens achter de geschiedenis* · Zaal 3 *Dromen, symbolen en het onderbewuste* · Zaal 4 *Een nieuwe beeldtaal* · Zaal 5 *Op weg naar een andere toekomst* · Finale *Wat bouwen we opnieuw op?* |
-| **39 werken uit 1940–1950** | 7 tot 9 per zaal. Klik je op een werk, dan zie je de afbeelding met titel, maker, jaar, techniek, afmetingen, collectie en de bron van de afbeelding. De uitleg per werk staat in het verslag. |
+| **39 werken uit 1940–1950** | 7 tot 9 per zaal. Klik je op een werk, dan zie je de afbeelding met titel, maker, jaar, techniek, collectie en de bron van de afbeelding. De uitleg per werk staat in het verslag. |
 | **Afbeeldingen** | Alle 41 werken met hun echte afbeelding. 18 zijn publiek domein of vrij gelicenseerd; 23 zijn nog auteursrechtelijk beschermd en worden getoond als citaat voor onderwijsdoeleinden, met maker, collectie, herkomst en ©-vermelding. |
 | **First-person** | WASD/pijltjes, muis met Pointer Lock (of slepen), Shift rennen, botsingen met muren, wanden, pilaren, banken en sokkels. |
 | **Inzoomen** | Klik op een werk (of druk **E**): de camera vliegt vloeiend en om muren heen naar het werk; links het beeld, rechts de informatie; vorig/volgend werk; vergroten met zoomen en verschuiven; terug naar exact je oude positie. |
-| **Educatieve laag** | Zaalteksten met begrippen, interactieve tijdlijn 1940–1950, quiz, reflectie, eindscherm met inzichten, bronnenpagina, credits. |
+| **Educatieve laag** | Korte zaalteksten, interactieve tijdlijn 1940–1950, quiz, eindscherm met inzichten, credits. |
 | **Navigatie** | Kompas naar de volgende zaal, minikaart, grote plattegrond met ‘ga hierheen’, terug naar de entree, korte tour, voortgang. |
 | **Toegankelijkheid** | Muisgevoeligheid, gezichtsveld, loopbeweging uit, minder beweging, tekstgrootte, hoog contrast, volume/geluid uit, kwaliteit laag/normaal/hoog, volledige toetsenbordbediening. |
 | **Fallback** | Lijstweergave zonder 3D (ook automatisch als WebGL 2 ontbreekt). |
@@ -179,4 +179,4 @@ Automatisch getest met Playwright in headless Chromium (`tests/browser-test.mjs`
 - Code: eigen werk voor dit schoolproject.
 - [Three.js](https://threejs.org) – MIT. [Vite](https://vite.dev) – MIT.
 - Lettertypen Cormorant Garamond en Inter – SIL Open Font License, via Fontsource.
-- Afbeeldingen: zie `docs/ONDERZOEK.md` §4 en de bronnenpagina in de site.
+- Afbeeldingen: zie `docs/ONDERZOEK.md` §4 en de bronvermelding bij elk werk in de site.

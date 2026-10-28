@@ -1,7 +1,7 @@
-import { esc, tag, link } from './dom.js';
+import { esc, link } from './dom.js';
 import { ROOMS, ROOM_BY_ID } from '../data/rooms.js';
 import { ARTWORKS, ART_BY_ID, ACCESSED, isCounted } from '../data/artworks.js';
-import { EXHIBITION, ABOUT, CURATORS, ROOM_TEXTS, REFLECTION, INSIGHTS } from '../data/texts.js';
+import { EXHIBITION, CURATORS, ROOM_TEXTS, INSIGHTS } from '../data/texts.js';
 import { TIMELINE, TIMELINE_YEARS } from '../data/timeline.js';
 import { QUIZ } from '../data/quiz.js';
 import { drawMap } from './map.js';
@@ -21,10 +21,7 @@ export const MODALS = {
           <button class="btn ghost" data-open="collection">Bekeken werken <kbd>C</kbd></button>
           <button class="btn ghost" data-open="timeline">Tijdlijn <kbd>T</kbd></button>
           <button class="btn ghost" data-act="tour">${g.tourActive ? 'Tour stoppen' : 'Start de korte tour'}</button>
-          <button class="btn ghost" data-open="about">Over de tentoonstelling</button>
           <button class="btn ghost" data-open="quiz">Quiz</button>
-          <button class="btn ghost" data-open="reflection">Reflectie</button>
-          <button class="btn ghost" data-open="sources">Bronnen</button>
           <button class="btn ghost" data-open="credits">Credits</button>
           <button class="btn ghost" data-open="settings">Instellingen en toegankelijkheid</button>
           <button class="btn ghost" data-open="help">Bediening <kbd>H</kbd></button>
@@ -203,21 +200,6 @@ export const MODALS = {
     };
   },
 
-  about() {
-    return {
-      title: 'Over de tentoonstelling',
-      wide: true,
-      html: `
-        <p class="lead">${esc(ABOUT.intro)}</p>
-        <div class="question-box"><span>Hoofdvraag</span>${esc(EXHIBITION.question)}</div>
-        ${ABOUT.sections.map((s) => `<section class="text-sec"><h3>${esc(s.h)} ${tag(s.tag)}</h3><p>${esc(s.p)}</p></section>`).join('')}
-        <section class="text-sec"><h3>De route</h3><ol class="route">
-          ${ROOMS.map((r) => `<li><strong>${esc(r.id === 'entree' ? 'Entree' : r.label)} – ${esc(r.title)}</strong> <span>${esc(ROOM_TEXTS[r.id].lead)}</span></li>`).join('')}
-        </ol></section>
-        <p class="disclaimer">${esc(EXHIBITION.disclaimer)}</p>`
-    };
-  },
-
   credits() {
     return {
       title: 'Credits',
@@ -233,46 +215,8 @@ export const MODALS = {
           <li>Geluid: volledig in de browser gegenereerd met de Web Audio API – er zijn geen bestaande muziek- of geluidsfragmenten gebruikt.</li>
           <li>Architectuur, texturen en de installatie zijn in code ontworpen voor dit project.</li>
         </ul></section>
-        <section class="text-sec"><h3>Afbeeldingen</h3><p>Zie <em>Bronnen</em> voor de herkomst en licentie van elke afbeelding.</p></section>
+        <section class="text-sec"><h3>Afbeeldingen</h3><p>Bij elk werk staat de bron van de afbeelding.</p></section>
         <p class="disclaimer">${esc(EXHIBITION.disclaimer)}</p>`
-    };
-  },
-
-  sources() {
-    const general = [
-      ['MoMA – Collection 1880–1950 / Abstract Expressionist New York', 'https://www.moma.org/collection/'],
-      ['The Metropolitan Museum of Art – Collection', 'https://www.metmuseum.org/art/collection'],
-      ['Tate – Art and artists', 'https://www.tate.org.uk/art'],
-      ['Art Institute of Chicago – Collection', 'https://www.artic.edu/collection'],
-      ['Stedelijk Museum Amsterdam – Collectie', 'https://www.stedelijk.nl/en/collection'],
-      ['Kunstmuseum Den Haag – Collectie', 'https://www.kunstmuseum.nl'],
-      ['National Archives (VS) – Executive Order 9066', 'https://www.archives.gov/milestone-documents/executive-order-9066'],
-      ['Library of Congress – Farm Security Administration/Office of War Information', 'https://www.loc.gov/pictures/collection/fsa/'],
-      ['Wikimedia Commons – bestandspagina’s met licentie-informatie per afbeelding', 'https://commons.wikimedia.org']
-    ];
-    return {
-      title: 'Bronnen en verantwoording',
-      wide: true,
-      html: `
-        <p>Alle bronnen zijn geraadpleegd op ${esc(ACCESSED)}. We maken onderscheid tussen <strong>feiten</strong> (gecontroleerd in museum- en archiefbronnen), <strong>interpretaties</strong> en onze eigen <strong>curatoriële keuzes</strong>. We hebben geen kunstwerken, citaten of gebeurtenissen verzonnen. Waar bronnen elkaar tegenspreken (bijvoorbeeld over een datering of afmeting), staat dat bij het werk vermeld.</p>
-        <section class="text-sec"><h3>Afbeeldingen en auteursrecht</h3><ul>
-          <li><strong>Publiek domein of vrij gelicenseerd:</strong> werken van kunstenaars die vóór 1956 overleden, en foto’s en affiches van de Amerikaanse overheid (via Wikimedia Commons, de Library of Congress en de National Archives).</li>
-          <li><strong>Auteursrechtelijk beschermd:</strong> werken van onder meer Picasso, Pollock, Rothko, Hopper en Kahlo. Die tonen we als citaat voor onderwijsdoeleinden, voor dit niet-commerciële CKV-schoolproject, met de naam van de maker, de collectie en de herkomst van de afbeelding (onder meer WikiArt, Tate, het Philadelphia Museum of Art en Wikipedia). De rechten blijven bij de rechthebbenden.</li>
-          <li><strong>Ruimtelijke impressie:</strong> bij het beeld van Henry Moore staat in de zaal een abstracte vorm, geen replica.</li>
-          <li><strong>Eigen werk:</strong> de installatie, de studie en alle architectuur zijn speciaal voor dit project gemaakt.</li>
-        </ul></section>
-        <section class="text-sec"><h3>Algemene bronnen</h3><ul>${general.map(([l, u]) => `<li>${link(u, l)}</li>`).join('')}</ul>
-          <p class="small">Een uitgebreid onderzoeksverslag staat in het projectbestand <code>docs/ONDERZOEK.md</code>.</p></section>
-        <section class="text-sec"><h3>Per kunstwerk</h3>
-          ${ROOMS.map((r) => {
-            const works = (r.slots || []).map((s) => ART_BY_ID[s.art]).filter((a) => a.status !== 'eigen');
-            if (!works.length) return '';
-            return `<h4>${esc(r.id === 'entree' ? 'Entree' : r.label)} · ${esc(r.title)}</h4><ul class="src-list">${works.map((a) => `
-              <li><strong>${esc(a.artist)}, ${esc(a.title)}, ${esc(a.year)}</strong> – ${esc(a.collection)}.
-                <br>Bronnen: ${a.sources.map((s) => link(s.url, s.label)).join(' · ')}
-                <br>Beeld: ${a.image ? `${esc(a.image.credit)} – ${esc(a.image.license)} (${link(a.image.sourceUrl, 'herkomst')})` : 'ruimtelijke impressie door de curatoren (geen replica)'}</li>`).join('')}</ul>`;
-          }).join('')}
-        </section>`
     };
   },
 
@@ -322,30 +266,6 @@ export const MODALS = {
     };
   },
 
-  reflection(g) {
-    const r = g.reflection;
-    return {
-      title: 'Reflectie',
-      wide: true,
-      html: `
-        <div class="question-box"><span>De vraag</span>${esc(REFLECTION.question)}</div>
-        <fieldset class="choices"><legend>Wat vind jij?</legend>
-          ${REFLECTION.options.map((o) => `<label class="choice"><input type="radio" name="refl" value="${o.id}" ${r.choice === o.id ? 'checked' : ''}><span><strong>${esc(o.label)}</strong><small>${esc(o.hint)}</small></span></label>`).join('')}
-        </fieldset>
-        <label class="textarea-label" for="refl-text">Leg in een paar zinnen uit waarom. Noem minstens één werk uit het museum.</label>
-        <textarea id="refl-text" rows="5" placeholder="Ik vind dat kunst… omdat…">${esc(r.text)}</textarea>
-        <div class="row-actions"><button class="btn primary" data-act="save">Bewaar mijn antwoord</button><span class="saved" aria-live="polite"></span></div>
-        <p class="small">Je antwoord wordt alleen in deze browser bewaard en nergens naartoe gestuurd.</p>`,
-      bind(root) {
-        root.querySelector('[data-act="save"]').addEventListener('click', () => {
-          const choice = root.querySelector('input[name="refl"]:checked')?.value || null;
-          g.saveReflection(choice, root.querySelector('#refl-text').value);
-          root.querySelector('.saved').textContent = 'Opgeslagen.';
-        });
-      }
-    };
-  },
-
   end(g) {
     const counted = ARTWORKS.filter(isCounted);
     const seen = counted.filter((a) => g.viewed.has(a.id)).length;
@@ -360,8 +280,6 @@ export const MODALS = {
         <div class="question-box"><span>Terug naar de hoofdvraag</span>${esc(EXHIBITION.question)}<p>Ons antwoord in één zin: oorlog en verlies maakten het afbeelden van de werkelijkheid urgenter (fotografie, affiches) én ontoereikender – en daarom zochten kunstenaars naar een nieuwe beeldtaal van gebaar, kleur en schaal om te laten voelen wat niet te zeggen was.</p></div>
         <div class="end-actions">
           <button class="btn primary" data-open="quiz">Doe de quiz</button>
-          <button class="btn ghost" data-open="reflection">Geef je reflectie</button>
-          <button class="btn ghost" data-open="sources">Bronnen</button>
           <button class="btn ghost" data-open="credits">Credits</button>
           <button class="btn ghost" data-act="restart">Route opnieuw beginnen</button>
           <button class="btn ghost" data-act="resume">Verder rondkijken</button>

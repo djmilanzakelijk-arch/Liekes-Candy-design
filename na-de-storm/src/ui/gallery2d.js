@@ -59,11 +59,8 @@ export class Gallery2D {
         <h1 class="display small">${esc(EXHIBITION.title)}</h1><p class="sub">${esc(EXHIBITION.subtitle)} · ${esc(EXHIBITION.period)}</p></div>
         <div class="row-actions">
           ${this.canGo3D ? '<button class="btn primary" data-g="back">Naar het 3D-museum</button>' : ''}
-          <button class="btn ghost" data-open="about">Over</button>
           <button class="btn ghost" data-open="timeline">Tijdlijn</button>
           <button class="btn ghost" data-open="quiz">Quiz</button>
-          <button class="btn ghost" data-open="reflection">Reflectie</button>
-          <button class="btn ghost" data-open="sources">Bronnen</button>
         </div>
       </header>
       ${ROOMS.map((r) => {

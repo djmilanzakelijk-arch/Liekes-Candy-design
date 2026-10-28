@@ -131,7 +131,7 @@ ok('Rechts verschijnt informatie over precies dat werk', /Totes Meer/.test(title
 const imgOk = await page.evaluate(() => { const i = document.querySelector('#detail-figure img'); return i && i.complete && i.naturalWidth > 0; });
 ok('Afbeelding links is geladen', imgOk);
 const metaKeys = await page.$$eval('#detail-info .meta dt', (ds) => ds.map((d) => d.textContent.trim()));
-ok('Panel toont de basisgegevens van het werk', ['Jaar', 'Materiaal en techniek', 'Afmetingen', 'Collectie'].every((k) => metaKeys.includes(k)), metaKeys.join(', '));
+ok('Panel toont de basisgegevens van het werk', ['Jaar', 'Materiaal en techniek', 'Collectie'].every((k) => metaKeys.includes(k)), metaKeys.join(', '));
 await shot('05-detail-nash');
 // zoom
 await page.click('#detail-zoom'); await sleep(500);
@@ -230,7 +230,7 @@ if (ONLY === 'all' || ONLY === 'art') {
       const empty = [...document.querySelectorAll('#detail-info .meta dd')].some((d) => !d.textContent.trim());
       return { title: document.querySelector('#detail-title').textContent, expected: art.title, state: g.state, det: g.detailId, img: img ? img.complete && img.naturalWidth > 0 : null, secs, empty, pos: g.camera.position.toArray().map((v) => +v.toFixed(2)), room: art.room };
     }, id);
-    const pass = info.state === 'detail' && info.det === id && info.title === info.expected && info.secs === 4 && !info.empty && info.img !== false;
+    const pass = info.state === 'detail' && info.det === id && info.title === info.expected && info.secs === 3 && !info.empty && info.img !== false;
     if (pass) good++; else bad.push(`${id}: ${JSON.stringify(info)}`);
     if (['pollock-autumn', 'mondrian-victory', 'lange-american', 'rothko-no3', 'eigen-installatie', 'moore-family', 'lam-jungle', 'leger-constructeurs'].includes(id)) await shot(`art-${id}`);
   }
